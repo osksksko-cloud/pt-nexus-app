@@ -1,7 +1,6 @@
 <meta charset="utf-8">
 <title>피지오리 국시 트레이너</title>
-<meta name="theme-color" content="#0f1517" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f4f7f6" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#fafaf8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="국시 트레이너">
@@ -12,22 +11,14 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{
-  --bg:#f4f7f6; --surf:#ffffff; --surf2:#eef2f1; --line:#dde5e3;
-  --ink:#131d1b; --ink2:#4a5a57; --ink3:#7c8b88;
-  --acc:#0d7d6e; --acc-w:#0a6558; --acc-soft:#dcefeb;
-  --warm:#c26a24; --warm-soft:#fbeadb;
-  --ok:#12805f; --ok-soft:#dcf0e7; --bad:#b3403a; --bad-soft:#fae3e1;
-  --shadow:0 1px 2px rgba(16,40,36,.06),0 8px 24px -12px rgba(16,40,36,.18);
+  --bg:#fafaf8; --surf:#ffffff; --surf2:#f2f3f0; --line:#e7e9e4;
+  --ink:#15181a; --ink2:#565e5b; --ink3:#8b938e;
+  --acc:#0e8f7d; --acc-w:#0b7869; --acc-soft:#e2f4f0;
+  --warm:#c9711f; --warm-soft:#fbeddb;
+  --ok:#12805f; --ok-soft:#e3f5ec; --bad:#c2453d; --bad-soft:#fbe7e5;
+  --shadow:0 1px 2px rgba(20,30,25,.04),0 10px 26px -16px rgba(20,30,25,.12);
   --r:14px;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f1517; --surf:#171f21; --surf2:#1e2729; --line:#2b3639;
-  --ink:#e8efed; --ink2:#a6b5b1; --ink3:#7a8a86;
-  --acc:#3fb3a0; --acc-w:#5cc9b6; --acc-soft:#12312d;
-  --warm:#e0913f; --warm-soft:#33251a;
-  --ok:#3fb38c; --ok-soft:#13302a; --bad:#e0736c; --bad-soft:#331e1d;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px -14px rgba(0,0,0,.7);
-}}
 :root[data-theme="dark"]{
   --bg:#0f1517; --surf:#171f21; --surf2:#1e2729; --line:#2b3639;
   --ink:#e8efed; --ink2:#a6b5b1; --ink3:#7a8a86;
@@ -128,10 +119,6 @@ section.view.on{display:block}
   --s1:#0d7d6e; --s1b:#dcefeb; --s2:#2563a8; --s2b:#dde9f7;
   --s3:#6d4aa8; --s3b:#e8e0f6; --s4:#b06a12; --s4b:#fbeeda; --s5:#a8384f; --s5b:#fae0e5;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --s1:#3fb3a0; --s1b:#12312d; --s2:#6aa6e8; --s2b:#132433; --s3:#a98ae0; --s3b:#221a33;
-  --s4:#e0a24a; --s4b:#31240f; --s5:#e07a90; --s5b:#331820;
-}}
 :root[data-theme="dark"]{
   --s1:#3fb3a0; --s1b:#12312d; --s2:#6aa6e8; --s2b:#132433; --s3:#a98ae0; --s3b:#221a33;
   --s4:#e0a24a; --s4b:#31240f; --s5:#e07a90; --s5b:#331820;
@@ -818,10 +805,9 @@ function examResult(el){
 /* ── 테마 ───────────────────────────────── */
 const tb=document.getElementById('themeBtn');
 tb.onclick=()=>{ const r=document.documentElement;
-  const cur=r.getAttribute('data-theme');
-  const next=cur==='dark'?'light':cur==='light'?null:(matchMedia('(prefers-color-scheme:dark)').matches?'light':'dark');
-  if(next) r.setAttribute('data-theme',next); else r.removeAttribute('data-theme');
-  localStorage.setItem('ptnexus.theme',next||''); };
+  const next=r.getAttribute('data-theme')==='dark'?'light':'dark';
+  r.setAttribute('data-theme',next);
+  localStorage.setItem('ptnexus.theme',next); };
 const th=localStorage.getItem('ptnexus.theme'); if(th) document.documentElement.setAttribute('data-theme',th);
 
 /* ── 로그인 · 승인 게이트 ───────────────────── */
