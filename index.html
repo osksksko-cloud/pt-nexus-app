@@ -262,12 +262,16 @@ nav.tabs svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1
   <div class="card pad" style="width:min(360px,88vw);text-align:left">
     <div style="font-family:'Gothic A1';font-weight:900;font-size:19px;margin-bottom:4px">피지오리 <span style="color:var(--acc)">국시 트레이너</span></div>
     <div id="authFormBox">
-      <div id="authTitle" style="margin:6px 0 16px;color:var(--ink2);font-size:13.5px">이메일로 로그인하세요.</div>
+      <div id="authTabs" style="display:flex;gap:4px;margin:14px 0 14px;background:var(--surf2);padding:4px;border-radius:11px">
+        <button type="button" id="tabLogin" style="flex:1;padding:9px 0;border-radius:8px;font-weight:700;font-size:13.5px;border:none;cursor:pointer;background:var(--surf);color:var(--ink)">로그인</button>
+        <button type="button" id="tabSignup" style="flex:1;padding:9px 0;border-radius:8px;font-weight:700;font-size:13.5px;border:none;cursor:pointer;background:transparent;color:var(--ink3)">회원가입</button>
+      </div>
+      <div id="authTitle" style="margin:0 0 12px;color:var(--ink2);font-size:13.5px">이미 가입한 이메일로 로그인하세요.</div>
       <input id="authEmail" type="email" placeholder="이메일" autocomplete="username" style="width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:var(--surf);color:var(--ink);font-size:14px">
+      <input id="authSchool" type="text" placeholder="학교명 (예: 백석대학교)" autocomplete="organization" hidden style="width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:var(--surf);color:var(--ink);font-size:14px">
       <input id="authPw" type="password" placeholder="비밀번호 (6자 이상)" autocomplete="current-password" style="width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;background:var(--surf);color:var(--ink);font-size:14px">
       <div id="authErr" style="color:var(--bad);font-size:13px;min-height:18px;margin-bottom:4px"></div>
       <button class="btn" id="authSubmit" style="width:100%;margin-top:4px">로그인</button>
-      <button class="ghost" id="authToggle" style="width:100%;margin-top:10px;text-align:center;background:none">계정이 없으신가요? 회원가입</button>
     </div>
     <div id="authPending" style="display:none;text-align:center;padding:8px 0">
       <div style="font-size:34px;margin-bottom:8px">⏳</div>
@@ -832,22 +836,31 @@ function authErrMsg(m){
   if(/password/i.test(m) && /6/.test(m)) return '비밀번호는 6자 이상이어야 합니다.';
   return m;
 }
-document.getElementById('authToggle').onclick=()=>{
-  AUTH_MODE=AUTH_MODE==='login'?'signup':'login';
-  document.getElementById('authTitle').textContent=AUTH_MODE==='login'?'이메일로 로그인하세요.':'이메일과 비밀번호로 가입하세요.';
-  document.getElementById('authSubmit').textContent=AUTH_MODE==='login'?'로그인':'회원가입';
-  document.getElementById('authToggle').textContent=AUTH_MODE==='login'?'계정이 없으신가요? 회원가입':'이미 계정이 있으신가요? 로그인';
+function setAuthMode(mode){
+  AUTH_MODE=mode;
+  const isLogin=AUTH_MODE==='login';
+  document.getElementById('tabLogin').style.background=isLogin?'var(--surf)':'transparent';
+  document.getElementById('tabLogin').style.color=isLogin?'var(--ink)':'var(--ink3)';
+  document.getElementById('tabSignup').style.background=isLogin?'transparent':'var(--surf)';
+  document.getElementById('tabSignup').style.color=isLogin?'var(--ink3)':'var(--ink)';
+  document.getElementById('authTitle').textContent=isLogin?'이미 가입한 이메일로 로그인하세요.':'이메일·학교·비밀번호를 입력해 새로 가입하세요.';
+  document.getElementById('authSubmit').textContent=isLogin?'로그인':'회원가입';
+  document.getElementById('authSchool').hidden=isLogin;
   document.getElementById('authErr').textContent='';
-};
+}
+document.getElementById('tabLogin').onclick=()=>setAuthMode('login');
+document.getElementById('tabSignup').onclick=()=>setAuthMode('signup');
 document.getElementById('authSubmit').onclick=async()=>{
   const email=document.getElementById('authEmail').value.trim();
   const pw=document.getElementById('authPw').value;
+  const school=document.getElementById('authSchool').value.trim();
   const errEl=document.getElementById('authErr'); errEl.textContent='';
   if(!email||!pw){ errEl.textContent='이메일과 비밀번호를 입력하세요.'; return; }
+  if(AUTH_MODE==='signup' && !school){ errEl.textContent='학교명을 입력하세요.'; return; }
   const btn=document.getElementById('authSubmit'); btn.disabled=true;
   const {data,error}=AUTH_MODE==='login'
     ? await sb.auth.signInWithPassword({email,password:pw})
-    : await sb.auth.signUp({email,password:pw});
+    : await sb.auth.signUp({email,password:pw,options:{data:{school}}});
   btn.disabled=false;
   if(error){ errEl.textContent=authErrMsg(error.message); return; }
   if(!data||!data.session){
@@ -891,11 +904,11 @@ async function openAdmin(){
   if(!data||!data.length){ list.innerHTML='<div class="sub">아직 가입한 학생이 없습니다.</div>'; return; }
   list.innerHTML=data.map(s=>`
     <div class="row" style="padding:10px 0;border-bottom:1px solid var(--line);gap:10px;display:flex;align-items:center">
-      <div style="min-width:0;flex:1">
+      <div style="min-width:0;flex:1 1 auto">
         <div style="font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(s.email)}</div>
-        <div class="sub" style="font-size:12px;color:var(--ink3)">가입 ${new Date(s.created_at).toLocaleDateString('ko')} · 풀이 ${s.solved||0}회</div>
+        <div class="sub" style="font-size:12px;color:var(--ink3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.school?esc(s.school)+' · ':''}가입 ${new Date(s.created_at).toLocaleDateString('ko')} · 풀이 ${s.solved||0}회</div>
       </div>
-      <button class="btn ${s.approved?'sec':''}" data-uid="${s.id}" data-val="${s.approved?0:1}" style="padding:8px 14px;font-size:13px">${s.approved?'승인 취소':'승인'}</button>
+      <button class="btn ${s.approved?'sec':''}" data-uid="${s.id}" data-val="${s.approved?0:1}" style="flex:0 0 auto;width:auto;padding:8px 14px;font-size:13px;white-space:nowrap">${s.approved?'승인 취소':'승인'}</button>
     </div>`).join('');
   list.querySelectorAll('button[data-uid]').forEach(b=>{
     b.onclick=async()=>{
