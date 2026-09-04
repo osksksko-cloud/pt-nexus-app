@@ -1,9 +1,9 @@
 <meta charset="utf-8">
-<title>피지오리 국시 트레이너</title>
+<title>피지오리 국가고시LAB</title>
 <meta name="theme-color" content="#fafaf8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="국시 트레이너">
+<meta name="apple-mobile-web-app-title" content="국가고시LAB">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -255,12 +255,12 @@ nav.tabs svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1
 }
 </style>
 
-<div class="load" id="load"><div style="font-family:'Gothic A1';font-weight:900;font-size:18px">피지오리 <span style="color:var(--acc)">국시 트레이너</span></div>
-<div class="b"><i></i></div><div style="font-size:13px;color:var(--ink3)">문제은행 8,008문항 불러오는 중…</div></div>
+<div class="load" id="load"><div style="font-family:'Gothic A1';font-weight:900;font-size:18px">피지오리 <span style="color:var(--acc)">국가고시LAB</span></div>
+<div class="b"><i></i></div><div style="font-size:13px;color:var(--ink3)">문제은행 불러오는 중…</div></div>
 
 <div id="authScreen" class="load" style="display:none">
   <div class="card pad" style="width:min(360px,88vw);text-align:left">
-    <div style="font-family:'Gothic A1';font-weight:900;font-size:19px;margin-bottom:4px">피지오리 <span style="color:var(--acc)">국시 트레이너</span></div>
+    <div style="font-family:'Gothic A1';font-weight:900;font-size:19px;margin-bottom:4px">피지오리 <span style="color:var(--acc)">국가고시LAB</span></div>
     <div id="authFormBox">
       <div id="authTabs" style="display:flex;gap:4px;margin:14px 0 14px;background:var(--surf2);padding:4px;border-radius:11px">
         <button type="button" id="tabLogin" style="flex:1;padding:9px 0;border-radius:8px;font-weight:700;font-size:13.5px;border:none;cursor:pointer;background:var(--surf);color:var(--ink)">로그인</button>
@@ -293,7 +293,7 @@ nav.tabs svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1
 
 <div id="app" style="display:none">
 <header class="top"><div class="wrap">
-  <div class="brand">피지오리 <span>국시 트레이너</span></div>
+  <div class="brand">피지오리 <span>국가고시LAB</span></div>
   <div class="streak" id="streak" hidden>🔥 <span class="num" id="streakN">0</span>일</div>
   <button class="ghost" id="adminBtn" hidden style="margin-right:8px">승인 관리</button>
   <button class="ghost" id="themeBtn" aria-label="테마 전환">◐</button>
@@ -898,6 +898,28 @@ async function initAuth(){
 /* ── 관리자: 승인 대기 목록 ─────────────────── */
 document.getElementById('adminBtn').onclick=openAdmin;
 document.getElementById('adminClose').onclick=()=>{ document.getElementById('adminScreen').style.display='none'; };
+function adminCard(s){
+  let actions;
+  if(s.rejected){
+    actions=`<button class="btn" data-act="restore" data-uid="${s.id}" style="flex:1;padding:9px 14px;font-size:13.5px">대기로 복원</button>`;
+  }else if(s.approved){
+    actions=`<button class="btn sec" data-act="approve" data-uid="${s.id}" data-val="0" style="flex:1;padding:9px 14px;font-size:13.5px">승인 취소</button>`;
+  }else{
+    actions=`<button class="btn" data-act="approve" data-uid="${s.id}" data-val="1" style="flex:1;padding:9px 14px;font-size:13.5px">승인</button>
+      <button class="btn" data-act="reject" data-uid="${s.id}" data-name="${esc(s.name||s.email)}" style="flex:1;padding:9px 14px;font-size:13.5px;background:var(--bad-soft);color:var(--bad)">거절</button>`;
+  }
+  return `<div class="row" style="padding:12px 0;border-bottom:1px solid var(--line);display:block">
+      <div style="font-weight:700;font-size:15px">${esc(s.name||'(이름 없음)')}</div>
+      <div style="font-size:13px;color:var(--ink2);margin-top:2px;overflow-wrap:break-word;word-break:break-all">✉️ ${esc(s.email)}</div>
+      <div style="font-size:13px;color:${s.school?'var(--ink2)':'var(--bad)'};margin-top:2px;overflow-wrap:break-word">🏫 ${s.school?esc(s.school):'학교 미입력'}</div>
+      <div class="sub" style="font-size:12px;color:var(--ink3);margin-top:2px">가입 ${new Date(s.created_at).toLocaleDateString('ko')} · 풀이 ${s.solved||0}회</div>
+      <div style="display:flex;gap:6px;margin-top:8px">${actions}</div>
+    </div>`;
+}
+function adminSection(title,color,rows){
+  if(!rows.length) return '';
+  return `<div style="font-weight:700;font-size:13.5px;color:${color};margin:16px 0 4px">${title} (${rows.length})</div>${rows.map(adminCard).join('')}`;
+}
 async function openAdmin(){
   document.getElementById('adminScreen').style.display='';
   const list=document.getElementById('adminList');
@@ -905,19 +927,14 @@ async function openAdmin(){
   const {data,error}=await sb.rpc('admin_students');
   if(error){ list.innerHTML='불러오기 실패: '+esc(error.message); return; }
   if(!data||!data.length){ list.innerHTML='<div class="sub">아직 가입한 학생이 없습니다.</div>'; return; }
-  const nPending=data.filter(s=>!s.approved).length;
-  const summary=`<div class="sub" style="font-size:13px;margin-bottom:10px">대기 <b style="color:var(--warm)">${nPending}</b>명 · 승인됨 ${data.length-nPending}명</div>`;
-  list.innerHTML=summary+data.map(s=>`
-    <div class="row" style="padding:12px 0;border-bottom:1px solid var(--line);display:block">
-      <div style="font-weight:700;font-size:15px">${esc(s.name||'(이름 없음)')}</div>
-      <div style="font-size:13px;color:var(--ink2);margin-top:2px;overflow-wrap:break-word;word-break:break-all">✉️ ${esc(s.email)}</div>
-      <div style="font-size:13px;color:${s.school?'var(--ink2)':'var(--bad)'};margin-top:2px;overflow-wrap:break-word">🏫 ${s.school?esc(s.school):'학교 미입력'}</div>
-      <div class="sub" style="font-size:12px;color:var(--ink3);margin-top:2px">가입 ${new Date(s.created_at).toLocaleDateString('ko')} · 풀이 ${s.solved||0}회</div>
-      <div style="display:flex;gap:6px;margin-top:8px">
-        <button class="btn ${s.approved?'sec':''}" data-act="approve" data-uid="${s.id}" data-val="${s.approved?0:1}" style="flex:1;padding:9px 14px;font-size:13.5px">${s.approved?'승인 취소':'승인'}</button>
-        ${s.approved?'':`<button class="btn" data-act="reject" data-uid="${s.id}" data-name="${esc(s.name||s.email)}" style="flex:1;padding:9px 14px;font-size:13.5px;background:var(--bad-soft);color:var(--bad)">거절</button>`}
-      </div>
-    </div>`).join('');
+  const pending=data.filter(s=>!s.approved&&!s.rejected);
+  const approved=data.filter(s=>s.approved);
+  const rejected=data.filter(s=>s.rejected);
+  const summary=`<div class="sub" style="font-size:13px">대기 <b style="color:var(--warm)">${pending.length}</b>명 · 승인됨 ${approved.length}명 · 거절됨 ${rejected.length}명</div>`;
+  list.innerHTML=summary
+    +adminSection('🕐 대기 중','var(--warm)',pending)
+    +adminSection('✅ 승인됨','var(--ok)',approved)
+    +adminSection('🚫 거절됨 (나중에 복원 가능)','var(--bad)',rejected);
   list.querySelectorAll('button[data-act="approve"]').forEach(b=>{
     b.onclick=async()=>{
       b.disabled=true;
@@ -927,10 +944,18 @@ async function openAdmin(){
   });
   list.querySelectorAll('button[data-act="reject"]').forEach(b=>{
     b.onclick=async()=>{
-      if(!confirm(`${b.dataset.name} 님의 가입 요청을 거절하고 계정을 삭제할까요? 되돌릴 수 없습니다.`)) return;
+      if(!confirm(`${b.dataset.name} 님의 가입 요청을 거절할까요? 계정은 삭제되지 않고, 거절 목록에서 나중에 다시 승인할 수 있어요.`)) return;
       b.disabled=true;
       const {error}=await sb.rpc('admin_reject_student',{p_uid:b.dataset.uid});
       if(error){ alert('거절 처리 실패: '+error.message); b.disabled=false; return; }
+      openAdmin();
+    };
+  });
+  list.querySelectorAll('button[data-act="restore"]').forEach(b=>{
+    b.onclick=async()=>{
+      b.disabled=true;
+      const {error}=await sb.rpc('admin_restore_student',{p_uid:b.dataset.uid});
+      if(error){ alert('복원 실패: '+error.message); b.disabled=false; return; }
       openAdmin();
     };
   });
