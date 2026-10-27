@@ -18,7 +18,7 @@
   const distinctCount = (records, predicate) => new Set(records.filter(predicate).map(row => Number(row.chapter))).size;
   function profile(state, now = new Date()) {
     const history = Array.isArray(state.history) ? state.history : [];
-    const qualified = history.filter(row => row?.kind === 'chapter' && Number.isInteger(Number(row.chapter)) && Number(row.attempted) >= 4 && Number(row.correct) / Number(row.attempted) >= .75 && Number(row.skipped) <= 1);
+    const qualified = history.filter(row => row?.kind === 'chapter' && row.passed !== false && Number.isInteger(Number(row.chapter)) && Number(row.attempted) >= 4 && Number(row.correct) / Number(row.attempted) >= .75 && Number(row.skipped) <= 1);
     const basic = distinctCount(qualified, row => Number(row.chapter) >= 1 && Number(row.chapter) <= 12);
     const full = distinctCount(qualified, row => Number(row.attempted) >= 6 && row.mode !== 'gentle');
     const middle = distinctCount(qualified, row => Number(row.chapter) >= 5 && Number(row.chapter) <= 8 && Number(row.attempted) >= 6 && row.mode !== 'gentle');
@@ -64,5 +64,12 @@
     state.studyDays = state.studyDays.slice(-365);
     return true;
   }
-  window.MAGIC_PATH = {profile, markDay, weekStart};
+  function missionGrade(results) {
+    const rows = Array.isArray(results) ? results : [];
+    const total = rows.length;
+    const correct = rows.filter(item => item?.ok && !item.help && !item.skipped).length;
+    const skipped = rows.filter(item => item?.skipped).length;
+    return {total, correct, skipped, accuracy:total ? Math.round(correct / total * 100) : 0, passed:total > 0 && correct / total >= .7 && skipped <= 1};
+  }
+  window.MAGIC_PATH = {profile, markDay, weekStart, missionGrade};
 })();

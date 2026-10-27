@@ -149,3 +149,12 @@ window.FULL_PASSAGE_WORDS = [
   [['mystery','수수께끼'],['search','찾다'],['compare','비교하다'],['clue','단서'],['investigate','조사하다']],
   [['danger','위험'],['entrance','입구'],['knowledge','지식'],['protect','보호하다'],['courage','용기']]
 ];
+
+// Authorized listening excerpts remain on the rights holder's website.
+window.OFFICIAL_EXCERPTS = [
+  {chapter:1,title:'The Boy Who Lived',url:'https://www.harrypotter.com/features/philosophers-stone-extract-week-one'},
+  {chapter:6,title:'The Journey from Platform Nine and Three-quarters',url:'https://www.harrypotter.com/features/philosophers-stone-extract-week-two',units:[5,6]},
+  {chapter:8,title:'The Potions Master',url:'https://www.harrypotter.com/features/philosophers-stone-extract-week-three',units:[8]},
+  {chapter:12,title:'The Mirror of Erised',url:'https://www.harrypotter.com/features/philosophers-stone-extract-week-four'},
+  {chapter:16,title:'Through the Trapdoor',url:'https://www.harrypotter.com/features/philosophers-stone-extract-week-five',units:[12]}
+];
