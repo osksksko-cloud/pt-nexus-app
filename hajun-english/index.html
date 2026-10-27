@@ -19,6 +19,9 @@
 .chapter .chapter-thumb{width:100%;aspect-ratio:2.05;display:block;object-fit:cover;object-position:center;border-radius:11px;margin-bottom:12px;border:1px solid #e5d8be}.chapter .chapicon{font-size:20px;display:inline;margin-left:4px}.chapter{padding:11px}.chapter h3,.chapter p,.chapter-foot,.chapter .ch-number{margin-left:4px;margin-right:4px}
 .chapterhero{padding:0;display:block;overflow:hidden;background:#fbf3e1;border:1px solid #e5d7b8}.chapterhero .chapter-scene{display:block;width:100%;height:225px;object-fit:cover;object-position:center}.chapterhero .chapter-meta{padding:17px 21px}.chapterhero .chapter-meta h1{margin:3px 0}.lesson-path{display:flex;gap:8px;overflow:auto;white-space:nowrap;padding:4px 0 13px;margin-bottom:8px}.lesson-path span{font-size:12px;color:#87672d;font-weight:800;background:#fff2d8;border:1px solid #f0ddaf;border-radius:12px;padding:7px 10px}.tabs{flex-wrap:nowrap;overflow:auto;scrollbar-width:thin}.tabs .tab{flex:1 0 auto;min-width:96px}.listening-scene{display:block;width:100%;height:220px;object-fit:cover;object-position:center;border-radius:15px;margin-top:12px}.audio-row-note{font-size:11px;color:#667483;margin-top:-3px;line-height:1.7}.file-box{border:1px dashed #c5a262;border-radius:14px;background:#fffbf3;padding:15px;margin:15px 0}.file-box p{margin:4px 0 10px}.file-box .btn{margin:3px}.original-banner{border-radius:14px;background:linear-gradient(105deg,#22334f,#4a4260);color:#fff;padding:16px;margin:10px 0 18px}.original-banner p{font-size:13px;color:#e7e2da;margin:6px 0 0}.original-pass{font-family:Georgia,serif;font-size:20px;line-height:2.1;white-space:pre-wrap;margin:8px 0 16px;overflow-wrap:anywhere}.book-vocab{border-radius:14px;background:#f0f5ef;padding:13px 17px;margin:12px 0}.book-vocab p{margin:5px 0}.lesson-tip{background:#fff7e9;padding:15px;border-radius:12px}.audio-select{min-width:155px;max-width:100%;width:auto}
 @media(max-width:580px){.hero{min-height:270px}.hero-backdrop{opacity:.4}.hero:before{background:linear-gradient(95deg,rgba(9,20,41,.94) 0%,rgba(12,29,52,.8) 70%,rgba(15,30,46,.45) 100%)}.chapterhero .chapter-scene{height:170px}.chapterhero .chapter-meta{padding:12px 15px}.listening-scene{height:170px}.chapter .chapter-thumb{margin-bottom:7px}.chapter h3{font-size:13px}.tabs .tab{min-width:max-content;padding:10px 13px}}
+.growth-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}.growth-step{background:#f7f8fa;border:1px solid var(--line);border-radius:14px;padding:14px}.growth-step strong{display:block;color:#243b56}.growth-step p{font-size:13px;color:var(--sub);margin:6px 0 0}.growth-answer{width:100%;min-height:92px}.growth-model{margin-top:12px;padding:14px;background:#eef6ef;border:1px solid #cfe4d2;border-radius:12px}.growth-model p{margin:6px 0}.growth-status{font-size:13px;color:#28705d;font-weight:800}
+.chapterhero .scene-id-2{object-position:center 22%}
+@media(max-width:680px){.growth-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -38,7 +41,7 @@
   </aside>
   <main class="main" id="app" aria-live="polite"></main>
  </div>
- <footer class="footer">개인 학습용 비공식 팬 교육 프로젝트 · 원작 인용/공식 삽화 미포함 · 이미지 AI 생성 · 기기 내부에만 진도 저장<div class="footnote">해리포터 원작 및 캐릭터의 권리는 각 권리자에게 있습니다. 본 앱은 공식 서비스가 아닙니다.</div></footer>
+ <footer class="footer">개인 학습용 비공식 팬 교육 프로젝트 · 원작 인용/공식 삽화 미포함 · 이미지 AI 생성 · 기기 내부에만 진도 저장<div class="footnote">해리포터 원작 및 캐릭터의 권리는 각 권리자에게 있습니다. 본 앱은 공식 서비스가 아닙니다. 영국식 합성 음성: <a href="https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_GB/alba/medium" target="_blank" rel="noopener noreferrer">Piper Alba</a> (원천 음성 데이터 CC BY 4.0).</div></footer>
 </div>
 <div class="toast" id="toast" role="status" hidden></div>
 
@@ -75,7 +78,7 @@ const CHAPTERS = [
  ]
 },
 {
- id:2,icon:'🌊',title:'거인의 방문',enTitle:'A Visitor at the Hut',theme:'예상 밖의 방문객',scene:'누군가 문을 세게 두드렸어!',grammar:'past tense / could',level:'A1+',
+ id:2,icon:'🌊',title:'거인의 방문',enTitle:'A Visitor at the Hut',theme:'예상 밖의 방문객',scene:'누군가 문을 세게 두드렸어!',grammar:'can / but',level:'A1+',
  intro:'폭풍우 치는 밤, 작은 오두막을 찾아온 낯선 방문객. 해리는 새로운 사실을 알게 돼.',
  story:['Harry stays in a small hut with his family.','During the night, a huge visitor arrives.','His name is Hagrid, and he knows about Harry.','Hagrid tells Harry that he can study magic at Hogwarts.','Harry feels surprised but excited.'],
  extra:['Harry had never imagined that a different world existed beyond his ordinary life.','When Hagrid explains the invitation, Harry begins to believe that his future could change.','He asks many questions because everything sounds impossible.'],
@@ -111,13 +114,13 @@ const CHAPTERS = [
  ]
 },
 {
- id:4,icon:'🪄',title:'나를 선택한 지팡이',enTitle:'The Wand Chooses',theme:'내게 맞는 지팡이',scene:'지팡이를 잡자 놀라운 일이!',grammar:'when / while',level:'A1+ → A2',
+ id:4,icon:'🪄',title:'나를 선택한 지팡이',enTitle:'The Wand Chooses',theme:'내게 맞는 지팡이',scene:'지팡이를 잡자 놀라운 일이!',grammar:'but / another',level:'A1+ → A2',
  intro:'지팡이 가게에서 여러 지팡이를 시험하는 해리. 중요한 것은 무엇일까?',
  story:['Harry visits a wand shop with Hagrid.','He tries one wand, but nothing special happens.','He tries another wand and feels something different.','The shopkeeper watches him carefully.','At last, Harry finds a wand that feels right.'],
  extra:['Choosing a wand is not as simple as choosing an ordinary school tool.','When Harry holds the right one, the experience feels completely different.','He realizes that there are still many things he does not understand about magic.'],
  ko:'해리는 지팡이를 여러 개 시험하다가 마침내 자기에게 맞는 지팡이를 발견해.',
  words:[['wand','지팡이'],['try','시도하다'],['different','다른'],['shopkeeper','점원·가게 주인'],['realize','깨닫다'],['ordinary','평범한']],
- phrase:['When Harry holds the right one, the experience feels different.','When + 어떤 일이 일어나는 순간을 연결할 수 있어.'],
+ phrase:['He tries one wand, but nothing special happens.','but 앞뒤에서 서로 다른 상황이 이어져.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“realize”에 가까운 뜻은?',opts:['깨닫다','잊어버리다','구매하다','숨기다'],a:0,ex:'realize는 사실을 알게 되거나 깨닫는다는 뜻이야.'},
   {kind:'pick',skill:'독해',q:'What happens with the first wand?',opts:['Harry flies.','Nothing special happens.','It becomes a book.','Hagrid buys it.'],a:1,ex:'He tries one wand, but nothing special happens.'},
@@ -129,13 +132,13 @@ const CHAPTERS = [
  ]
 },
 {
- id:5,icon:'🚂',title:'비밀 승강장의 기차',enTitle:'The Hidden Platform',theme:'기차역에서 길 찾기',scene:'어디에도 없는 승강장 번호!',grammar:'have to / must',level:'A2',
+ id:5,icon:'🚂',title:'비밀 승강장의 기차',enTitle:'The Hidden Platform',theme:'기차역에서 길 찾기',scene:'어디에도 없는 승강장 번호!',grammar:'cannot / but',level:'A2',
  intro:'해리는 학교로 가는 기차를 타야 하는데 승강장 번호가 이상해. 어떻게 찾아갈까?',
  story:['Harry arrives at King’s Cross station with his luggage.','His ticket shows a platform that seems impossible to find.','He looks around but cannot see the entrance.','A friendly family helps him understand where to go.','Harry reaches the train just in time.'],
  extra:['At first, the directions seem confusing, especially because the platform is hidden from ordinary travelers.','Harry has to trust the family’s advice even though the idea sounds unbelievable.','Once he finds the entrance, his journey toward Hogwarts finally begins.'],
  ko:'해리는 런던 킹스크로스역에서 비밀 승강장을 찾지 못해 당황하지만 도움을 받아 기차를 타.',
  words:[['platform','승강장'],['luggage','짐'],['ticket','승차권'],['entrance','입구'],['directions','길 안내'],['trust','믿다']],
- phrase:['Harry has to trust the family’s advice.','have to는 어떤 일을 해야 한다는 뜻이야.'],
+ phrase:['He looks around but cannot see the entrance.','cannot은 할 수 없다는 뜻이고, but은 대조를 나타내.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“entrance”는 무엇을 뜻할까?',opts:['출구','입구','가방','승강장'],a:1,ex:'entrance는 들어가는 곳, 입구야.'},
   {kind:'pick',skill:'독해',q:'Why is Harry confused at the station?',opts:['He lost his name.','His ticket shows a strange platform.','The train is a bus.','He forgot his luggage.'],a:1,ex:'The ticket shows a platform that seems impossible to find.'},
@@ -165,13 +168,13 @@ const CHAPTERS = [
  ]
 },
 {
- id:7,icon:'🎩',title:'모자가 내리는 결정',enTitle:'A Choice at School',theme:'기숙사 배정',scene:'모자는 무엇을 보고 결정할까?',grammar:'comparative / than',level:'A2',
+ id:7,icon:'🎩',title:'모자가 내리는 결정',enTitle:'A Choice at School',theme:'기숙사 배정',scene:'모자는 무엇을 보고 결정할까?',grammar:'when / where',level:'A2',
  intro:'큰 홀에서 학생들이 기숙사 배정을 기다려. 해리는 자신의 선택이 중요하다는 것을 깨닫지.',
  story:['New students gather in a large hall.','A special hat helps decide where each student belongs.','Harry feels nervous when his turn comes.','He hopes to join a house where he can make good friends.','The decision becomes an important beginning for him.'],
  extra:['Harry understands that belonging to a group may shape his school life.','Although he cannot control everything, his own wishes still matter.','He learns that a brave choice can be more important than an easy one.'],
  ko:'학생들은 기숙사 배정을 기다리고, 해리는 앞으로 함께할 친구들과 자신의 선택에 대해 고민해.',
  words:[['gather','모이다'],['belong','속하다'],['nervous','긴장한'],['decision','결정'],['shape','영향을 주다'],['brave','용감한']],
- phrase:['A brave choice can be more important than an easy one.','more ... than을 써서 둘을 비교해 볼 수 있어.'],
+ phrase:['Harry feels nervous when his turn comes.','when 뒤에서 해리가 긴장한 때를 알려줘.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“nervous”에 가장 가까운 감정은?',opts:['긴장한','편안한','기쁜','배고픈'],a:0,ex:'nervous는 걱정되거나 긴장한 상태야.'},
   {kind:'pick',skill:'독해',q:'Where do the new students gather?',opts:['In a small shop','In a large hall','On a bus','By the sea'],a:1,ex:'New students gather in a large hall.'},
@@ -183,31 +186,31 @@ const CHAPTERS = [
  ]
 },
 {
- id:8,icon:'📖',title:'첫 수업의 비밀',enTitle:'First Lessons',theme:'실패해도 다시 시도',scene:'첫 주문이 잘되지 않는 이유는?',grammar:'if / should',level:'A2',
- intro:'마법학교 수업이 시작됐어. 해리는 연습이 실력을 바꾼다는 사실을 배워.',
- story:['Harry begins taking lessons at Hogwarts.','Some activities are easier than others.','A teacher explains that students need practice.','Harry makes mistakes, but he keeps trying.','He learns more when he pays attention and asks for help.'],
- extra:['Making a mistake does not mean that a student has failed forever.','If Harry practices patiently, he will become more confident over time.','He realizes that asking a thoughtful question is sometimes better than pretending to know the answer.'],
- ko:'해리는 첫 수업에서 실수하지만 꾸준히 연습하고 질문하면서 조금씩 자신감을 얻어.',
- words:[['practice','연습하다'],['mistake','실수'],['attention','주의·집중'],['patiently','참을성 있게'],['confident','자신 있는'],['pretend','~인 척하다']],
- phrase:['If Harry practices patiently, he will become more confident.','If + 현재, will + 동사로 앞으로의 가능성을 말할 수 있어.'],
+ id:8,icon:'📖',title:'첫 수업의 비밀',enTitle:'The Potions Master',theme:'실패해도 다시 시도',scene:'첫 마법약 수업에서 배운 것은?',grammar:'cannot / but',level:'A2',
+ intro:'스네이프 교수의 첫 마법약 수업에서 해리는 어려운 질문을 받고, 관찰과 읽기의 중요성을 배워.',
+ story:['Harry begins his first Potions lesson at Hogwarts.','Professor Snape asks Harry difficult questions.','Harry cannot answer, but Hermione seems to know.','The students read instructions and work with ingredients.','Harry learns that careful thinking matters in this class.'],
+ extra:['Harry feels uncomfortable when he cannot answer in front of the class.','Making a potion takes more than magic; students must observe and follow directions.','He can prepare for the next lesson by reading and asking useful questions.'],
+ ko:'해리는 첫 마법약 수업에서 어려운 질문을 받고, 지시문을 읽고 재료를 살피며 배워.',
+ words:[['potion','마법약'],['question','질문'],['answer','대답하다'],['ingredient','재료'],['instruction','지시문'],['observe','관찰하다']],
+ phrase:['Harry cannot answer, but Hermione seems to know.','cannot은 할 수 없다는 뜻이고, but은 서로 다른 상황을 이어줘.'],
  qs:[
-  {kind:'pick',skill:'어휘',q:'“pretend”의 뜻에 가까운 것은?',opts:['기다리다','~인 척하다','공유하다','다시 오다'],a:1,ex:'pretend to know는 알고 있는 척하다라는 뜻이야.'},
-  {kind:'pick',skill:'독해',q:'What does Harry do after making mistakes?',opts:['He stops studying.','He keeps trying.','He leaves school.','He hides every book.'],a:1,ex:'Harry makes mistakes, but he keeps trying.'},
-  {kind:'listen',skill:'듣기',audio:'A teacher explains that students need practice.',q:'선생님이 강조한 것은?',opts:['비밀','시험 날짜','연습','승강장'],a:2,ex:'students need practice = 학생들에게는 연습이 필요하다.'},
-  {kind:'order',skill:'문장',q:'“해리는 계속 시도한다.” 영어로 배열해 봐.',tokens:['trying.','Harry','keeps'],answer:['Harry','keeps','trying.'],ex:'Harry keeps trying.'},
-  {kind:'pick',skill:'추론',q:'잘 모를 때 해리에게 더 좋은 행동은?',opts:['아는 척하기','조용히 포기하기','생각한 질문을 하기','다른 학생 탓하기'],a:2,ex:'asking a thoughtful question이 pretending보다 나을 수 있어.'},
-  {kind:'pick',skill:'표현',q:'If Harry practices, he ___ improve.',opts:['will','was','have','are'],a:0,ex:'If 현재형 + will 동사원형 구조야.'},
-  {kind:'type',skill:'쓰기',q:'영어로 쓰기: “나는 계속 시도한다.”',aText:'I keep trying.',alternatives:['I will keep trying.'],ex:'keep + -ing를 써.'}
+  {kind:'pick',skill:'어휘',q:'“ingredient”의 뜻에 가까운 것은?',opts:['재료','도서관','승강장','친구'],a:0,ex:'ingredient는 마법약을 만들 때 사용하는 재료야.'},
+  {kind:'pick',skill:'독해',q:'Who asks Harry difficult questions?',opts:['Ron','Hagrid','Professor Snape','Mrs Weasley'],a:2,ex:'Professor Snape asks Harry difficult questions.'},
+  {kind:'listen',skill:'듣기',audio:'The students read instructions and work with ingredients.',q:'학생들이 읽는 것은?',opts:['편지','지시문','시간표','지도'],a:1,ex:'read instructions는 지시문을 읽는다는 뜻이야.'},
+  {kind:'order',skill:'문장',q:'“해리는 대답할 수 없다.” 영어로 배열해 봐.',tokens:['answer.','cannot','Harry'],answer:['Harry','cannot','answer.'],ex:'Harry cannot answer.'},
+  {kind:'pick',skill:'추론',q:'마법약 수업에서 중요한 태도는?',opts:['지시문 무시하기','재료를 관찰하고 읽기','무조건 빨리 끝내기','친구 답만 베끼기'],a:1,ex:'Students must observe, read, and think.'},
+  {kind:'pick',skill:'표현',q:'Harry cannot answer, ___ Hermione seems to know.',opts:['but','because','before','so'],a:0,ex:'but은 서로 다른 두 상황을 이어줘.'},
+  {kind:'type',skill:'쓰기',q:'영어로 쓰기: “나는 대답할 수 없다.”',aText:'I cannot answer.',alternatives:["I can't answer."],ex:'cannot 뒤에는 동사 원형 answer가 와.'}
  ]
 },
 {
- id:9,icon:'🧹',title:'첫 비행 도전',enTitle:'Learning to Fly',theme:'빗자루 비행',scene:'떨리지만 하늘로!',grammar:'could / while',level:'A2',
+ id:9,icon:'🧹',title:'첫 비행 도전',enTitle:'Learning to Fly',theme:'빗자루 비행',scene:'떨리지만 하늘로!',grammar:'must / before',level:'A2',
  intro:'첫 비행 시간! 해리는 실수도 하고 용기도 내며 하늘을 날아올라.',
  story:['Harry attends a flying lesson with other students.','Everyone must listen to the teacher before they start.','Harry feels worried at first, but he learns quickly.','Flying takes balance, attention, and courage.','He discovers that he enjoys being in the air.'],
  extra:['While some students struggle to control their brooms, Harry begins to understand how to move confidently.','He does not become skilled by ignoring the rules; he watches, listens, and responds carefully.','The experience shows him that an unfamiliar challenge can reveal a new strength.'],
  ko:'해리는 비행 수업에서 설명을 듣고 균형을 잡으며 자신이 비행을 좋아한다는 걸 알아.',
  words:[['flying','비행'],['balance','균형'],['courage','용기'],['struggle','애쓰다'],['control','조절하다'],['strength','강점·힘']],
- phrase:['While some students struggle, Harry begins to understand.','While은 두 일이 진행되는 동안의 대비를 보여줄 수 있어.'],
+ phrase:['Everyone must listen to the teacher before they start.','must는 꼭 해야 할 일을, before는 먼저 일어나는 일을 나타내.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“balance”에 가장 가까운 뜻은?',opts:['공포','균형','기억','속도'],a:1,ex:'balance는 몸이나 물체의 균형이야.'},
   {kind:'pick',skill:'독해',q:'What should everyone do before flying?',opts:['Buy more books','Listen to the teacher','Leave the classroom','Eat snacks'],a:1,ex:'Everyone must listen to the teacher before they start.'},
@@ -219,13 +222,13 @@ const CHAPTERS = [
  ]
 },
 {
- id:10,icon:'🗝️',title:'복도의 수상한 문',enTitle:'The Secret Corridor',theme:'숨겨진 문',scene:'왜 이 문은 잠겨 있을까?',grammar:'might / must not',level:'A2+',
+ id:10,icon:'🗝️',title:'복도의 수상한 문',enTitle:'The Secret Corridor',theme:'숨겨진 문',scene:'왜 이 문은 잠겨 있을까?',grammar:'why / instead of',level:'A2+',
  intro:'밤이 되자 수상한 복도가 눈에 띄었어. 들어가도 괜찮을까?',
  story:['Harry notices a locked door in a quiet corridor.','He wonders why the area is not open to students.','His friends tell him that some places are dangerous.','They decide to look for clues instead of rushing inside.','Harry understands that curiosity needs good judgment.'],
  extra:['The door might hide something important, but nobody knows exactly what is behind it.','Rather than ignoring every warning, Harry considers the possible consequences of his actions.','He begins to understand that being brave is not the same as being careless.'],
  ko:'해리는 잠긴 문을 발견하지만 친구들과 함께 무작정 들어가지 않고 단서를 찾아보기로 해.',
  words:[['locked','잠긴'],['corridor','복도'],['clue','단서'],['judgment','판단'],['consequence','결과'],['careless','부주의한']],
- phrase:['The door might hide something important.','might는 ~일지도 모른다는 가능성을 나타내.'],
+ phrase:['They decide to look for clues instead of rushing inside.','instead of는 한 행동 대신 다른 행동을 선택한다는 뜻이야.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“clue”는 어떤 뜻일까?',opts:['단서','문지기','계단','지도'],a:0,ex:'clue는 문제나 비밀을 풀 수 있는 단서야.'},
   {kind:'pick',skill:'독해',q:'What do Harry and his friends decide to do?',opts:['Rush inside','Look for clues','Forget school','Break every door'],a:1,ex:'They decide to look for clues instead of rushing inside.'},
@@ -237,13 +240,13 @@ const CHAPTERS = [
  ]
 },
 {
- id:11,icon:'🧩',title:'단서들을 연결하라',enTitle:'Putting Clues Together',theme:'친구들과 추리',scene:'단서를 모으면 무슨 뜻이 될까?',grammar:'by + -ing / 과거완료',level:'A2+',
+ id:11,icon:'🧩',title:'단서들을 연결하라',enTitle:'Putting Clues Together',theme:'친구들과 추리',scene:'단서를 모으면 무슨 뜻이 될까?',grammar:'after / that',level:'A2+',
  intro:'해리와 친구들은 서로 다른 정보를 가지고 있어. 하나씩 연결하면 그림이 보일지도 몰라.',
  story:['Harry, Ron, and Hermione discuss what they have learned.','Each friend remembers a different detail.','At first, the clues do not seem connected.','After they compare their ideas, a clearer picture appears.','They realize that teamwork helps them solve difficult problems.'],
  extra:['Hermione has read information that the others had not noticed before.','Ron remembers a conversation that seemed unimportant at the time.','By combining what they know, the friends develop a better explanation than any one of them could have found alone.'],
  ko:'세 친구는 각자의 정보를 나누고 단서를 연결해 어려운 문제를 함께 풀어 나가.',
  words:[['discuss','의논하다'],['detail','세부 내용'],['compare','비교하다'],['teamwork','협동'],['combine','결합하다'],['explanation','설명']],
- phrase:['By combining what they know, they develop a better explanation.','by + -ing는 어떤 방법으로 했는지를 설명해.'],
+ phrase:['After they compare their ideas, a clearer picture appears.','after 뒤에서 먼저 한 일을 알려줘.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“compare”는 무엇을 뜻할까?',opts:['비교하다','감추다','부르다','고치다'],a:0,ex:'compare ideas는 의견을 비교하다야.'},
   {kind:'pick',skill:'독해',q:'What happens after the friends compare ideas?',opts:['They forget everything.','A clearer picture appears.','They stop being friends.','They lose the clues.'],a:1,ex:'After they compare their ideas, a clearer picture appears.'},
@@ -255,13 +258,13 @@ const CHAPTERS = [
  ]
 },
 {
- id:12,icon:'🏆',title:'마지막 선택',enTitle:'Courage and Choice',theme:'첫 학기 모험의 끝',scene:'용기란 두렵지 않은 걸까?',grammar:'even though / would',level:'A2+ → B1 입구',
+ id:12,icon:'🏆',title:'마지막 선택',enTitle:'Courage and Choice',theme:'첫 학기 모험의 끝',scene:'용기란 두렵지 않은 걸까?',grammar:'yet / choose to',level:'A2+ → B1 입구',
  intro:'해리는 친구들, 용기, 선택이 왜 중요한지 다시 생각해 봐. 너라면 어떤 선택을 할까?',
  story:['Harry faces a difficult choice at the end of his adventure.','He knows that his friends have helped him many times.','He is afraid, yet he chooses to do what he believes is right.','His journey has taught him more than magical skills.','He understands that friendship and courage can change a person.'],
  extra:['Even though Harry feels uncertain, he decides that protecting others matters more than winning praise.','Looking back, he realizes that the choices he made were shaped by friendship, curiosity, and practice.','The adventure ends, but he knows that learning will continue.'],
  ko:'마지막 선택 앞에서 해리는 두려움도 느끼지만 친구와 용기를 떠올리며 옳다고 믿는 행동을 해.',
  words:[['face','직면하다'],['believe','믿다'],['uncertain','확신이 없는'],['protect','보호하다'],['praise','칭찬'],['continue','계속하다']],
- phrase:['Even though Harry feels uncertain, he decides to protect others.','even though는 ~이지만이라는 뜻으로 대비를 나타내.'],
+ phrase:['He is afraid, yet he chooses to do what he believes is right.','yet은 앞뒤의 반대되는 내용을 이어줘.'],
  qs:[
   {kind:'pick',skill:'어휘',q:'“protect”의 의미는?',opts:['보호하다','비교하다','놓아주다','설명하다'],a:0,ex:'protect는 사람이나 물건을 지키는 것이야.'},
   {kind:'pick',skill:'독해',q:'What does Harry learn beyond magical skills?',opts:['Only how to shop','Friendship and courage','How to cook','Nothing new'],a:1,ex:'He understands that friendship and courage can change a person.'},
@@ -273,6 +276,35 @@ const CHAPTERS = [
  ]
 }
 ];
+// Original response prompts built around the short retellings above.
+const GROWTH_TASKS = [
+ {question:'Why is Harry curious?',starter:'Harry is curious because ...',model:'Harry is curious because nobody tells him the truth.',focus:'이유를 한 문장으로 말하기',standard:'6영02-06'},
+ {question:'How does Harry feel when the visitor arrives?',starter:'He feels ...',model:'He feels surprised and excited.',focus:'감정 두 가지 말하기',standard:'6영02-06'},
+ {question:'What can Harry find on the street?',starter:'He can find ...',model:'He can find books and school supplies.',focus:'장소에서 찾을 수 있는 것 설명하기',standard:'6영02-05'},
+ {question:'What happens when Harry tries the first wand?',starter:'When he tries the first wand, ...',model:'When he tries the first wand, nothing special happens.',focus:'일어난 일 순서대로 말하기',standard:'6영02-05'},
+ {question:'Who helps Harry at the station?',starter:'A ... helps Harry.',model:'A friendly family helps Harry at the station.',focus:'도움을 준 사람 소개하기',standard:'6영02-04'},
+ {question:'What does Ron share with Harry?',starter:'Ron shares ...',model:'Ron shares snacks with Harry.',focus:'친구의 행동 설명하기',standard:'6영02-07'},
+ {question:'How does Harry feel before the decision?',starter:'He feels ... because ...',model:'He feels nervous because his turn is coming.',focus:'감정과 이유 연결하기',standard:'6영02-06'},
+ {question:'What does Harry learn in Potions class?',starter:'He learns to ...',model:'He learns to read instructions and observe carefully.',focus:'수업에서 배운 행동 설명하기',standard:'6영02-05'},
+ {question:'What must students do before flying?',starter:'They must ...',model:'They must listen to the teacher before flying.',focus:'안전한 순서 설명하기',standard:'6영02-05'},
+ {question:'What do the friends do instead of rushing inside?',starter:'They decide to ...',model:'They decide to look for clues.',focus:'선택한 행동 설명하기',standard:'6영02-06'},
+ {question:'Why does teamwork help the friends?',starter:'Teamwork helps because ...',model:'Teamwork helps because each friend remembers a different detail.',focus:'의견과 근거 말하기',standard:'6영02-06'},
+ {question:'What would you choose if you felt afraid?',starter:'I would ... because ...',model:'I would ask my friends for help because we can solve problems together.',focus:'자신의 생각과 이유 표현하기',standard:'6영02-06'}
+];
+const TRANSFER_TASKS = [
+ {question:'What are you curious about?',starter:'I am curious about ...',model:'I am curious about the stars.'},
+ {question:'How do you feel when you meet someone new?',starter:'I feel ...',model:'I feel nervous but excited.'},
+ {question:'What can you find near your home?',starter:'I can find ...',model:'I can find a library near my home.'},
+ {question:'What do you do when something does not work?',starter:'When it does not work, I ...',model:'When it does not work, I try again.'},
+ {question:'Who helps you when you cannot find a place?',starter:'... helps me.',model:'My family helps me when I cannot find a place.'},
+ {question:'What do you share with a friend?',starter:'I share ...',model:'I share snacks with my friend.'},
+ {question:'How do you feel before a new challenge?',starter:'I feel ... because ...',model:'I feel nervous because I want to do well.'},
+ {question:'What do you do after a mistake?',starter:'After a mistake, I ...',model:'After a mistake, I ask for help and try again.'},
+ {question:'What must you do before riding a bicycle?',starter:'I must ... before ...',model:'I must wear a helmet before riding a bicycle.'},
+ {question:'What can you do instead of rushing?',starter:'Instead of rushing, I ...',model:'Instead of rushing, I stop and think.'},
+ {question:'How can teamwork help you?',starter:'Teamwork helps me because ...',model:'Teamwork helps me because my friends have different ideas.'},
+ {question:'What would you choose if you felt afraid?',starter:'I would ... because ...',model:'I would ask for help because I trust my friends.'}
+];
 const PLACEMENT = [
  {q:'"The owl is waiting outside." 부엉이는 어디에 있을까?',opts:['밖에','책상 위에','침대 밑에','숲속에'],a:0,skill:'독해',tier:1},
  {q:'"Harry has already opened the letter." 지금 알 수 있는 내용은?',opts:['편지를 아직 받지 못했다','편지를 이미 열었다','편지를 내일 열 것이다','편지를 찾고 있다'],a:1,skill:'독해',tier:2},
@@ -280,19 +312,22 @@ const PLACEMENT = [
  {q:'He ___ to school every Monday.',opts:['go','goes','going','gone'],a:1,skill:'문법',tier:1},
  {q:'"Although he was afraid, he opened the door." 가장 정확한 뜻은?',opts:['두렵지 않아서 문을 열었다','무서웠지만 문을 열었다','문이 열렸기 때문에 두려웠다','문을 여는 것을 잊었다'],a:1,skill:'독해',tier:3},
  {q:'Which sentence has the correct word order?',opts:['Harry always is curious.','Harry is always curious.','Always Harry curious is.','Harry curious always is.'],a:1,skill:'문법',tier:2},
- {q:'"She had finished her homework before dinner." 알 수 있는 사실은?',opts:['저녁 식사 전 숙제를 끝냈다','숙제를 저녁에 시작했다','숙제를 내일 할 것이다','저녁을 먹지 않았다'],a:0,skill:'독해',tier:3},
+ {q:'"Ron found his friend before the train left." 먼저 일어난 일은?',opts:['기차가 떠났다','친구를 찾았다','기차가 도착했다','친구가 편지를 썼다'],a:1,skill:'독해',tier:3},
  {q:'If I have time, I ___ read the next chapter.',opts:['would','will','had','was'],a:1,skill:'문법',tier:2},
- {q:'"Despite the heavy rain, the train arrived on time." 가장 적절한 해석은?',opts:['비 때문에 기차가 늦었다','비가 많이 왔지만 기차는 제시간에 왔다','기차가 오기 전에 비가 그쳤다','기차는 비가 올 때만 온다'],a:1,skill:'독해',tier:3},
+ {q:'"The friends saw dark clouds, so they went inside." 친구들이 안으로 들어간 이유는?',opts:['하늘이 맑아서','어두운 구름을 보아서','기차가 떠나서','수업이 끝나서'],a:1,skill:'독해',tier:3},
  {q:'Which is closest to "He was relieved after finding his friend"?',opts:['그는 친구를 찾고 안도했다','그는 친구를 찾아서 화가 났다','그는 친구를 잊어버렸다','그는 친구를 찾지 못해 떠났다'],a:0,skill:'어휘',tier:3}
 ];
 
 </script>
+<script src="passages.js"></script>
 <script>
 'use strict';
 (() => {
 const KEY='hajun-magic-english-v2';
-const scene=(id)=> (window.MAGIC_SCENES&&window.MAGIC_SCENES[Number(id)-1])||`art/scene-${String(id).padStart(2,'0')}.jpg`;
-const GRAMMAR_TIPS={1:'because는 이유, but은 반대되는 내용을 이어줘요.',2:'과거형은 이미 일어난 사건을 이야기할 때 사용해요.',3:'there is/are는 어떤 장소에 무엇이 있는지 알려줘요.',4:'when은 특정한 시점을, while은 진행 중인 상황을 연결해요.',5:'must와 have to는 필요하거나 반드시 해야 하는 일을 표현해요.',6:'의문문은 누가, 무엇을, 왜 했는지 알아내는 도구예요.',7:'비교급은 두 가지를 서로 비교할 때 사용해요.',8:'if는 조건을 소개하고 will은 미래의 결과를 표현할 수 있어요.',9:'could는 과거의 능력이나 가능성을 표현할 때 쓰여요.',10:'might는 확실하지 않은 가능성을 말할 때 써요.',11:'과거완료는 다른 과거 사건보다 먼저 일어난 일을 설명해요.',12:'even though는 서로 반대되는 내용을 연결해요.'};
+const scene=(id)=> Number(id)===8?'assets/scene-08-v3.jpg':[2,5,6].includes(Number(id))?`assets/scene-${String(id).padStart(2,'0')}-v2.jpg`:(window.MAGIC_SCENES&&window.MAGIC_SCENES[Number(id)-1])||'';
+const GRAMMAR_TIPS={1:'because 뒤에는 이유가, but 뒤에는 다른 상황이 나와요.',2:'can 뒤에는 동사 원형을 쓰고, but은 서로 다른 느낌을 이어요.',3:'여러 가게를 말할 때는 There are를 써요.',4:'but 앞뒤에서 지팡이를 시험한 결과가 달라져요.',5:'cannot은 할 수 없다는 뜻이에요. but은 앞뒤 상황을 바꿔 줘요.',6:'shares는 나누어 준다는 뜻이고, asks는 질문한다는 뜻이에요.',7:'when은 언제인지, where는 어디인지 알려줘요.',8:'cannot 뒤에는 동사 원형이 오고, but은 서로 다른 상황을 이어 줘요.',9:'must는 꼭 해야 할 일, before는 먼저 해야 할 순서를 알려줘요.',10:'instead of 뒤에는 하지 않은 행동이 와요.',11:'After 뒤에는 먼저 한 행동이 와요.',12:'yet은 두려움과 선택처럼 다른 상황을 이어줘요.'};
+const stageLabel=(id)=>id<=4?'기초 다지기 · 5학년 준비':id<=8?'읽고 말하기 · 5~6학년 확장':'생각 표현 · 6학년 도전';
+const audioFile=(id,name)=>`audio/${String(id).padStart(2,'0')}/${name}.mp3`;
 const RELICS=['비밀 편지','거인의 등불','마법 동전','나의 지팡이','기차표','우정 사탕','선택의 모자','첫 수업 노트','비행 빗자루','수상한 열쇠','추리 퍼즐','용기의 메달'];
 const app=document.getElementById('app');
 const toastEl=document.getElementById('toast');
@@ -302,16 +337,17 @@ const today=(date=new Date())=>[date.getFullYear(),String(date.getMonth()+1).pad
 const addDays=(d,n)=>{const p=d.split('-').map(Number);const x=new Date(p[0],p[1]-1,p[2]+n);return today(x)};
 const pretty=(t)=>new Date(t).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'});
 const getChapter=(id)=>CHAPTERS.find(c=>c.id===Number(id))||CHAPTERS[0];
-const blank=()=>({v:2,xp:0,level:'explorer',rate:1,accent:'en-GB',voice:'',placement:null,chapters:{},history:[],words:{},excerpt:'',bookPassages:{},customGloss:{},parentObs:{},lastVisit:today(),savedAt:Date.now()});
+const blank=()=>({v:2,xp:0,level:'explorer',rate:1,accent:'en-GB',voice:'',placement:null,chapters:{},history:[],words:{},excerpt:'',bookPassages:{},customGloss:{},growth:{},parentObs:{},lastVisit:today(),savedAt:Date.now()});
 function load(){try{let s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===2&&typeof s.xp==='number'&&s.chapters&&s.history&&s.words)return {...blank(),...s};}catch(e){}return blank();}
 let state=load();
-let view='home',chId=1,chapterTab='story',advanced=false,translation=false,gloss=null,listenHelp=false,quest=null,placement=null,review=null,passageGame=null,voiceCache=[],speakerRun=0,toastTimer=null;
+let view='home',chId=1,chapterTab='story',advanced=false,translation=false,gloss=null,listenHelp=false,growthReveal=false,growthModel=false,growthDraft=null,growthDraftPersonal=null,quest=null,placement=null,review=null,passageGame=null,voiceCache=[],speakerRun=0,toastTimer=null;
 let audioPlayer=null; const ephemeralAudio={};
 const AUDIO_DB='hajun-narration-store';
 function openAudioDb(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return reject(Error('no indexedDB'));const request=indexedDB.open(AUDIO_DB,1);request.onupgradeneeded=()=>{request.result.createObjectStore('files');};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}
 async function storeAudio(id,blob){const db=await openAudioDb();return new Promise((resolve,reject)=>{const tx=db.transaction('files','readwrite');tx.objectStore('files').put(blob,id);tx.oncomplete=()=>{db.close();resolve()};tx.onerror=()=>{db.close();reject(tx.error)}});}
 async function readAudio(id){if(ephemeralAudio[id])return ephemeralAudio[id];try{const db=await openAudioDb();return await new Promise((resolve,reject)=>{const tx=db.transaction('files','readonly');const r=tx.objectStore('files').get(id);r.onsuccess=()=>{db.close();resolve(r.result||null)};r.onerror=()=>{db.close();reject(r.error)}})}catch(e){return null;}}
 async function playUploadedAudio(id){const file=await readAudio(id);if(!file){notify('저장된 원어민 음원이 없어요. MP3 파일을 추가하거나 기본 음성을 이용하세요.');return;}stopVoice();const url=URL.createObjectURL(file);const player=new Audio(url);audioPlayer=player;player.playbackRate=Number(state.rate)||1;player.onended=()=>{URL.revokeObjectURL(url);if(audioPlayer===player)audioPlayer=null;};player.onerror=()=>{URL.revokeObjectURL(url);notify('음원이 재생되지 않습니다. 다른 MP3를 추가해 주세요.');};try{await player.play()}catch(e){URL.revokeObjectURL(url);notify('재생할 수 없어요. 재생 버튼을 한 번 더 눌러주세요.');}}
+function playNarration(id,name,fallback){stopVoice();const player=new Audio(audioFile(id,name));audioPlayer=player;player.playbackRate=Number(state.rate)||1;let failed=false;const fail=()=>{if(failed)return;failed=true;if(audioPlayer===player)audioPlayer=null;notify('음원 연결이 어려워 기기 음성으로 읽습니다.');if(fallback)speak(fallback);};player.onended=()=>{if(audioPlayer===player)audioPlayer=null;};player.onerror=fail;player.play().catch(fail);}
 function save(){state.savedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){notify('이 기기에서 자동 저장을 사용할 수 없어요. 결과를 파일로 저장해 주세요.');}}
 function notify(s){clearTimeout(toastTimer);toastEl.textContent=s;toastEl.hidden=false;toastTimer=setTimeout(()=>toastEl.hidden=true,2900);}
 function button(label,action,cls='line',extra=''){return `<button type="button" class="btn ${cls}" data-action="${esc(action)}" ${extra}>${label}</button>`;}
@@ -340,11 +376,11 @@ function home(){
  </section>
  <section class="panel rain"><div class="metricgrid"><div class="metric"><strong>${complete}<span style="font-size:14px">/12</span></strong><span>완료한 장면</span></div><div class="metric"><strong>${state.xp}</strong><span>획득한 별 XP</span></div><div class="metric"><strong>${due}</strong><span>오늘 다시 볼 단어</span></div></div>
  <div class="section-head section"><h2>🏰 모험 지도</h2><span class="fine">원하는 장면부터 시작 가능 · 잠금 없음</span></div>
- <div class="chaptergrid">${CHAPTERS.map(c=>{const s=state.chapters[c.id],done=s?.completions>0;return `<button type="button" class="chapter ${done?'done':''}" data-chapter="${c.id}"><img class="chapter-thumb" src="${scene(c.id)}" alt="${esc(c.title)} 장면을 연상시키는 AI 생성 판타지 삽화" loading="lazy"><span class="ch-number">CHAPTER ${String(c.id).padStart(2,'0')}</span><span class="chapicon">${c.icon}</span><h3>${esc(c.title)}</h3><p>${esc(c.enTitle)}</p><div class="chapter-foot"><span>${done?'✓ 탐험 완료':'▶ 탐험 시작'}</span><span>${esc(c.level)}</span></div></button>`}).join('')}</div><div class="section-head section"><h2>🎁 내가 모은 이야기 보물</h2><span class="fine">장면을 끝내면 하나씩 발견!</span></div><div class="chiprow">${CHAPTERS.map(c=>`<span class="chip ${state.chapters[c.id]?.completions?'gold':''}" title="${esc(RELICS[c.id-1])}">${state.chapters[c.id]?.completions?c.icon:'❔'} ${state.chapters[c.id]?.completions?esc(RELICS[c.id-1]):'미발견'}</span>`).join('')}</div>
+ <div class="chaptergrid">${CHAPTERS.map(c=>{const s=state.chapters[c.id],done=s?.completions>0;return `<button type="button" class="chapter ${done?'done':''}" data-chapter="${c.id}"><img class="chapter-thumb" src="${scene(c.id)}" alt="${esc(c.title)} 장면을 연상시키는 AI 생성 판타지 삽화" loading="lazy"><span class="ch-number">CHAPTER ${String(c.id).padStart(2,'0')}</span><span class="chapicon">${c.icon}</span><h3>${esc(c.title)}</h3><p>${esc(c.enTitle)}</p><div class="chapter-foot"><span>${done?'✓ 탐험 완료':'▶ 탐험 시작'}</span><span>${stageLabel(c.id)}</span></div></button>`}).join('')}</div><div class="section-head section"><h2>🎁 내가 모은 이야기 보물</h2><span class="fine">장면을 끝내면 하나씩 발견!</span></div><div class="chiprow">${CHAPTERS.map(c=>`<span class="chip ${state.chapters[c.id]?.completions?'gold':''}" title="${esc(RELICS[c.id-1])}">${state.chapters[c.id]?.completions?c.icon:'❔'} ${state.chapters[c.id]?.completions?esc(RELICS[c.id-1]):'미발견'}</span>`).join('')}</div>
  </section>
  <section class="panel"><div class="section-head"><h2>✨ 오늘은 딱 5~10분이면 충분해</h2></div><div class="cardsplit"><div class="card warm"><strong>한 장면을 4번 만나요</strong><p class="fine">① 이야기 듣기 → ② 읽고 단어 찾기 → ③ 미션 해결 → ④ 1·3·7일 복습</p></div><div class="card green"><strong>틀렸어도 모험은 계속!</strong><p class="fine">힌트와 건너뛰기가 있어. 연속 출석보다 다음 장면이 궁금한 마음을 중요하게 생각해.</p></div></div><div class="notice blue">부모님께: 실제 해리포터 원문은 수록하지 않았습니다. 장면을 바탕으로 새로 쓴 영어 학습 문장이며, 보유한 원서의 짧은 구절을 직접 입력해서 연결해 볼 수도 있어요.</div></section>`;
 }
-function openChapter(id){chId=Number(id);chapterTab=state.bookPassages?.[chId]?'book':'story';advanced=state.level==='challenge';translation=false;gloss=null;go('chapter');}
+function openChapter(id){chId=Number(id);chapterTab='book';advanced=state.level==='challenge';translation=false;growthReveal=false;growthModel=false;growthDraft=null;growthDraftPersonal=null;gloss=null;go('chapter');}
 function storyLine(line,i){const parts=line.split(/(\b[A-Za-zÀ-ÿ]+(?:['’][A-Za-z]+)?\b)/g);const html=parts.map(part=>{if(/^[a-z]/i.test(part)){const clean=part.toLowerCase().replace(/[’']/g,'');return `<button class="word en" data-word="${esc(clean)}" data-original="${esc(part)}" title="눌러서 단어 보기">${esc(part)}</button>`}return esc(part)}).join('');return `<p class="line-text" lang="en" data-read-line="${i}"><span>${html}</span><button type="button" class="line-sound" data-sentence="${i}" aria-label="${i+1}번 영어 문장 듣기">🔉</button></p>`;}
 function glossary(word,original){const c=getChapter(chId);const all=CHAPTERS.flatMap(k=>k.words.map(x=>[x[0].toLowerCase(),x[1]]));const defs=new Map([...all,...Object.entries(state.customGloss)]);const meaning=defs.get(word.toLowerCase())||'아직 등록된 뜻이 없어요. 문맥을 보고 추측하거나 부모님과 찾아봐요.';return `<div class="gloss"><div><strong class="en">${esc(original||word)}</strong><div class="ko">${esc(meaning)}</div></div><div class="chiprow">${button('🔊 듣기','sayword','line sm')}${button('×','closegloss','ghost sm')}</div></div>`;}
 function levelButtons(){return `<div class="chiprow">${[['gentle','🐣 차근차근'],['explorer','🗺️ 탐험'],['challenge','⚡ 도전']].map(([l,t])=>`<button class="btn sm ${state.level===l?'primary':'line'}" data-level="${l}">${t}</button>`).join('')}</div>`;}
@@ -352,18 +388,34 @@ function chapter(){
  const c=getChapter(chId),status=state.chapters[c.id],tab=chapterTab;
  const text=advanced?[...c.story,...c.extra]:c.story;
  const original=state.bookPassages?.[c.id]||'';
- const audioTools=`<div class="audio-tools">${button('🔊 브라우저 음성','saystory','primary sm')}${button('🎧 등록한 원어민 MP3','playaudio','gold sm')}${button('⏹ 중지','stopvoice','line sm')}</div><div class="audio-row-note">브라우저 기본 합성 음성은 기기에 따라 억양이 달라요. 원어민처럼 자연스러운 소리가 필요하면 직접 만든/허가받은 MP3를 등록해 사용하세요.</div>`;
+ const audioTools=`<div class="audio-tools">${button('🎧 영국식 이야기 듣기','playstory','primary sm')}${button('🔊 기기 음성','saystory','line sm')}${button('🎼 내가 등록한 음원','playaudio','gold sm')}${button('⏹ 중지','stopvoice','line sm')}</div><div class="audio-row-note">영국식 이야기 듣기는 미리 만든 합성 음성으로 어느 기기에서나 같은 소리로 재생돼요. 원서 구절은 기기 음성이나 가족이 등록한 음원으로 들어요.</div>`;
  const upload=`<div class="file-box"><strong>🎼 나만의 고품질 듣기 음원</strong><p class="fine">원서의 해당 구절을 원어민이 읽거나 허가된 AI 음성으로 만든 MP3 파일을 추가하세요. 기기에 저장되고, 가족 학습에 사용됩니다.</p><label class="btn line sm" for="chapterAudioFile">MP3 / 오디오 파일 등록</label><input id="chapterAudioFile" type="file" accept="audio/*" hidden><button class="btn sm ghost" data-action="playaudio">등록한 음원 듣기 ▶</button></div>`;
  app.innerHTML=`<section class="panel rain"><button class="backlink" data-nav="home">← 모험 지도로 돌아가기</button>
- <div class="chapterhero"><img src="${scene(c.id)}" class="chapter-scene" alt="${esc(c.title)} 테마의 AI 생성 마법학교 삽화"><div class="chapter-meta"><div class="eyebrow">CHAPTER ${String(c.id).padStart(2,'0')} · ${esc(c.level)}</div><h1>${esc(c.title)}</h1><p>${esc(c.enTitle)} · ${esc(c.theme)}</p></div></div>
- <div class="lesson-path"><span>① 장면</span><span>② 듣고 읽기</span><span>③ 단어</span><span>④ 문법</span><span>⑤ 독해·말하기</span></div>
- <div class="tabs"><button class="tab ${tab==='book'?'selected':''}" data-tab="book">📜 원서 지문</button><button class="tab ${tab==='story'?'selected':''}" data-tab="story">🔊 듣고 읽기</button><button class="tab ${tab==='words'?'selected':''}" data-tab="words">🗝️ 단어</button><button class="tab ${tab==='grammar'?'selected':''}" data-tab="grammar">🧩 문법</button><button class="tab ${tab==='practice'?'selected':''}" data-tab="practice">⚡ 독해 미션</button></div>
- ${tab==='book'?`<div class="eyebrow">THE REAL BOOK · 내가 가진 영어 원서</div><h2 class="title">📜 책에서 직접 고른 한 장면</h2><p class="subtitle">실제 해리포터 영어 원서의 짧은 구절을 부모님이 입력하면 이 화면에서 함께 듣고, 단어를 찾아보고, 빈칸 문제를 만들 수 있어요.</p><div class="original-banner"><strong>장면 먼저 보기</strong><p>${esc(c.intro)}</p></div><label for="chapterBookInput"><strong>내 영어책에서 고른 원문</strong> <span class="fine">(가족 개인 학습용 · 최대 600자)</span></label><textarea id="chapterBookInput" class="text-area en" lang="en" maxlength="600" placeholder="여기에 소장 중인 영어 원서에서 짧은 구절을 직접 입력하세요. 원작의 긴 분량이나 전체 장은 넣지 않습니다.">${esc(original)}</textarea><div class="audio-tools">${button('💾 내 원서 구절 저장','savechapterbook','primary sm')}${button('🔊 이 원문 듣기','saychapterbook','line sm')}${button('🎧 원어민 MP3 듣기','playaudio','gold sm')}${button('⏹ 중지','stopvoice','ghost sm')}</div>${upload}${original?`<div class="storybox"><div class="eyebrow">MY REAL BOOK PASSAGE</div><p class="original-pass" lang="en">${esc(original)}</p><div class="chiprow">${button('🎯 원문 단어 빈칸 게임','chapterbookquest','primary sm')}${button('📚 단어 뜻 직접 확인','go-passage','line sm')}</div></div><div class="book-vocab"><strong>원문에서 찾아보는 문법 신호</strong><p class="fine">${grammarSignals(original).length?grammarSignals(original).map(k=>esc(k)).join(' · '):'이 구절에서 기본 문법 신호를 바로 찾지 못했어요. 직접 읽고 문장을 분석해 보세요.'} </p></div>`:`<div class="notice blue">아직 원서 지문이 등록되지 않았어요. 책에서 좋아하는 장면을 부모님과 골라 2~5문장을 입력해 보세요. 그 전에는 <strong>듣고 읽기</strong> 탭의 직접 만든 초급 지문으로 연습할 수 있습니다.</div>`}<div class="card warm"><strong>🧠 원서를 읽고 답해 볼 질문</strong><p class="fine">① 이 장면에 누가 등장하지? ② 무슨 일이 벌어지지? ③ 주인공은 왜 이렇게 행동했을까?</p><p class="fine">문법 해설과 정답이 포함된 원서 전용 문제는 부모님이 선택한 실제 구절을 토대로 별도 제작해야 해요. 현재는 듣기와 빈칸 게임을 자동화했어요.</p></div>`:''}
+ <div class="chapterhero"><img src="${scene(c.id)}" class="chapter-scene scene-id-${c.id}" alt="${esc(c.title)} 테마의 AI 생성 마법학교 삽화"><div class="chapter-meta"><div class="eyebrow">CHAPTER ${String(c.id).padStart(2,'0')} · ${stageLabel(c.id)}</div><h1>${esc(c.title)}</h1><p>${esc(c.enTitle)} · ${esc(c.theme)}</p></div></div>
+ <div class="lesson-path"><span>① 장면 듣기</span><span>② 읽고 단어 찾기</span><span>③ 문장 이해</span><span>④ 영어로 말하고 쓰기</span></div>
+ <div class="tabs"><button class="tab ${tab==='book'?'selected':''}" data-tab="book">📜 원서 연계 지문</button><button class="tab ${tab==='story'?'selected':''}" data-tab="story">🔊 듣고 읽기</button><button class="tab ${tab==='words'?'selected':''}" data-tab="words">🗝️ 단어</button><button class="tab ${tab==='grammar'?'selected':''}" data-tab="grammar">🧩 문법</button><button class="tab ${tab==='practice'?'selected':''}" data-tab="practice">⚡ 독해 미션</button><button class="tab ${tab==='growth'?'selected':''}" data-tab="growth">🌱 말하고 쓰기</button></div>
+ ${tab==='book'?renderBook(c,original):''}
  ${tab==='story'?`<div class="eyebrow">LISTEN & READ · 초급 영어로 재구성한 장면</div><h2 class="title">${esc(c.scene)}</h2><p class="subtitle">${esc(c.intro)} 실제 원서에서 인용한 글이 아니라 학습을 위해 새로 쓴 문장입니다.</p><div class="chiprow"><button class="btn sm ${!advanced?'primary':'line'}" data-advanced="0">5문장 듣기</button><button class="btn sm ${advanced?'primary':'line'}" data-advanced="1">심화 문장 3개 추가</button></div><img src="${scene(c.id)}" class="listening-scene" alt="${esc(c.title)} 장면을 떠올리는 듣기 삽화">${audioTools}<div class="storybox"><div class="eyebrow">LISTEN, FOLLOW & DISCOVER · 단어를 눌러 봐</div><div class="english">${text.map(storyLine).join('')}</div></div>${gloss?glossary(gloss.word,gloss.original):''}<div class="audio-tools">${button(translation?'🇰🇷 줄거리 숨기기':'🇰🇷 줄거리 확인','translate','line sm')}</div>${translation?`<div class="translation"><strong>이야기 안내</strong><p>${esc(c.ko)}</p><p class="fine">영어 문장과 1:1 직역이 아니라 장면을 설명하는 내용이에요.</p></div>`:''}<div class="pattern"><div class="eyebrow">오늘의 핵심 표현</div><strong lang="en" class="en">${esc(c.phrase[0])}</strong><p>${esc(c.phrase[1])}</p>${button('🔊 이 표현 듣기','sayphrase','line sm')}</div><div class="quest-footer">${button('단어 공부 →','tab-words','line')}${button('문법 이해 →','tab-grammar','primary')}</div>`:''}
  ${tab==='words'?`<h2 class="title">🔑 장면에서 만나는 핵심 단어 6개</h2><p class="subtitle">뜻만 외우지 말고, 등장한 문장에서 다시 찾아보세요.</p><div class="vocabgrid">${c.words.map(([en,ko],i)=>`<div class="vocab"><div><strong class="en">${esc(en)}</strong><small>${esc(ko)}</small></div><button data-say="${esc(en)}" aria-label="${esc(en)} 발음 듣기">🔊</button></div>`).join('')}</div><div class="notice green">단어는 1·3·7·14일 간격으로 복습 카드에서 다시 만나요.</div><div class="quest-footer">${button('← 영어 지문','tab-story','line')}${button('문법 공부 →','tab-grammar','primary')}</div>`:''}
  ${tab==='grammar'?`<div class="eyebrow">GRAMMAR DETECTIVE</div><h2 class="title">🧩 원서 읽기를 위한 오늘의 문법</h2><p class="subtitle">긴 문법 강의가 아니라, 지문을 이해하는 데 꼭 필요한 문법 한 가지만 찾아봅시다.</p><div class="pattern"><div class="eyebrow">오늘의 문법 · ${esc(c.grammar)}</div><strong class="en" lang="en">${esc(c.phrase[0])}</strong><p>${esc(c.phrase[1])}</p><p>${esc(GRAMMAR_TIPS[c.id])}</p>${button('🔊 예문 듣기','sayphrase','line sm')}</div><div class="notice blue">실제 원서 구절을 입력했다면, 그 구절 안에서 이 표현을 찾을 수 있는지 확인해 보세요. 문법이 반드시 같은 표현으로 나타나는 것은 아닙니다.</div><div class="quest-footer">${button('← 단어 공부','tab-words','line')}${button('독해 미션 →','tab-practice','primary')}</div>`:''}
  ${tab==='practice'?`<div class="questicon">⚡</div><h2 class="title center">영어 이야기 추리 미션</h2><p class="subtitle center">듣고 읽은 자체 제작 영어 지문으로 퀴즈를 풀어 보세요. 실제 원서 문제는 원서 지문 탭에서 별도 연습합니다.</p><div class="card soft"><strong>오늘의 난이도</strong><p class="fine">부담 없이 시작하고, 너무 쉬우면 도전으로 높여 보세요.</p>${levelButtons()}<p class="fine">🐣 4문항 / 🗺️ 6문항 / ⚡ 7문항 (문장 직접 쓰기 포함)</p></div>${status?.completions?`<div class="notice green">이전에 ${status.completions}회 완료했어요. 최고 독립 정답률 ${status.best}%</div>`:''}<div style="margin-top:20px">${button('⚡ 독해·쓰기 미션 시작','startquest','primary full')}</div><div class="card warm" style="margin-top:14px"><strong>🎙️ 말하기 도전</strong><p class="fine">좋아하는 문장 하나를 골라 듣기 → 따라 말하기 2번 → 한국어로 뜻 설명하기 순서로 진행해 보세요. 자동 발음 채점은 아직 지원하지 않습니다.</p></div>`:''}
+ ${tab==='growth'?renderGrowth(c):''}
  </section>`;
+}
+function renderBook(c,original){
+ const p=window.FULL_PASSAGES?.[c.id-1];
+ if(!p)return '<div class="notice blue">이 단원의 학습 지문을 불러오지 못했습니다. 새로고침해 주세요.</div>';
+ const official=c.id===8?'https://www.harrypotter.com/features/philosophers-stone-extract-week-three':'https://shop.scholastic.com/content/dam/scholastic/kids/pdf/Book%20Excerpts/HarryPotterSorcersStone_Excerpt.pdf';
+ const sourceNote=c.id===8?'공식 8장 원문 발췌 읽기':'출판사 원문 무료 발췌 보기 (1장)';
+ return `<div class="eyebrow">BOOK-ALIGNED READING · ${esc(stageLabel(c.id))}</div>
+ <h2 class="title">📜 ${esc(c.enTitle)} · 영어 지문</h2>
+ <p class="subtitle">해리포터 1권 <strong>${esc(p.source)}</strong>의 사건을 바탕으로 5–6학년 학습을 위해 새로 쓴 글입니다. 원서 문장 그대로는 아닙니다.</p>
+ <div class="notice blue"><strong>원서 연결</strong> · ${esc(p.source)}<br><a href="${official}" target="_blank" rel="noopener noreferrer">${sourceNote} ↗</a> · 다른 장의 원문은 보유한 책에서 같은 장 제목을 찾아 읽어 보세요.</div>
+ <div class="audio-tools">${button('🎧 전체 지문 듣기','playfullpassage','primary sm')}${button('⏹ 중지','stopvoice','line sm')}<span class="fine">영국식 합성 음성 · 속도는 설정에서 조절</span></div>
+ <div class="storybox"><div class="eyebrow">READ THE STORY · ${p.sentences.length} SENTENCES</div><div class="english">${p.sentences.map((line,i)=>`<p class="line-text" lang="en"><span><b>${i+1}.</b> ${esc(line)}</span></p>`).join('')}</div></div>
+ <div class="card warm"><strong>🔎 읽고 답하기</strong><p class="fine">먼저 영어로 답을 생각하고 정답을 열어 보세요.</p>${p.checks.map(([q,a],i)=>`<details style="margin:10px 0"><summary lang="en" class="en">${i+1}. ${esc(q)}</summary><p lang="en" class="en" style="margin:8px 0 0">${esc(a)}</p></details>`).join('')}</div>
+ <div class="card soft"><strong>🗝️ 오늘의 단어와 표현</strong><p>${window.FULL_PASSAGE_WORDS[c.id-1].map(([w,k])=>`<span lang="en" class="en"><b>${esc(w)}</b></span> ${esc(k)}`).join(' · ')}</p><p class="fine">지문 안에서 뜻을 모르는 단어에 표시하고, 앞뒤 문장을 읽어 뜻을 추측해 보세요.</p>${button('영어로 말하고 쓰기 →','tab-growth','primary sm')}</div>
+ <details class="card" style="margin-top:16px"><summary><strong>내가 가진 원서의 짧은 구절로 더 공부하기</strong></summary><p class="fine">같은 장의 짧은 구절을 가족 학습용으로 직접 입력할 수 있어요. 이 기기에만 저장됩니다.</p><label for="chapterBookInput">내 영어책에서 고른 원문</label><textarea id="chapterBookInput" class="text-area en" lang="en" maxlength="600" placeholder="소장 중인 원서에서 2~5문장을 입력하세요.">${esc(original)}</textarea><div class="audio-tools">${button('💾 구절 저장','savechapterbook','primary sm')}${button('🔊 기기 음성으로 듣기','saychapterbook','line sm')}${button('🎯 빈칸 연습','chapterbookquest','line sm')}${button('🎼 등록한 음원 듣기','playaudio','gold sm')}</div><div class="file-box"><label class="btn line sm" for="chapterAudioFile">내 음원 등록</label><input id="chapterAudioFile" type="file" accept="audio/*" hidden></div>${original?`<p class="original-pass" lang="en">${esc(original)}</p>`:''}</details>`;
 }
 function grammarSignals(text){const match=[];const t=text.toLowerCase();for(const [re,desc] of [[/\bbecause\b/,'because: 이유'],[/\bbut\b/,'but: 대조'],[/\bwhen\b/,'when: 시점'],[/\bif\b/,'if: 조건'],[/\b(was|were)\b/,'was/were: be동사 과거형'],[/\b(could|would|should|might|must)\b/,'조동사: 가능성·필요'],[/\b(had|has|have)\b/,'have 계열 동사'],[/\b(is|are|am)\b/,'be동사: 상태·정체']]){if(re.test(t))match.push(desc);}return match.slice(0,5)}
 
@@ -399,20 +451,20 @@ function lookupKnown(word){return CHAPTERS.some(c=>c.words.some(w=>w[0].toLowerC
 function aggregate(){let lessons=state.history.filter(x=>x.kind==='chapter'),stat={},total=0,correct=0,help=0,skip=0;lessons.forEach(h=>{total+=h.attempted;correct+=h.correct;help+=h.assisted;skip+=h.skipped;h.results.forEach(r=>{if(!stat[r.skill])stat[r.skill]={total:0,correct:0,help:0,skipped:0};if(!r.skipped){stat[r.skill].total++;if(r.ok&&!r.help)stat[r.skill].correct++;if(r.help)stat[r.skill].help++;}else stat[r.skill].skipped++;});});let joys={yes:0,okay:0,no:0};lessons.forEach(h=>{if(joys[h.joy]!==undefined)joys[h.joy]++;});return{lessons,stat,total,correct,help,skip,joys};}
 function renderParent(){const a=aggregate(),count=doneCount(),last=a.lessons.slice(-6).reverse();const week=CHAPTERS.map((c,i)=>`<tr><td>${i+1}주</td><td>${c.icon} ${esc(c.title)}</td><td>${esc(c.grammar)}</td><td>${state.chapters[c.id]?.completions?'✅ 완료':'예정'}</td></tr>`).join('');
  const stats=Object.entries(a.stat).map(([name,s])=>`<div class="barrow"><span>${esc(name)}</span><div class="gauge"><b style="width:${percent(s.correct,s.total)}%"></b></div><strong>${s.total?percent(s.correct,s.total)+'%':'—'}</strong></div>`).join('');
- app.innerHTML=`<section class="panel rain"><div class="eyebrow">PARENT DASHBOARD</div><h1 class="title">📊 하준이 영어 학습 리포트</h1><p class="subtitle">영어 실력뿐 아니라 꾸준히 참여하는지, 어려움을 느끼는지 함께 확인해 주세요.</p><div class="metricgrid"><div class="metric"><strong>${count}<span style="font-size:13px">/12</span></strong><span>완료한 단원</span></div><div class="metric"><strong>${percent(a.correct,a.total)}%</strong><span>힌트 없는 첫 정답률</span></div><div class="metric"><strong>${a.lessons.length}</strong><span>누적 학습 회차</span></div></div><div class="cardsplit" style="margin-top:12px"><div class="card"><strong>🎯 영역별 기록</strong>${stats||'<p class="fine">첫 미션을 완료하면 영역별 기록이 여기에 표시됩니다.</p>'}<p class="fine">힌트 사용 ${a.help}개 · 건너뛰기 ${a.skip}개 · 학습 완료 누적 ${a.total}문항</p></div><div class="card"><strong>💛 학습 흥미 체크</strong><p class="fine">🤩 또 할래 ${a.joys.yes}회<br>🙂 괜찮아 ${a.joys.okay}회<br>😵 힘들었어 ${a.joys.no}회</p><div class="notice green">점수 상승만큼 중요한 지표: 아이가 다음 장면을 자발적으로 찾는가? 힘들어하면 난이도보다 학습 시간을 먼저 줄여 주세요.</div></div></div><div class="section-head section"><h2>최근 모험 기록</h2><span class="fine">이 기기에만 저장</span></div>${last.length?`<table class="table"><thead><tr><th>날짜</th><th>장면</th><th>첫 정답</th><th>반응</th></tr></thead><tbody>${last.map(h=>`<tr><td>${pretty(h.at)}</td><td>${esc(getChapter(h.chapter).title)}</td><td>${h.correct}/${h.attempted}</td><td>${({yes:'🤩',okay:'🙂',no:'😵'})[h.joy]||'—'}</td></tr>`).join('')}</tbody></table>`:'<div class="box fine">아직 완료한 탐험이 없습니다. 첫 번째 장면에서 시작해 주세요.</div>'}
+ app.innerHTML=`<section class="panel rain"><div class="eyebrow">PARENT DASHBOARD</div><h1 class="title">📊 하준이 영어 학습 리포트</h1><p class="subtitle">영어 실력뿐 아니라 꾸준히 참여하는지, 어려움을 느끼는지 함께 확인해 주세요.</p><div class="metricgrid"><div class="metric"><strong>${count}<span style="font-size:13px">/12</span></strong><span>완료한 단원</span></div><div class="metric"><strong>${percent(a.correct,a.total)}%</strong><span>힌트 없는 첫 정답률</span></div><div class="metric"><strong>${a.lessons.length}</strong><span>누적 학습 회차</span></div></div><div class="cardsplit" style="margin-top:12px"><div class="card"><strong>🎯 영역별 기록</strong>${stats||'<p class="fine">첫 미션을 완료하면 영역별 기록이 여기에 표시됩니다.</p>'}<p class="fine">힌트 사용 ${a.help}개 · 건너뛰기 ${a.skip}개 · 학습 완료 누적 ${a.total}문항</p></div><div class="card"><strong>💛 학습 흥미 체크</strong><p class="fine">🤩 또 할래 ${a.joys.yes}회<br>🙂 괜찮아 ${a.joys.okay}회<br>😵 힘들었어 ${a.joys.no}회</p><div class="notice green">점수 상승만큼 중요한 지표: 아이가 다음 장면을 자발적으로 찾는가? 힘들어하면 난이도보다 학습 시간을 먼저 줄여 주세요.</div></div></div><div class="section-head section"><h2>🌱 영어로 말하고 쓰기</h2></div><div class="notice green">말하기 연습 ${Object.values(state.growth||{}).filter(r=>r.spoken).length}/12단원 · 내 영어 문장 ${Object.values(state.growth||{}).filter(r=>r.answer).length}/12단원. 내 생활 영어 문장 ${Object.values(state.growth||{}).filter(r=>r.personal).length}/12단원. 문장은 자동 채점하지 않고 부모님과 뜻이 통하는지 확인합니다.</div><p class="fine">1~4단원은 그림·감정 묘사, 5~8단원은 사람·행동 설명, 9~12단원은 선택과 이유 표현을 연습합니다.</p><div class="section-head section"><h2>최근 모험 기록</h2><span class="fine">이 기기에만 저장</span></div>${last.length?`<table class="table"><thead><tr><th>날짜</th><th>장면</th><th>첫 정답</th><th>반응</th></tr></thead><tbody>${last.map(h=>`<tr><td>${pretty(h.at)}</td><td>${esc(getChapter(h.chapter).title)}</td><td>${h.correct}/${h.attempted}</td><td>${({yes:'🤩',okay:'🙂',no:'😵'})[h.joy]||'—'}</td></tr>`).join('')}</tbody></table>`:'<div class="box fine">아직 완료한 탐험이 없습니다. 첫 번째 장면에서 시작해 주세요.</div>'}
  <div class="section-head section"><h2>부모님 관찰 기록</h2><span class="fine">자동으로 판정할 수 없는 영역</span></div><div class="box"><p class="fine">읽기 발음의 정확성·자연스러운 말하기·학습 회피 행동은 객관식 점수만으로 평가할 수 없습니다. 실제 모습을 보며 체크해 주세요.</p>${[['reading','영어 문장을 혼자 소리 내어 읽는다'],['speaking','짧은 영어 질문에 말로 대답한다'],['tension','영어를 시작할 때 부담을 덜 느낀다'],['interest','다음 장면을 스스로 궁금해한다']].map(([k,label])=>`<div class="settings-row"><strong style="font-size:12px">${label}</strong><div class="chiprow">${[['low','아직 어려움'],['mid','도움 필요'],['high','스스로 함']].map(([v,t])=>`<button class="btn sm ${state.parentObs[k]===v?'primary':'line'}" data-observe="${k}:${v}">${t}</button>`).join('')}</div></div>`).join('')}</div>
- <div class="section-head section"><h2>12주 독서 연계 학습 계획</h2><span class="fine">주당 3~4회, 회당 5~10분</span></div><div class="notice blue"><strong>월:</strong> 장면 듣기 · <strong>화:</strong> 5문장 읽기 + 단어 2개 · <strong>목:</strong> 게임 미션 · <strong>토:</strong> 복습 카드 + 한국어책 같은 장면 찾기. 힘들어하면 1주에 한 단원보다 천천히 진행하세요.</div><div style="overflow-x:auto"><table class="table"><thead><tr><th>기간</th><th>이야기</th><th>핵심 언어</th><th>진행</th></tr></thead><tbody>${week}</tbody></table></div><div class="section-head section"><h2>기록 관리</h2></div><div class="chiprow">${button('📋 학습 요약 복사','copyreport','line')}${button('📦 전체 데이터 백업','exportdata','primary')}${button('📤 백업 가져오기','importdata','line')}${button('🗑️ 학습 기록 초기화','resetdata','ghost')}</div><input type="file" id="importFile" accept=".json,application/json" hidden><div class="notice">진도와 원서 문장은 로그인 없이 이 브라우저에만 저장됩니다. 다른 기기로 옮기려면 백업 파일을 가져오세요. 브라우저 데이터를 삭제하면 진도가 사라질 수 있습니다.</div><div class="notice blue">이 앱의 수준 라벨(A1 등)은 교육과정 구성 참고용이며 공인 진단이 아닙니다. 듣기는 기기 합성 음성으로만 평가되므로 실제 영어 듣기 능력을 확정할 수 없습니다.</div></section>`;
+ <div class="section-head section"><h2>12주 독서 연계 학습 계획</h2><span class="fine">주당 3~4회, 회당 5~10분</span></div><div class="notice blue"><strong>첫날:</strong> 그림 보고 듣기 · <strong>둘째 날:</strong> 5문장 읽기와 단어 찾기 · <strong>셋째 날:</strong> 말하고 쓰기 + 독해 미션 · <strong>주말:</strong> 복습 카드와 한국어책 같은 장면 찾기. 힘들어하면 1주에 한 단원보다 천천히 진행하세요.</div><div style="overflow-x:auto"><table class="table"><thead><tr><th>기간</th><th>이야기</th><th>핵심 언어</th><th>진행</th></tr></thead><tbody>${week}</tbody></table></div><div class="section-head section"><h2>기록 관리</h2></div><div class="chiprow">${button('📋 학습 요약 복사','copyreport','line')}${button('📦 전체 데이터 백업','exportdata','primary')}${button('📤 백업 가져오기','importdata','line')}${button('🗑️ 학습 기록 초기화','resetdata','ghost')}</div><input type="file" id="importFile" accept=".json,application/json" hidden><div class="notice">진도와 원서 문장은 로그인 없이 이 브라우저에만 저장됩니다. 다른 기기로 옮기려면 백업 파일을 가져오세요. 브라우저 데이터를 삭제하면 진도가 사라질 수 있습니다.</div><div class="notice blue">이 앱의 단계는 학습 순서를 돕기 위한 표시입니다. 성취 여부는 퀴즈 점수와 말하기·쓰기 기록을 함께 살펴봐야 하며, 학교 학년 수준을 자동 판정하지 않습니다.</div></section>`;
 }
-function reportText(){let a=aggregate(),ts=new Date().toLocaleString('ko-KR');const ss=Object.entries(a.stat).map(([name,s])=>`${name}: ${s.correct}/${s.total} (힌트 미사용 첫 정답)`);return `하준이의 마법 영어학교 학습 요약\n기록일: ${ts}\n진단: ${state.placement?state.placement.correct+'/10 · '+levelName(state.placement.recommended):'미실시'}\n현재 난이도: ${levelName(state.level)}\n완료한 장면: ${doneCount()}/12\n총 학습 회차: ${a.lessons.length}\n힌트 없는 첫 정답: ${a.correct}/${a.total}\n${ss.join('\n')}\n학습 흥미: 또 할래 ${a.joys.yes} / 괜찮아 ${a.joys.okay} / 힘들었어 ${a.joys.no}\n최근 학습: ${a.lessons.slice(-5).map(h=>getChapter(h.chapter).title+' '+h.correct+'/'+h.attempted).join(' · ')}\n보호자 관찰: ${JSON.stringify(state.parentObs)}\n※ 자체 제작 학습기록이며 공인 영어능력검사가 아닙니다.`;}
+function reportText(){let a=aggregate(),ts=new Date().toLocaleString('ko-KR');const ss=Object.entries(a.stat).map(([name,s])=>`${name}: ${s.correct}/${s.total} (힌트 미사용 첫 정답)`);return `하준이의 마법 영어학교 학습 요약\n기록일: ${ts}\n진단: ${state.placement?state.placement.correct+'/10 · '+levelName(state.placement.recommended):'미실시'}\n현재 난이도: ${levelName(state.level)}\n완료한 장면: ${doneCount()}/12\n직접 쓴 영어 문장: ${Object.values(state.growth||{}).filter(r=>r.answer).length}/12\n내 생활 영어 문장: ${Object.values(state.growth||{}).filter(r=>r.personal).length}/12\n말하기 연습: ${Object.values(state.growth||{}).filter(r=>r.spoken).length}/12\n총 학습 회차: ${a.lessons.length}\n힌트 없는 첫 정답: ${a.correct}/${a.total}\n${ss.join('\n')}\n학습 흥미: 또 할래 ${a.joys.yes} / 괜찮아 ${a.joys.okay} / 힘들었어 ${a.joys.no}\n최근 학습: ${a.lessons.slice(-5).map(h=>getChapter(h.chapter).title+' '+h.correct+'/'+h.attempted).join(' · ')}\n보호자 관찰: ${JSON.stringify(state.parentObs)}\n※ 자체 제작 학습기록이며 공인 영어능력검사가 아닙니다.`;}
 async function copy(str){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(str);else{const ta=document.createElement('textarea');ta.value=str;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();if(!document.execCommand('copy'))throw Error('copy');ta.remove();}notify('복사했어! 채팅창에 붙여 넣을 수 있어.');}catch(e){window.prompt('내용을 복사해 주세요.',str);}}
 function fileDownload(filename,contents,mime){const blob=new Blob([contents],{type:mime||'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);}
 function renderSettings(){
  const voices=getVoices().sort((a,b)=>scoreVoice(b)-scoreVoice(a));const selected=selectedVoice();
- app.innerHTML=`<section class="panel rain"><div class="eyebrow">VOICE & LEARNING SETTINGS</div><h1 class="title">🎧 듣기 음성 · 난이도 설정</h1><p class="subtitle">듣기 공부는 자연스러운 억양이 중요해요. 기본 브라우저 음성은 원어민 녹음과 다르므로, 원서 단원 화면에서 허가받은 원어민 MP3를 추가할 수도 있어요.</p>
+ app.innerHTML=`<section class="panel rain"><div class="eyebrow">VOICE & LEARNING SETTINGS</div><h1 class="title">🎧 듣기 음성 · 난이도 설정</h1><p class="subtitle">자체 제작 학습 지문에는 영국식 합성 음성이 제공됩니다. 소장한 원서 구절은 기기 음성이나 가족이 등록한 음원으로 들을 수 있어요.</p>
  <div class="section-head section"><h2>1. 어떤 영어 발음을 연습할까요?</h2></div><div class="settings-row"><label for="accentSelect"><strong>음성 지역 선택</strong><div class="fine">원서의 배경을 생각해 영국식 영어를 우선 추천합니다.</div></label><select id="accentSelect" class="audio-select"><option value="en-GB" ${state.accent==='en-GB'?'selected':''}>🇬🇧 영국식 영어</option><option value="en-US" ${state.accent==='en-US'?'selected':''}>🇺🇸 미국식 영어</option></select></div>
  <label for="voiceSelect" class="fine">이 기기에서 선택 가능한 영어 목소리</label><div class="settings-row"><select id="voiceSelect" class="audio-select">${voices.length?voices.map(v=>`<option value="${esc(v.voiceURI)}" ${(state.voice?state.voice===v.voiceURI:selected?.voiceURI===v.voiceURI)?'selected':''}>${esc(v.name)} (${esc(v.lang)})${v.localService?' · 기기 내장':''}</option>`).join(''):'<option value="">영어 목소리를 불러오는 중 또는 브라우저 기본 음성</option>'}</select>${button('🔊 목소리 비교','testvoice','primary sm')}</div>
  <div class="settings-row"><div><strong>읽는 속도</strong><div class="fine">${Number(state.rate).toFixed(2)}배속 · 기본 1.0배속을 권장합니다.</div></div><input type="range" id="rateRange" min="0.75" max="1.15" step="0.05" value="${Number(state.rate)}" aria-label="영어 음성 속도"></div>
- <div class="notice blue">브라우저 TTS의 음성 품질은 기기에 설치된 목소리에 따라 달라집니다. 빠르기·악센트 변경만으로 사람 같은 자연스러운 억양을 보장할 수는 없어요. 고품질 AI TTS 또는 실제 녹음으로 만든 MP3를 등록하면 기기마다 동일하게 들을 수 있습니다.</div>
+ <div class="notice blue">영국식 이야기 듣기 음원은 단원마다 같은 목소리로 재생됩니다. 문장을 직접 입력해 듣는 기능은 이 기기의 음성을 사용하므로 억양이 다를 수 있어요.</div>
  <div class="section-head section"><h2>2. 학습 난이도</h2></div><div class="card soft"><p class="fine">처음 진단이 쉬웠다면 ⚡ 도전부터 시작하되, 재미가 떨어지면 탐험으로 조정하세요.</p>${levelButtons()}<div class="notice green">현재: <strong>${levelName(state.level)}</strong></div></div>
  <div class="section-head section"><h2>3. 실력 다시 점검하기</h2></div>${button('🧭 출발점 난이도 확인','go-placement','line')}<p class="fine">같은 문제를 반복하면 실제 실력보다 점수가 높게 나올 수 있으니 재검사 시 주의하세요.</p></section>`;
 }
@@ -451,7 +503,7 @@ function handleClick(e){
  const tab=e.target.closest('[data-tab]');if(tab){chapterTab=tab.dataset.tab;gloss=null;render();return;}
  const advancedButton=e.target.closest('[data-advanced]');if(advancedButton){advanced=advancedButton.dataset.advanced==='1';gloss=null;render();return;}
  const word=e.target.closest('[data-word]');if(word){gloss={word:word.dataset.word,original:word.dataset.original};render();const box=app.querySelector('.gloss');if(box)box.scrollIntoView({behavior:'smooth',block:'nearest'});return;}
- const sentence=e.target.closest('[data-sentence]');if(sentence){let c=getChapter(chId),lines=advanced?[...c.story,...c.extra]:c.story;speak(lines[Number(sentence.dataset.sentence)]);return;}
+ const sentence=e.target.closest('[data-sentence]');if(sentence){let c=getChapter(chId),i=Number(sentence.dataset.sentence),lines=advanced?[...c.story,...c.extra]:c.story;playNarration(chId,`line-${i}`,lines[i]);return;}
  const pronounce=e.target.closest('[data-say]');if(pronounce){speak(pronounce.dataset.say);return;}
  const ans=e.target.closest('[data-answer]');if(ans&&view==='quest'&&!quest.feedback){const i=Number(ans.dataset.answer),q=activeQ();finishQuestion(i===q.a,i);return;}
  const add=e.target.closest('[data-add-order]');if(add&&view==='quest'&&!quest.feedback){const i=Number(add.dataset.addOrder);if(!quest.order.includes(i)){quest.order.push(i);renderQuest();}return;}
@@ -474,6 +526,7 @@ function handleClick(e){
   case'tab-words':chapterTab='words';render();break;
   case'tab-grammar':chapterTab='grammar';render();break;
   case'tab-practice':chapterTab='practice';render();break;
+  case'tab-growth':chapterTab='growth';render();break;
   case'tab-story':chapterTab='story';render();break;
   case'startquest':startQuest();break;
   case'leavequest':if(confirm('잠깐 쉬어도 괜찮아! 지금 미션 진행은 저장되지 않는데, 모험 지도로 갈까?'))go('home');break;
@@ -481,10 +534,22 @@ function handleClick(e){
   case'questhint':if(quest){if(activeQ().kind==='type')quest.typed=el('#writeAnswer')?.value||quest.typed;quest.help=true;renderQuest();}break;
   case'questskip':finishQuestion(false,null,true);break;
   case'questsubmit':submitAnswer();break;
-  case'sayquest':speak(activeQ().audio);break;
-  case'slowquest':{let old=state.rate;state.rate=0.76;speak(activeQ().audio);state.rate=old;break;}
+  case'sayquest':playNarration(quest.id,'quiz',activeQ().audio);break;
+  case'slowquest':{let old=state.rate;state.rate=0.78;playNarration(quest.id,'quiz',activeQ().audio);state.rate=old;break;}
   case'transcript':quest.transcript=true;quest.help=true;renderQuest();break;
   case'saystory':{const c=getChapter(chId);speakLines(advanced?[...c.story,...c.extra]:c.story);break;}
+  case'playstory':{const c=getChapter(chId);playNarration(c.id,advanced?'story-extended':'story-basic',(advanced?[...c.story,...c.extra]:c.story).join(' '));break;}
+  case'playgrowth':playNarration(chId,'passage',window.FULL_PASSAGES[chId-1].sentences.join(' '));break;
+  case'playfullpassage':playNarration(chId,'passage',window.FULL_PASSAGES[chId-1].sentences.join(' '));break;
+  case'playgrowthquestion':playNarration(chId,'growth-question',GROWTH_TASKS[chId-1].question);break;
+  case'playgrowthmodel':playNarration(chId,'growth-model',GROWTH_TASKS[chId-1].model);break;
+  case'playpersonalquestion':playNarration(chId,'personal-question',TRANSFER_TASKS[chId-1].question);break;
+  case'playpersonalmodel':playNarration(chId,'personal-model',TRANSFER_TASKS[chId-1].model);break;
+  case'growthreveal':growthReveal=!growthReveal;render();break;
+  case'growthmodel':growthModel=!growthModel;render();break;
+  case'growthspoken':{state.growth=state.growth||{};state.growth[chId]={...(state.growth[chId]||{}),spoken:true,spokenAt:Date.now()};save();render();notify('말하기 연습을 기록했어요.');break;}
+  case'savegrowth':{const answer=(el('#growthAnswer')?.value||'').trim().slice(0,240);if(!answer)return notify('짧은 영어 문장을 먼저 적어 보세요.');state.growth=state.growth||{};state.growth[chId]={...(state.growth[chId]||{}),answer,at:Date.now()};growthDraft=null;save();render();notify('내 영어 문장을 저장했어요.');break;}
+  case'savepersonal':{const personal=(el('#personalAnswer')?.value||'').trim().slice(0,240);if(!personal)return notify('내 생활을 영어 한 문장으로 적어 보세요.');state.growth=state.growth||{};state.growth[chId]={...(state.growth[chId]||{}),personal,personalAt:Date.now()};growthDraftPersonal=null;save();render();notify('내 생활 문장을 저장했어요.');break;}
   case'playaudio':playUploadedAudio(chId);break;
   case'saychapterbook':{const t=el('#chapterBookInput')?.value?.trim()||state.bookPassages?.[chId];if(t)speak(t);else notify('먼저 원서 구절을 입력해 주세요.');break;}
   case'savechapterbook':{const t=(el('#chapterBookInput')?.value||'').trim().slice(0,600);state.bookPassages=state.bookPassages||{};state.bookPassages[chId]=t;state.excerpt=t.slice(0,350);save();render();notify('이 기기 안에 원서 구절을 저장했어요.');break;}
@@ -527,9 +592,22 @@ document.addEventListener('change',async e=>{
   catch(err){notify('지원되지 않는 백업 파일입니다.');}
  }
 });
-document.addEventListener('input',e=>{if(e.target.id==='writeAnswer'&&quest)quest.typed=e.target.value;if(e.target.id==='rateRange'){const value=Number(e.target.value);let description=e.target.parentElement?.querySelector('.fine');if(description)description.textContent=`${value.toFixed(2)}배속 · 너무 느리면 부자연스러울 수 있어요.`;}});
+document.addEventListener('input',e=>{if(e.target.id==='writeAnswer'&&quest)quest.typed=e.target.value;if(e.target.id==='growthAnswer')growthDraft=e.target.value;if(e.target.id==='personalAnswer')growthDraftPersonal=e.target.value;if(e.target.id==='rateRange'){const value=Number(e.target.value);let description=e.target.parentElement?.querySelector('.fine');if(description)description.textContent=`${value.toFixed(2)}배속 · 너무 느리면 부자연스러울 수 있어요.`;}});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='writeAnswer'&&view==='quest'){e.preventDefault();submitAnswer();}});
 if('speechSynthesis' in window){try{speechSynthesis.addEventListener('voiceschanged',()=>{voiceCache=getVoices();if(view==='settings')render();});}catch(e){}}
+function renderGrowth(c){
+ const task=GROWTH_TASKS[c.id-1],record=state.growth?.[c.id]||{};
+ return `<div class="eyebrow">GROW WITH THE STORY · ${stageLabel(c.id)}</div><h2 class="title">🌱 듣고 이해한 이야기를 내 영어로 말해요</h2><p class="subtitle">한 장면을 3일에 나누어 연습해요. 짧은 문장 하나를 스스로 표현하면 충분합니다.</p>
+ <div class="growth-grid"><div class="growth-step"><strong>1일차 · 그림 보고 듣기</strong><p>그림을 보고 무슨 일이 일어날지 생각한 뒤, 글을 보지 않고 한 번 들어요.</p></div><div class="growth-step"><strong>2일차 · 읽고 찾기</strong><p>영어 문장을 읽으며 오늘의 단어와 사람·장소·행동을 찾아요.</p></div><div class="growth-step"><strong>3일차 · 말하고 쓰기</strong><p>질문에 소리 내어 답하고, 짧은 영어 한 문장을 남겨요.</p></div></div>
+ <img src="${scene(c.id)}" class="listening-scene" alt="${esc(c.title)} 장면을 떠올리는 그림">${button('🎧 먼저 귀로 듣기','playgrowth','primary sm')}${button(growthReveal?'문장 접기':'영어 문장 보기','growthreveal','line sm')}
+ ${growthReveal?`<div class="storybox" style="margin-top:14px"><div class="eyebrow">READ AFTER LISTENING</div><div class="english">${window.FULL_PASSAGES[c.id-1].sentences.map((line,i)=>`<p class="line-text" lang="en">${i+1}. ${esc(line)}</p>`).join('')}</div></div>`:''}
+ <div class="pattern"><div class="eyebrow">이야기 속 단어</div><p>${c.words.slice(0,3).map(([word,meaning])=>`<strong lang="en">${esc(word)}</strong> ${esc(meaning)}`).join(' · ')}</p><p class="fine">먼저 뜻을 떠올려 보고, 기억이 나지 않으면 단어 탭에서 다시 확인하세요.</p></div>
+ <div class="card warm" style="margin-top:17px"><strong>🎙️ ${esc(task.focus)}</strong><p class="en" lang="en">${esc(task.question)}</p><p class="fine">시작 문장: <span lang="en">${esc(task.starter)}</span></p>${button('🔊 질문 듣기','playgrowthquestion','line sm')}${button(record.spoken?'✓ 말하기 완료':'🎙️ 소리 내어 답했어요','growthspoken','gold sm')}</div>
+ <div class="card" style="margin-top:14px"><label for="growthAnswer"><strong>✍️ 내 영어 문장</strong></label><p class="fine">길게 쓰지 않아도 좋아요. 이야기에서 배운 표현을 바꿔 쓰거나 내 생각을 적어 보세요.</p><textarea id="growthAnswer" class="text-area en growth-answer" lang="en" maxlength="240" placeholder="${esc(task.starter)}">${esc(growthDraft===null?(record.answer||''):growthDraft)}</textarea><div class="audio-tools">${button('💾 내 문장 저장','savegrowth','primary sm')}${button('예시 문장 보기','growthmodel','line sm')}</div>${record.answer?`<p class="growth-status">✓ 내 문장을 이 기기에 저장했어요.</p>`:''}</div>
+ <div class="card soft" style="margin-top:14px"><strong>🏡 내 생활과 연결하기</strong><p class="fine">이야기에서 배운 문장 틀을 내 일상에 써 보세요.</p><p class="en" lang="en">${esc(TRANSFER_TASKS[c.id-1].question)}</p><p class="fine">시작 문장: <span lang="en">${esc(TRANSFER_TASKS[c.id-1].starter)}</span></p>${button('🔊 질문 듣기','playpersonalquestion','line sm')}<textarea id="personalAnswer" class="text-area en growth-answer" lang="en" maxlength="240" aria-label="내 생활 영어 문장" placeholder="${esc(TRANSFER_TASKS[c.id-1].starter)}">${esc(growthDraftPersonal===null?(record.personal||''):growthDraftPersonal)}</textarea>${button('💾 내 생활 문장 저장','savepersonal','primary sm')}${record.personal?`<p class="growth-status">✓ 내 생활 문장을 저장했어요.</p>`:''}</div>
+ ${growthModel?`<div class="growth-model"><strong>참고할 수 있는 예시 문장</strong><p>이야기: <span class="en" lang="en">${esc(task.model)}</span></p><p>내 생활: <span class="en" lang="en">${esc(TRANSFER_TASKS[c.id-1].model)}</span></p><p class="fine">예시는 하나의 표현 방법이에요. 내 문장에 뜻이 잘 담겼는지 부모님과 이야기해 보세요.</p>${button('🎧 이야기 예시 듣기','playgrowthmodel','line sm')}${button('🎧 내 생활 예시 듣기','playpersonalmodel','line sm')}</div>`:''}
+ <div class="notice green">학습 기준: 이야기에서 정보를 찾고, 그림과 질문을 바탕으로 짧게 말하고 씁니다. 이 활동만으로 학교 학년 수준이나 공인 영어 등급을 판정하지 않습니다.</div>`;
+}
 render();
 })();
 
