@@ -1,10 +1,10 @@
 {
-  "revision": "2026-11-14.1",
+  "revision": "2026-11-14.2",
   "deployedAt": "2026-11-14",
   "total": 8455,
-  "held": 1843,
-  "htmlSha256": "9b7d67173219649928d380a659d1788834121998e269431e6e8bac362665ddea",
-  "dataSha256": "c4eed48b3e9476117229dea4bfb1b29cc7a347dabb2e6698445e548cd599a108",
+  "held": 1828,
+  "htmlSha256": "aac083ee4fb9c297f1d7d7ae1b99c4e7127f2070c07215db23cf14068898214e",
+  "dataSha256": "15e5556b85c7dbcf3b994ddc61f3ba9f2827d6774597cc2a5c360bb8eea5e884",
   "assets": [
     {
       "file": "images/Q0059_상지_더마톰.png",
