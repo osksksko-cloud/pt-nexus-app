@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하준이 수학 탐험 · ⚡ 연산 훈련</title>
+<style>
+:root{--ink:#1d2a44;--sub:#5a6680;--line:#dfe5f0;--bg:#f5f7fb;--blue:#2f5bd3;--green:#1f9d63;--red:#d44a4a;--amber:#e09a12;--soft:#eef3ff}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.55}
+header{background:#6a3fd1;color:#fff;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+header b{font-size:19px}
+header a{color:#fff;text-decoration:none;background:rgba(255,255,255,.18);border-radius:10px;padding:8px 12px;font-size:15px;margin-left:6px}
+main{max-width:760px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px}
+h2{font-size:20px;margin:0 0 10px}h3{font-size:17px;margin:0 0 8px}
+.muted{color:var(--sub);font-size:15px}
+.btn{display:inline-block;border:0;border-radius:14px;padding:13px 18px;font-size:17px;font-weight:700;cursor:pointer;background:var(--blue);color:#fff;margin:4px 6px 4px 0;text-decoration:none}
+.btn.ghost{background:var(--soft);color:var(--blue)}.btn.green{background:var(--green)}.btn.small{padding:8px 12px;font-size:15px}
+.tabs button{border:0;background:#eef1f7;border-radius:10px;padding:8px 14px;margin-right:6px;font-size:15px;cursor:pointer}
+.tabs button.sel{background:var(--blue);color:#fff}
+.skills{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px}
+.sk{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;display:flex;flex-direction:column;gap:4px}
+.sk.rec{border:2px solid #6a3fd1;background:#f6f2ff}
+.sk .t{font-weight:800;font-size:16px}
+.sk .ex{font-size:14px;color:var(--sub)}
+.lv{display:flex;gap:4px;margin:4px 0}.lv i{flex:1;height:8px;border-radius:6px;background:#e8edf7}.lv i.on{background:#6a3fd1}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;background:#eef1f7;color:var(--sub)}
+.tag.g{background:#dff5ea;color:var(--green)}.tag.p{background:#efe8ff;color:#6a3fd1}
+/* ---- 위에 고정되는 타이머 ---- */
+.tbar{position:sticky;top:0;z-index:10;background:#1d2a44;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.tbar .clock{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;min-width:96px}
+.tbar .tp{flex:1;min-width:0}
+.tbar .track{height:14px;background:rgba(255,255,255,.18);border-radius:8px;overflow:hidden}
+.tbar .track i{display:block;height:100%;width:0;background:#a98bff;transition:width .3s ease}
+.tbar .lab{font-size:13px;opacity:.9;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbar .cnt{font-size:18px;font-weight:800;white-space:nowrap}
+.tbar button{border:0;border-radius:10px;padding:8px 10px;background:rgba(255,255,255,.18);color:#fff;font-size:15px;cursor:pointer}
+/* ---- 문제 ---- */
+.prob{font-size:38px;font-weight:800;text-align:center;margin:18px 0 14px;font-variant-numeric:tabular-nums;line-height:1.4}
+.prob.small{font-size:28px}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.72em;line-height:1.1;margin:0 3px}
+.fr span:first-child{border-bottom:3px solid currentColor;padding:0 4px}
+.box{display:inline-block;width:1.2em;height:1.1em;border:3px solid currentColor;border-radius:6px;vertical-align:middle}
+.ansrow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.ansrow input{font-size:30px;padding:10px 12px;border:3px solid var(--line);border-radius:14px;width:240px;max-width:80%;text-align:center}
+.ansrow input:focus{outline:none;border-color:#6a3fd1}
+.msg{color:var(--red);text-align:center;font-size:15px;min-height:22px;margin:6px 0 0}
+.tip{text-align:center;font-size:14px;color:var(--sub);margin-top:6px}
+.fixnote{background:#fff4d9;border:1px solid #f4dfa4;border-radius:12px;padding:10px 12px;text-align:center}
+.reveal{background:#fdeeee;border:1px solid #f3c9c9;border-radius:12px;padding:12px;text-align:center;margin-top:10px}
+.pausebox{text-align:center;padding:40px 10px}
+.count{font-size:90px;font-weight:900;text-align:center;color:#6a3fd1;margin:30px 0}
+/* ---- 결과 ---- */
+.stars{font-size:46px;text-align:center;letter-spacing:4px}
+.res{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin:12px 0}
+.res div{background:#f7f8fb;border-radius:12px;padding:10px 4px;font-size:13px;color:var(--sub)}.res b{display:block;font-size:22px;color:var(--ink)}
+.lesson{border-radius:14px;padding:14px;margin-top:8px;font-size:16px}
+.lesson.good{background:#e6f7ee;border:1px solid #bfe8d2}.lesson.warn{background:#fff4d9;border:1px solid #f4dfa4}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:middle}
+.rule li{margin:3px 0}
+/* ---- 기록 그래프 (막대가 낮을수록 빠름) ---- */
+.chart{display:flex;align-items:flex-end;gap:6px;height:150px;padding:6px 4px 0;border-bottom:2px solid var(--line);margin-top:8px}
+.chart .b{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.chart .b i{display:block;width:100%;max-width:40px;border-radius:8px 8px 0 0;background:#c9b8ff}
+.chart .b.clean i{background:#6a3fd1}.chart .b.miss i{background:#d5d9e3}.chart .b.now i{outline:3px solid #ffb020}
+.chart .b small{font-size:11px;color:var(--sub);white-space:nowrap}.chart .b em{font-style:normal;font-size:13px;line-height:1.2}
+.chartlab{display:flex;gap:6px;padding:0 4px}.chartlab span{flex:1;text-align:center;font-size:11px;color:var(--sub);min-width:0;overflow:hidden}
+.grow{display:flex;align-items:center;justify-content:center;gap:10px;font-size:18px;margin:8px 0;flex-wrap:wrap}
+.grow b{font-size:24px}.grow .arrow{color:var(--green);font-weight:900}
+.big{font-size:22px;font-weight:900;text-align:center;margin:6px 0}
+@media (max-width:520px){.prob{font-size:30px}.tbar .clock{font-size:24px;min-width:76px}.tbar{gap:8px}}
+</style>
+</head>
+<body>
+<header><b>⚡ 연산 훈련</b><nav><a href="start.html">시작화면</a><a href="mission.html">오늘의 미션</a></nav></header>
+<div id="tbar" class="tbar" style="display:none">
+  <div class="clock" id="tclock">0:00</div>
+  <div class="tp"><div class="track"><i id="tfill"></i></div><div class="lab" id="tlab"></div></div>
+  <div class="cnt" id="tcnt"></div>
+  <button id="tpause" onclick="togglePause()">⏸</button>
+</div>
+<main id="app"><div class="card">불러오는 중…</div></main>
+<script src="mission_data.js"></script>
+<script src="progress.js"></script>
+<script src="arith_gen.js"></script>
+<script>
+/* ---------------------------------------------------------------
+   ⚡ 연산 훈련 — "정확함이 먼저, 속도는 그다음"
+   - 첫 판: 바로 채점하지 않는다(시험처럼). 스스로 확인하고 내야 한다.
+   - 제한 시간·목표 시간 없음. 시계는 '내 기록'을 재기만 한다 (2026-11-12 부모님 결정).
+   - 고치기: 틀린 문제만 다시. 시계는 계속 흐른다 → 실수하면 오히려 늦게 끝난다.
+   - 별은 정확도로만: ⭐⭐⭐ 실수 0 / ⭐⭐ 실수 1 / ⭐ 고쳐서 완성
+   - 최고 기록·신기록은 실수 0 세트만 인정. 끝나면 지난 기록과 비교 그래프로 '빨라지고 정확해진 것'을 보여 준다.
+   - 기록: localStorage 'hajun_math_mission_v1' 의 S.drill.log (미션 기록과 같은 저장소)
+---------------------------------------------------------------- */
+const P = window.PROGRESS, D = window.MISSION_DATA, STORE = 'hajun_math_mission_v1';
+let S; try { S = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { S = {}; }
+S = Object.assign({grade:4, xpAwards:{}, attempts:[], wrong:[], days:{}, settings:{openAll:false, opened:{}}}, S);
+S.settings = Object.assign({openAll:false, opened:{}}, S.settings || {});
+S.drill = Object.assign({log:[]}, S.drill || {});
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { alert('기록 저장에 실패했어요.'); } }
+function today(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $ = id => document.getElementById(id);
+const mmss = s => { s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); };
+const skillById = Object.fromEntries(P.DRILL.skills.map(k => [k.id, k]));
+
+const { GEN, makeSet, readAnswer, judge, F, showFrac, textFrac } = window.ARITH;
+
+/* ---------- 타이머 ---------- */
+let R = null, tick = null, grade = P.dailyGrade(S);   // 매일 학습·미션과 같은 학년
+function elapsed(){ if (!R || !R.startAt) return 0; const now = R.endAt || R.pauseAt || Date.now(); return (now - R.startAt - R.pausedMs) / 1000; }
+function drawTimer(){
+  const bar = $('tbar'); const on = R && ['count','solve','fix'].includes(R.phase);
+  bar.style.display = on ? 'flex' : 'none'; if (!on) return;
+  $('tclock').textContent = mmss(elapsed());                       // 시계는 기록만 잰다 (제한 시간 없음)
+  const done = R.phase === 'fix' ? R.items.length : R.idx;
+  $('tfill').style.width = (R.phase === 'count' ? 0 : done / R.items.length * 100) + '%';   // 막대 = 푼 문제 수
+  $('tlab').textContent = R.phase === 'fix' ? '✏️ 고치는 중 · 천천히 정확하게' : '⏱ 내 기록 재는 중 · 서두르지 말고 정확하게!';
+  $('tcnt').textContent = R.phase === 'fix' ? `고치기 ${R.fixIdx+1}/${R.fix.length}` : R.phase === 'solve' ? `${R.idx+1} / ${R.items.length}` : '';
+  $('tpause').textContent = R.pauseAt ? '▶' : '⏸'; $('tpause').style.display = R.phase === 'count' ? 'none' : '';
+}
+function startTick(){ stopTick(); tick = setInterval(drawTimer, 250); }
+function stopTick(){ if (tick) clearInterval(tick); tick = null; }
+function togglePause(){ if (!R || !R.startAt) return;
+  if (R.pauseAt) { R.pausedMs += Date.now() - R.pauseAt; R.pauseAt = null; } else R.pauseAt = Date.now();
+  render(); }
+
+/* ---------- 흐름 ---------- */
+function start(skillId){
+  R = {skill: skillId, items: makeSet(skillId).map(p => ({p})),
+       idx: 0, fix: [], fixIdx: 0, reveal: null, phase: 'count', count: 3, startAt: null, pausedMs: 0, pauseAt: null, endAt: null, firstSec: 0, input: '', msg: ''};
+  render(); startTick(); window.scrollTo(0,0);
+  const me = R; const cd = setInterval(() => { if (R !== me || R.phase !== 'count') { clearInterval(cd); return; } R.count--; if (R.count <= 0) { clearInterval(cd); R.phase = 'solve'; R.startAt = Date.now(); } render(); }, 800);
+}
+function submit(){
+  if (!R || R.pauseAt) return;
+  if (R.reveal) { R.reveal = null; return nextFix(); }
+  const it = R.phase === 'solve' ? R.items[R.idx] : R.items[R.fix[R.fixIdx]];
+  const r = readAnswer(R.input, it.p);
+  if (r.err) { R.msg = r.err; render(); return; }      // 형식 오류는 틀린 것으로 치지 않고 다시 쓰게
+  const j = judge(r, it.p); R.msg = '';
+  if (R.phase === 'solve') {
+    it.a1 = R.input.trim(); it.ok1 = j.ok; it.why = j.why; R.input = '';
+    if (R.idx + 1 < R.items.length) { R.idx++; render(); return; }
+    R.firstSec = elapsed();
+    R.fix = R.items.map((x, i) => x.ok1 ? -1 : i).filter(i => i >= 0);
+    if (!R.fix.length) return finish();
+    R.phase = 'fix'; R.fixIdx = 0; render(); return;
+  }
+  it.a2 = R.input.trim(); it.ok2 = j.ok; R.input = '';
+  if (!j.ok) { R.reveal = it; render(); return; }      // 고치기에서도 틀리면 정답을 보여 주고 넘어감
+  nextFix();
+}
+function nextFix(){ if (R.fixIdx + 1 < R.fix.length) { R.fixIdx++; render(); return; } finish(); }
+function finish(){
+  R.endAt = Date.now(); const sec = Math.round(elapsed()); stopTick();
+  const wrong = R.items.filter(x => !x.ok1).length;
+  const stars = wrong === 0 ? 3 : wrong === 1 ? 2 : 1;                 // 별은 정확도로만
+  const before = P.drillLevel(S, R.skill);
+  const rec = {date: today(), at: new Date().toISOString(), skill: R.skill, n: R.items.length, wrong, sec, first: Math.round(R.firstSec || sec), stars,
+               miss: R.items.filter(x => !x.ok1).map(x => ({q: x.p.html.replace(/<span class="box"><\/span>/g,'□').replace(/<span class="fr"><span>(\d+)<\/span><span>(\d+)<\/span><\/span>/g,' $1/$2').replace(/<[^>]+>/g,''), a: x.a1, c: textFrac(x.p.ans), why: x.why, fixed: !!x.ok2}))};
+  S.drill.log.push(rec);
+  const k = today() + '|drill'; let xp = 0;
+  if (!S.xpAwards[k]) { S.xpAwards[k] = 10; xp = 10; }           // 연산 훈련: 하루 한 번 10XP (미션 50XP 한도와 별도)
+  save();
+  R.phase = 'result'; R.rec = rec; R.xp = xp; R.before = before; R.justDone = !before.done && P.drillLevel(S, R.skill).done;
+  render(); window.scrollTo(0,0);
+}
+function quit(){ if (R && ['solve','fix'].includes(R.phase) && !confirm('훈련을 그만둘까요? 이번 기록은 저장되지 않아요.')) return; stopTick(); R = null; render(); }
+
+/* ---------- 화면 ---------- */
+function render(){
+  drawTimer();
+  const app = $('app');
+  if (!R) app.innerHTML = home();
+  else if (R.phase === 'count') app.innerHTML = `<div class="card"><div class="muted" style="text-align:center">${esc(skillById[R.skill].name)} · ${R.items.length}문제 · 시간 제한 없음</div><div class="count">${R.count}</div><p class="tip">내 기록을 재요. <b>정확하게</b> 풀면 기록이 저절로 빨라져요! (실수 0일 때만 기록 인정)</p></div>`;
+  else if (R.phase === 'solve' || R.phase === 'fix') app.innerHTML = solveView();
+  else app.innerHTML = resultView();
+  const inp = $('ans');
+  if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } }); }
+  const nb = $('revealNext'); if (nb) nb.focus();
+}
+function solveView(){
+  if (R.pauseAt) return `<div class="card pausebox"><div style="font-size:50px">⏸</div><h2>잠깐 멈춤</h2><p class="muted">문제는 숨겨 두었어요. 준비되면 계속해요.</p><button class="btn" onclick="togglePause()">▶ 계속하기</button> <button class="btn ghost" onclick="quit()">그만하기</button></div>`;
+  const fix = R.phase === 'fix', it = fix ? R.items[R.fix[R.fixIdx]] : R.items[R.idx], p = it.p;
+  const head = fix ? `<div class="fixnote">✏️ <b>고치기</b> — 첫 판에서 틀린 ${R.fix.length}문제예요. 천천히 다시 계산해 보세요. (시계는 계속 가요)<br><span class="muted">처음 쓴 답: ${esc(it.a1)}${it.why==='약분 안 함'?' · 값은 맞았는데 약분을 안 했어요':it.why==='분수로'?' · 분수로 써야 해요':''}</span></div>` : '';
+  if (R.reveal) return `<div class="card">${head}<div class="prob ${p.small?'small':''}">${p.html} = ?</div>
+    <div class="reveal">❌ 정답은 <b style="font-size:24px">${showFrac(p.ans)}${p.unit||''}</b> 이에요. 어디서 달라졌는지 종이에서 찾아 보세요.</div>
+    <div style="text-align:center;margin-top:12px"><button class="btn" id="revealNext" onclick="submit()">다음 →</button></div></div>`;
+  const im = p.kind === 'int' ? 'numeric' : (p.kind === 'dec' ? 'decimal' : 'text');
+  return `<div class="card">${head}<div class="prob ${p.small?'small':''}">${p.html} = ?</div>
+    <div class="ansrow"><input id="ans" inputmode="${im}" autocomplete="off" value="${esc(R.input)}" placeholder="${p.kind==='frac'?'예: 3/4, 1 2/5':'답'}" oninput="R.input=this.value">${p.unit?'<span style="font-size:28px;align-self:center">%</span>':''}</div>
+    <div class="msg">${esc(R.msg)}</div>
+    <div style="text-align:center"><button class="btn" onclick="submit()">${fix?'다시 제출':'제출'} (Enter)</button></div>
+    <p class="tip">${fix ? '답을 쓰기 전에 거꾸로 계산해서 맞는지 확인해 봐요.' : '채점은 끝나고 한꺼번에! 내기 전에 한 번 더 보기 👀'}${p.kind==='frac'?' · 분수는 기약분수로':''}</p>
+    <div style="text-align:right"><button class="btn ghost small" onclick="quit()">그만하기</button></div></div>`;
+}
+/* 기록 그래프: 최근 10세트, 막대가 낮을수록 빠름. 보라 = 실수 0(기록 인정), 회색 = 실수 있음 */
+function chartHTML(log, nowAt){
+  const L = log.slice(-10); if (L.length < 2) return '';
+  const max = Math.max(...L.map(r => r.sec)), clean = L.filter(r => !r.wrong), best = clean.length ? Math.min(...clean.map(r => r.sec)) : null;
+  const bars = L.map(r => `<div class="b ${r.wrong ? 'miss' : 'clean'} ${r.at === nowAt ? 'now' : ''}"><em>${!r.wrong && r.sec === best ? '🏅' : r.wrong ? '❌' + r.wrong : ''}</em><small>${mmss(r.sec)}</small><i style="height:${Math.max(8, r.sec / max * 100)}%"></i></div>`).join('');
+  const labs = L.map(r => `<span>${r.at === nowAt ? '지금' : r.date.slice(5).replace('-','/')}</span>`).join('');
+  return `<div class="chart">${bars}</div><div class="chartlab">${labs}</div>
+    <p class="muted" style="margin:6px 0 0;font-size:13px">막대가 <b>낮아질수록 빨라진 것</b>이에요 · 보라 = 실수 0 (기록 인정) · 회색 = 실수 있음</p>`;
+}
+function cleanStreak(log){ let n = 0; for (let i = log.length - 1; i >= 0 && !log[i].wrong; i--) n++; return n; }
+function resultView(){
+  const r = R.rec, sk = skillById[r.skill], lv = P.drillLevel(S, r.skill), b = R.before;
+  const prev = b.last, prevBest = b.best, fixSec = r.sec - r.first, streak = cleanStreak(lv.log);
+  let head, lesson = '';
+  if (!r.wrong && prevBest == null) head = `<div class="big">🎉 첫 실수 0 기록! ${mmss(r.sec)}</div><p class="tip">이제 이 기록을 깨 보는 거예요.</p>`;
+  else if (!r.wrong && r.sec < prevBest) head = `<div class="big">🏅 신기록! ${mmss(r.sec)}</div><p class="tip">지난 최고 ${mmss(prevBest)}보다 <b>${prevBest - r.sec}초</b> 빨라졌어요!</p>`;
+  else if (!r.wrong) head = `<div class="big">✅ 실수 0! ${mmss(r.sec)}</div><p class="tip">${prev && r.sec < prev.sec ? `지난번(${mmss(prev.sec)})보다 <b>${prev.sec - r.sec}초</b> 빨라졌어요 ⚡ · ` : ''}최고 기록 ${mmss(prevBest)}</p>`;
+  else {
+    head = `<div class="big">✏️ 고쳐서 완성! ${mmss(r.sec)}</div>`;
+    lesson = prevBest != null && r.first < prevBest
+      ? `<div class="lesson warn">⚡ 첫 판은 ${mmss(r.first)}로 최고 기록보다 빨랐어요. 그런데 실수 ${r.wrong}개를 고치느라 <b>${mmss(fixSec)}</b>가 더 걸렸어요.<br>기록은 <b>실수 0일 때만</b> 인정돼요. 내기 전에 한 번 더 보면 신기록이에요!</div>`
+      : `<div class="lesson warn">실수 ${r.wrong}개를 고쳐서 끝까지 해냈어요. 다음엔 내기 전에 한 번 더 확인해 봐요. 정확하면 속도는 저절로 붙어요!</div>`;
+  }
+  const growth = lv.firstClean != null && lv.best != null && lv.firstClean > lv.best
+    ? `<div class="grow"><span>처음 기록 <b>${mmss(lv.firstClean)}</b></span><span class="arrow">→</span><span>최고 기록 <b>${mmss(lv.best)}</b></span><span class="arrow">⚡ ${lv.firstClean - lv.best}초 빨라짐</span></div>` : '';
+  const whyTxt = {'계산':'계산 실수', '약분 안 함':'약분 안 함', '분수로':'분수로 안 씀'};
+  const miss = r.miss.length ? `<h3 style="margin-top:14px">틀린 문제</h3><table><tr><th>문제</th><th>내 답</th><th>정답</th><th>이유</th></tr>${r.miss.map(m => `<tr><td>${esc(m.q)}</td><td>${esc(m.a)}</td><td><b>${esc(m.c)}</b></td><td>${whyTxt[m.why]||m.why}${m.fixed?' · 고침 ✅':''}</td></tr>`).join('')}</table>` : '';
+  return `<div class="card"><div class="muted" style="text-align:center">${esc(sk.name)} · ${r.n}문제</div>
+    <div class="stars">${'⭐'.repeat(r.stars)}<span style="opacity:.2">${'⭐'.repeat(3 - r.stars)}</span></div>
+    ${head}
+    <div class="res"><div><b>${r.n - r.wrong}/${r.n}</b>첫 판 정답</div><div><b>${mmss(r.sec)}</b>오늘 기록</div><div><b>${lv.best != null ? mmss(lv.best) : '–'}</b>최고 기록</div></div>
+    ${P.feedbackHTML({n: r.n, ok: r.n - r.wrong, sec: r.first, prev: b.log.map(x => ({n: x.n, ok: x.n - x.wrong, sec: x.first || x.sec})), reduce: r.miss.filter(m => m.why === '약분 안 함').length})}
+    ${streak >= 2 ? `<p class="tip">🔥 실수 0 <b>${streak}세트 연속</b>!</p>` : ''}${lesson}
+    ${R.justDone ? `<div class="lesson good" style="margin-top:8px">🎉 <b>익힘 완료!</b> 실수 0을 서로 다른 ${P.DRILL.passDays}일 해냈어요. 이제 가끔 기록 깨기만 해요.</div>` : ''}
+    ${R.xp ? `<p class="muted" style="text-align:center">+${R.xp} XP (오늘 첫 연산 훈련)</p>` : ''}</div>
+    ${lv.log.length >= 2 ? `<div class="card"><h3>📈 내 기록 변화</h3>${growth}${chartHTML(lv.log, r.at)}</div>` : ''}
+    ${miss ? `<div class="card">${miss}</div>` : ''}
+    <div class="card" style="text-align:center">${P.courseBanner(S, D)}<button class="btn ghost" onclick="start('${r.skill}')">한 번 더 (기록 깨기)</button><button class="btn ghost" onclick="R=null;render()">다른 훈련 고르기</button></div>`;
+}
+function home(){
+  const list = P.drillSkills(grade), flu = P.fluency(S, grade);
+  const todayDone = new Set(S.drill.log.filter(r => r.date === today()).map(r => r.skill));
+  const rec = P.drillRecommend(S, D, grade);
+  const uTitle = id => { const u = D.units.find(x => x.id === id); return u ? `${u.g}-${u.s} ${u.title}` : id; };
+  const cards = list.map(k => { if (!P.drillOpen(S, D, grade, k)) return `<div class="sk" style="opacity:.55"><div class="t">🔒 ${esc(k.name)}</div>
+      <div class="ex">예) ${esc(k.ex)}</div><div class="muted" style="font-size:14px">📚 <b>${esc(uTitle(k.u))}</b> 단원을 배울 때 열려요</div></div>`;
+    const lv = P.drillLevel(S, k.id), gain = lv.firstClean != null && lv.best != null ? lv.firstClean - lv.best : 0;
+    return `<div class="sk ${rec && k.id===rec.id?'rec':''}"><div class="t">${lv.done?'✅ ':''}${esc(k.name)} ${k.g===0?'<span class="tag">기초</span>':''} ${rec && k.id===rec.id?'<span class="tag p">추천</span>':''}</div>
+      <div class="ex">예) ${esc(k.ex)} · ${k.n}문제</div>
+      <div class="muted" style="font-size:14px">${lv.best != null ? `🏅 최고 기록 <b>${mmss(lv.best)}</b>${gain > 0 ? ` · <span style="color:var(--green);font-weight:700">처음보다 ${gain}초 빨라짐</span>` : ''}` : '아직 실수 0 기록 없음'}</div>
+      <div class="muted" style="font-size:13px">${lv.done ? '익힘 ✅ · 가끔 기록 깨기' : `익힘까지: 실수 0 날 ${lv.passDays}/${P.DRILL.passDays}일`}${todayDone.has(k.id) ? ' · <span class="tag g">오늘 함</span>' : ''}</div>
+      <div><button class="btn small" onclick="start('${k.id}')">시작 ⏱</button></div></div>`; }).join('');
+  const recent = [...S.drill.log].reverse().slice(0, 10).map(r => `<tr><td>${r.date.slice(5).replace('-','/')}</td><td>${esc(skillById[r.skill]?.name||r.skill)}</td><td>${'⭐'.repeat(r.stars)}</td><td>${mmss(r.sec)}</td><td>${r.wrong ? `실수 ${r.wrong}` : '실수 0'}</td></tr>`).join('');
+  const careless = (() => { const L = S.drill.log.filter(r => r.date >= daysAgo(13)); const n = L.reduce((a,r)=>a+r.n,0), w = L.reduce((a,r)=>a+r.wrong,0); return n ? `최근 2주: ${L.length}세트 · 실수 ${w}개 / ${n}문제 (${Math.round(w/n*100)}%)` : ''; })();
+  return `<div class="card"><h2>⚡ 연산 훈련 · 내 기록 깨기</h2>
+    <ul class="rule muted" style="margin:0;padding-left:20px">
+      <li><b>시간 제한은 없어요.</b> 시계는 내 기록을 재기만 해요.</li>
+      <li>채점은 끝나고 한꺼번에! 틀린 문제는 <b>고치기</b>로 다시 풀어요.</li>
+      <li>별은 정확도로만: ⭐⭐⭐ 실수 0 · ⭐⭐ 실수 1 · ⭐ 고쳐서 완성</li>
+      <li>🏅 최고 기록은 <b>실수 0일 때만</b> 인정돼요. 정확하면 속도는 저절로 붙어요.</li>
+      <li>실수 0을 서로 다른 ${P.DRILL.passDays}일 해내면 그 기술 <b>익힘 ✅</b></li>
+      <li><b>교과서 순서대로</b> 해요: 곱셈구구 → 나눗셈구구 → 지금 배우는 단원의 연산. <b>추천</b> 기술을 익히면(✅) 다음 기술이 추천돼요. 아직 안 배운 단원의 연산은 🔒</li>
+    </ul></div>
+    <div class="card"><div class="tabs" style="margin-bottom:10px">${[4,5,6].map(g=>`<button class="${g===grade?'sel':''}" onclick="grade=${g};render()">${g}학년</button>`).join('')}</div>
+      <p class="muted" style="margin:0 0 10px">연산 유창성: 익힘 <b>${flu.passed}/${flu.total}</b> ${flu.ok?'✅ (경시 사다리 3층 조건 달성)':'· 모두 익히면 경시 사다리 3층 조건 달성'}</p>
+      <div class="skills">${cards}</div></div>
+    <div class="card"><h3>최근 기록</h3>${recent ? `<table><tr><th>날짜</th><th>훈련</th><th>별</th><th>시간</th><th>실수</th></tr>${recent}</table><p class="muted">${careless}</p>` : '<p class="muted">아직 기록이 없어요.</p>'}</div>`;
+}
+function daysAgo(n){ const d = new Date(); d.setDate(d.getDate()-n); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+document.addEventListener('visibilitychange', () => { if (document.hidden && R && R.startAt && !R.pauseAt && ['solve','fix'].includes(R.phase)) { R.pauseAt = Date.now(); render(); } });  // 다른 창으로 가면 자동 멈춤
+if (!P) $('app').innerHTML = '<div class="card">progress.js 를 찾지 못했어요.</div>';
+else { const h = location.hash.slice(1); if (h && skillById[h] && P.drillOpen(S, D, grade, skillById[h])) start(h); else render(); }
+</script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하준이 수학 탐험 · 오늘의 미션</title>
+<style>
+:root{--ink:#1d2a44;--sub:#5a6680;--line:#dfe5f0;--bg:#f5f7fb;--card:#fff;--blue:#2f5bd3;--green:#1f9d63;--red:#d44a4a;--gold:#f2b632;--soft:#eef3ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.55}
+header{background:var(--blue);color:#fff;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+header b{font-size:19px}
+header nav button{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:10px;padding:8px 12px;font-size:15px;margin-left:6px}
+main{max-width:760px;margin:0 auto;padding:14px}
+html,body{overflow-x:hidden}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+h1{font-size:24px;margin:0 0 6px}h2{font-size:20px;margin:0 0 10px}h3{font-size:17px;margin:0 0 8px}
+.muted{color:var(--sub);font-size:15px}
+.btn{display:inline-block;border:0;border-radius:14px;padding:13px 18px;font-size:17px;font-weight:700;cursor:pointer;background:var(--blue);color:#fff;margin:4px 6px 4px 0}
+.btn.ghost{background:var(--soft);color:var(--blue)}.btn.green{background:var(--green)}.btn.small{padding:8px 12px;font-size:15px}
+.btn:disabled{opacity:.45}
+.level{display:flex;align-items:center;gap:16px}
+.badge{width:74px;height:74px;border-radius:50%;background:linear-gradient(135deg,#ffd76a,#f2a516);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#5a3a00;font-weight:800;flex:none}
+.badge small{font-size:12px;font-weight:700}.badge span{font-size:28px;line-height:1}
+.bar{height:16px;background:#e8edf7;border-radius:10px;overflow:hidden;margin:6px 0}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#4f7cf0,#2f5bd3);border-radius:10px;transition:width .6s}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
+.steps span{font-size:13px;padding:4px 9px;border-radius:20px;background:#eef1f7;color:var(--sub)}
+.steps span.on{background:var(--blue);color:#fff}.steps span.ok{background:#dff5ea;color:var(--green)}
+.week{display:flex;gap:4px}
+.week div{flex:1;text-align:center;border-radius:12px;padding:8px 0;background:#eef1f7;font-size:13px;color:var(--sub)}
+.week div b{display:block;font-size:20px}
+.week .s{background:#dff5ea;color:var(--green)}.week .p{background:#fff4d9;color:#9a6a00}.week .t{outline:2px solid var(--blue)}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,100%),1fr));gap:8px}
+.units button{text-align:left;border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;font-size:15px;cursor:pointer}
+.units button.sel{border:2px solid var(--blue);background:var(--soft)}
+.tabs button{border:0;background:#eef1f7;border-radius:10px;padding:8px 14px;margin-right:6px;font-size:15px}
+.tabs button.sel{background:var(--blue);color:#fff}
+.q{font-size:20px;font-weight:600;margin:6px 0 12px}
+.q img{display:block;max-width:100%;margin:10px 0;border:1px solid var(--line);border-radius:12px;background:#fff}
+.answer{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.answer input{font-size:22px;padding:10px 12px;border:2px solid var(--line);border-radius:12px;width:220px;max-width:70%}
+.chips{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.qchip{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:17px;font-weight:800;color:var(--sub);cursor:pointer}
+.qchip.filled{background:#dfe8ff;border-color:#9fb6f0;color:var(--blue)}.qchip.now{outline:3px solid var(--blue);outline-offset:1px}
+.submitbox{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.unit{font-size:19px;color:var(--sub)}
+.fb{border-radius:14px;padding:14px;margin-top:14px}
+.fb.ok{background:#e6f7ee;border:1px solid #bfe8d2}.fb.no{background:#fdeeee;border:1px solid #f3c9c9}.fb.info{background:var(--soft);border:1px solid #d6e1ff}
+.fb ol{margin:6px 0 0 0;padding-left:22px}
+.hint{background:#fff8e6;border:1px solid #f4dfa4;border-radius:12px;padding:10px 12px;margin-top:10px;font-size:16px}
+.big{font-size:44px;text-align:center;margin:6px 0}
+.center{text-align:center}
+textarea{width:100%;font-size:17px;padding:10px;border:2px solid var(--line);border-radius:12px;min-height:80px}
+.feel button{font-size:28px;background:#fff;border:2px solid var(--line);border-radius:14px;padding:6px 12px;margin-right:6px}
+.feel button.sel{border-color:var(--blue);background:var(--soft)}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;background:#eef1f7;color:var(--sub)}
+.tag.g{background:#dff5ea;color:var(--green)}.tag.y{background:#fff4d9;color:#9a6a00}.tag.r{background:#fdeeee;color:var(--red)}
+.pop{animation:pop .35s ease}@keyframes pop{0%{transform:scale(.96)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}}
+.tbar{position:sticky;top:0;z-index:10;background:#1d2a44;color:#fff;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.tbar .clock{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums;min-width:90px}
+.tbar .tp{flex:1;min-width:0}.tbar .track{height:14px;background:rgba(255,255,255,.18);border-radius:8px;overflow:hidden}
+.tbar .track i{display:block;height:100%;width:0;background:#3ccf8e;transition:width .25s linear}.tbar .track i.warn{background:#f2b632}.tbar .track i.over{background:#ff6b6b}
+.tbar .lab{font-size:13px;opacity:.9;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+<header><b>🧭 수학 탐험 · 오늘의 미션</b><nav><button onclick="location.href='start.html'">시작화면</button><button onclick="go('home')">홈</button><button onclick="go('parent')">부모님</button></nav></header>
+<div id="tbar" class="tbar" style="display:none"><div class="clock" id="tclock">0:00</div><div class="tp"><div class="track"><i id="tfill"></i></div><div class="lab" id="tlab"></div></div></div>
+<main id="app"><div class="card">문제를 불러오는 중…</div></main>
+<script src="mission_data.js"></script>
+<script src="progress.js"></script>
+<script>
+/* ---------------------------------------------------------------
+   하준이 수학 탐험 · 오늘의 미션 (설계: 수학/학습설계 정책 v0.3)
+   - 미션: 연산 → 개념 → 기본 → 응용 → 오답 확인(같은 유형 새 숫자) → 돌아보기
+   - 경험치: 활동당 10XP, 하루 최대 50XP, 100XP마다 레벨 +1 (같은 날 같은 활동 중복 지급 없음)
+   - 레벨은 '꾸준히 학습한 활동의 누적'이며 실력 등급이 아님. 개념 확인 상태는 따로 표시.
+   - 기록은 이 기기 브라우저(localStorage)에만 저장됨.
+---------------------------------------------------------------- */
+const D = window.MISSION_DATA;
+const STORE = 'hajun_math_mission_v1';
+const XP_PER = 10, XP_DAY_MAX = 50, XP_LEVEL = 100, MAX_REPAIR_TRIES = 2;
+const STEP_NAMES = {arith:'연산 준비', concept:'개념', basic:'기본', app:'응용', repair:'오답 확인', reflect:'돌아보기', done:'완료'};
+const STEP_ORDER = ['arith','concept','basic','app','repair','reflect','done'];
+const byId = {}; const byFam = {}; const byUnit = {};
+D.questions.forEach(q => { byId[q.id] = q; (byFam[q.f] ||= []).push(q); (byUnit[q.u] ||= []).push(q); });
+const unitById = Object.fromEntries(D.units.map(u => [u.id, u]));
+
+/* ---------- 저장 ---------- */
+function blank(){ return {grade:4, unitId:null, xpAwards:{}, seen:{}, attempts:[], wrong:[], days:{}, active:null, review:null, settings:{openAll:false, opened:{}}}; }
+let S = load();
+function load(){ try{ const s = JSON.parse(localStorage.getItem(STORE)); return s && s.xpAwards ? Object.assign(blank(), s) : blank(); }catch(e){ return blank(); } }
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(S)); }catch(e){ alert('기록 저장에 실패했어요. 브라우저 저장 공간을 확인해 주세요.'); } }
+
+/* ---------- 날짜 ---------- */
+function today(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function dateObj(s){ const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); }
+function fmtDate(s){ const d = dateObj(s); return (d.getMonth()+1)+'/'+d.getDate()+'('+'일월화수목금토'[d.getDay()]+')'; }
+function isSaturday(){ return new Date().getDay() === 6; }
+function lastNDays(n){ const out=[]; const d=new Date(); for(let i=n-1;i>=0;i--){ const x=new Date(d); x.setDate(d.getDate()-i); out.push(x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')); } return out; }
+
+/* ---------- 경험치·레벨 ---------- */
+function totalXP(){ return Object.values(S.xpAwards).reduce((a,b)=>a+b,0); }
+function dayXP(date){ return Object.entries(S.xpAwards).filter(([k])=>k.startsWith(date+'|') && !k.endsWith('|drill')).reduce((a,[,v])=>a+v,0); }  // ⚡연산 훈련 XP는 한도와 별도
+function level(){ const t = totalXP(); return {lv: 1 + Math.floor(t / XP_LEVEL), prog: t % XP_LEVEL, total: t}; }
+function award(key){
+  const date = today(), k = date+'|'+key;
+  if (S.xpAwards[k]) return 0;                       // 같은 날 같은 활동은 한 번만
+  const room = XP_DAY_MAX - dayXP(date); if (room <= 0) return 0;
+  const before = level().lv; S.xpAwards[k] = Math.min(XP_PER, room); save();
+  const after = level().lv; if (after > before) S._levelUp = after;
+  return S.xpAwards[k];
+}
+
+/* ---------- 정답 판정 (문제은행 answer_rules.py 와 같은 규칙) ---------- */
+const UNIT_ALIASES = {'cm²':['cm²','cm2','㎠','제곱센티미터'],'m²':['m²','m2','㎡','제곱미터'],'cm³':['cm³','cm3','㎤','세제곱센티미터'],'m³':['m³','m3','㎥'],
+  'L':['L','l','리터'],'mL':['mL','ml','밀리리터'],'°':['°','도'],'°C':['°C','℃','도'],'cm':['cm','㎝','센티미터'],'m':['m','미터'],'kg':['kg','킬로그램'],'g':['g','그램'],'%':['%','퍼센트']};
+function gcd(a,b){ a=a<0n?-a:a; b=b<0n?-b:b; while(b){ [a,b]=[b,a%b]; } return a; }
+function frac(n,d){ n=BigInt(n); d=BigInt(d); if(d===0n) throw 0; const g=gcd(n,d)||1n; return [n/g, d/g]; }
+function decToFrac(s){ const [i,f=''] = s.split('.'); return frac(BigInt(i+f), 10n**BigInt(f.length)); }
+function parseValue(text, unit){
+  let s = String(text).trim().replace(/\s+/g,' ');
+  const aliases = unit ? (UNIT_ALIASES[unit] || [unit]) : [];
+  [...aliases, unit].filter(Boolean).sort((a,b)=>b.length-a.length).some(u => { if (s.endsWith(u)) { s = s.slice(0, -u.length).trim(); return true; } });
+  s = s.replace(/[개명번권장마리대자루컵배바퀴쪽원가지시간살일]$/,'').trim();   // "12개"처럼 셈 단위가 붙은 경우
+  if (s.includes(',')) { if (!/^\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) throw '쉼표'; s = s.replace(/,/g,''); }
+  let m = s.match(/^(\d+)\s*(?:와|과|\s)\s*(\d+)\s*\/\s*(\d+)$/);
+  if (m) { const w=BigInt(m[1]), n=BigInt(m[2]), d=BigInt(m[3]); if (d===0n || n>=d) throw '대분수'; return {v: frac(w*d+n, d), raw:[n,d]}; }
+  m = s.match(/^(\d+)\s*\/\s*(\d+)$/); if (m) return {v: frac(m[1], m[2]), raw:[BigInt(m[1]),BigInt(m[2])]};
+  if (/^\d+(\.\d+)?$/.test(s)) return {v: decToFrac(s), raw:null};
+  throw '형식';
+}
+function storedValue(v){ const s=String(v); if (s.includes('/')){ const [n,d]=s.split('/'); return frac(n,d); } return s.includes('.') ? decToFrac(s) : frac(s,1); }
+function grade(q, text){
+  if (!String(text).trim()) return {ok:false, msg:'답을 입력해 주세요.', empty:true};
+  try {
+    const p = parseValue(text, q.a.unit), want = storedValue(q.a.value);
+    const ok = p.v[0] === want[0] && p.v[1] === want[1];
+    if (ok && q.a.simp && p.raw && gcd(p.raw[0], p.raw[1]) !== 1n) return {ok:false, msg:'값은 맞아요! 더 간단한 분수(기약분수)로 써 보세요.', retry:true};
+    return {ok};
+  } catch(e) { return {ok:false, msg:'숫자, 분수(3/4), 대분수(1과 3/4) 형태로 써 주세요.', retry:true}; }
+}
+
+/* ---------- 연산 준비 문제 (정답을 정수 계산으로 만드는 안전한 계산 문제) ---------- */
+function rnd(a,b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function arithFor(g){
+  const out = [];
+  for (let i=0;i<3;i++){
+    let stem, ans, kind = (i + rnd(0,2)) % 3;
+    if (g === 4){
+      if (kind===0){ const a=rnd(120,899), b=rnd(12,68); stem=`${a} × ${b} = ?`; ans=String(a*b); }
+      else if (kind===1){ const b=rnd(12,49), q=rnd(11,39); stem=`${b*q} ÷ ${b} = ?`; ans=String(q); }
+      else { const a=rnd(10,99)*100+rnd(1,99), b=rnd(10,99)*100+rnd(1,99); stem=`${a} + ${b} = ?`; ans=String(a+b); }
+    } else if (g === 5){
+      if (kind===0){ const a=rnd(20,60), b=rnd(2,9), c=rnd(2,9); stem=`${a} + ${b} × ${c} = ?`; ans=String(a+b*c); }
+      else if (kind===1){ const c=rnd(2,9), q=rnd(3,12), b=rnd(1,20); stem=`(${c*q+b} − ${b}) ÷ ${c} = ?`; ans=String(q); }
+      else { const a=rnd(2,9), b=rnd(2,9), c=rnd(10,40); stem=`${c} − ${a} × ${b} ÷ ${a} = ?`; ans=String(c-b); }
+    } else {
+      if (kind===0){ const a=rnd(11,49), b=rnd(2,9); stem=`${(a/10).toFixed(1)} × ${b} = ?`; const p=a*b; ans=(p%10? (p/10).toFixed(1) : String(p/10)); }
+      else if (kind===1){ const d=[2,4,5,8][rnd(0,3)], k=rnd(2,9); stem=`${k} ÷ 1/${d} = ?`; ans=String(k*d); }
+      else { const b=rnd(2,9), q=rnd(2,15); stem=`${(b*q/10).toFixed(1)} ÷ ${b} = ?`; ans=(q%10? (q/10).toFixed(1) : String(q/10)); }
+    }
+    out.push({id:'ARITH-'+i, stem, a:{value:ans, display:ans, unit:'', simp:false}, hints:[], steps:[], arith:true});
+  }
+  return out;
+}
+
+/* ---------- 오늘의 미션 만들기 ---------- */
+function unseen(list){ return list.filter(q => !S.seen[q.id]); }
+function pickFromFamily(fam, avoid){ const pool = byFam[fam] || []; const u = unseen(pool).filter(q=>!avoid.includes(q.id)); const src = u.length ? u : pool.filter(q=>!avoid.includes(q.id)); return src.length ? src[Math.floor(Math.random()*src.length)] : null; }
+function newMission(unitId){
+  const u = unitById[unitId], qs = byUnit[unitId] || [];
+  const fams = [...new Set(qs.map(q=>q.f))];
+  const famsBy = d => fams.filter(f => byFam[f][0].d === d);
+  const used = [];
+  const take = f => { const q = pickFromFamily(f, used); if (q) used.push(q.id); return q && q.id; };
+  const basic = famsBy(1).slice(0,2).map(take).filter(Boolean);
+  const advOpen = PROGRESS.unitStage(S, D, unitId).stage >= 3;              // 🌳 이상일 때만 심화
+  const app = (advOpen ? [...famsBy(2).slice(0,1), ...famsBy(3).slice(0,1)] : famsBy(2).slice(0,2)).map(take).filter(Boolean);
+  // 지난번 '혼자 풀기 확인'을 못 마친 유형은 오늘 오답 확인에 먼저 넣는다
+  const carry = S.wrong.filter(w => w.repair === 'pending').map(w => ({fam:w.f, orig:w.qid, tries:[], status:'todo', carried:true}));
+  // 오늘 ⚡ 연산 훈련을 이미 했으면 미션의 연산 준비는 건너뜀 (오늘의 코스에서 이미 함)
+  const drilled = ((S.drill && S.drill.log) || []).some(r => r.date === today());
+  return {date: today(), unitId, grade: u.g, step: drilled ? 'concept' : 'arith', arithSkipped: drilled, idx:0, arith: arithFor(u.g), basic, app, advOpen,
+          res:{}, repairs: carry, reflect:{feel:null, text:''}, status:'in_progress'};
+}
+
+/* ---------- 화면 ---------- */
+let page = 'home', cur = {input:'', fb:null, hint:false};
+function go(p){ page = p; cur = {input:'', fb:null, hint:false}; render(); window.scrollTo(0,0); }
+const $ = id => document.getElementById(id);
+function esc(t){ return String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---- 연산 준비 시계 (위에 고정) — 제한 시간 없음, 내 기록만 잰다 (2026-11-12) ---- */
+const mmss = s => { s = Math.max(0, Math.round(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); };
+function drawTimer(){
+  const A = S.active, on = page === 'mission' && A && A.step === 'arith' && A.arithStart && A.arithSec == null;
+  $('tbar').style.display = on ? 'flex' : 'none'; if (!on) return;
+  $('tclock').textContent = mmss((Date.now() - A.arithStart) / 1000);
+  const sh = A.sh && A.sh.step === 'arith' ? A.sh : null, done = sh ? A.arith.filter((x, k) => (sh.inp[k] || '').trim()).length : 0;
+  $('tfill').style.width = (done / A.arith.length * 100) + '%';
+  $('tlab').textContent = '⏱ 내 기록 재는 중 · 서두르지 말고 정확하게!';
+}
+// 지난 미션의 연산 준비 기록(실수 0인 것만 기록으로 인정)
+function arithHistory(A){ return Object.entries(S.days).filter(([d,x]) => d < A.date && x.arith && !x.arith.wrong && (!x.arith.grade || x.arith.grade === A.grade)).sort().map(([d,x]) => ({date:d, sec:x.arith.sec})); }
+function arithNote(A){
+  if (A.arithWrong) return `실수 ${A.arithWrong}개 — 기록은 실수 0일 때만 인정돼요. 정확하면 속도는 저절로 붙어요!`;
+  const h = arithHistory(A); if (!h.length) return '실수 0! 첫 기록이에요. 다음 미션에서 이 기록을 깨 봐요.';
+  const best = Math.min(...h.map(x => x.sec)), last = h[h.length - 1].sec;
+  if (A.arithSec < best) return `🏅 신기록! 지난 최고 ${mmss(best)}보다 <b>${best - A.arithSec}초</b> 빨라졌어요.`;
+  if (A.arithSec < last) return `실수 0! 지난번 ${mmss(last)}보다 <b>${last - A.arithSec}초</b> 빨라졌어요 ⚡`;
+  return `실수 0! 정확하게 잘했어요 · 최고 기록 ${mmss(best)}`;
+}
+setInterval(drawTimer, 250);
+
+function render(){
+  const app = $('app');
+  if (page === 'home') app.innerHTML = home();
+  else if (page === 'mission') app.innerHTML = missionView();
+  else if (page === 'review') app.innerHTML = reviewView();
+  else if (page === 'parent') app.innerHTML = parentView();
+  drawTimer();
+  const inp = $('ans'); if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); (cur.fb ? $('nextBtn') : $('checkBtn'))?.click(); } }); }
+  if (S._levelUp) { const n = S._levelUp; delete S._levelUp; save(); setTimeout(()=>alert(`🎉 레벨 업! 이제 수학 탐험 레벨 ${n}이에요!`), 200); }
+}
+
+function levelCard(){
+  const L = level(), dx = dayXP(today());
+  return `<div class="card"><div class="level"><div class="badge"><small>레벨</small><span>${L.lv}</span></div>
+  <div style="flex:1"><h3>수학 탐험 레벨 ${L.lv}</h3><div class="bar"><i style="width:${L.prog}%"></i></div>
+  <div class="muted">다음 레벨까지 ${L.prog} / ${XP_LEVEL} XP · 오늘 ${dx} / ${XP_DAY_MAX} XP</div></div></div></div>`;
+}
+function weekStrip(){
+  return `<div class="week">${lastNDays(7).map(d => { const st = S.days[d]?.status; const cls = st==='success'?'s':(st?'p':''); const icon = st==='success'?'⭐':(st==='learning_done_check_pending'?'📘':(st?'⏳':'·'));
+    return `<div class="${cls} ${d===today()?'t':''}"><b>${icon}</b>${fmtDate(d).replace(/\(.\)/,'')}</div>`; }).join('')}</div>
+    <p class="muted" style="margin:8px 0 0">⭐ 미션 성공 · 📘 공부 완료(혼자 풀기 확인은 다음에) · ⏳ 진행 중</p>`;
+}
+function home(){
+  const t = today(), A = S.active && S.active.date === t ? S.active : null, done = S.days[t];
+  const openWrong = S.wrong.filter(w => w.sat !== 'done');
+  let todayCard;
+  if (done && (done.status === 'success' || done.status === 'learning_done_check_pending')) {
+    todayCard = `<div class="card center pop"><div class="big">${done.status==='success'?'🏆':'📘'}</div><h2>${done.status==='success'?'오늘 미션 성공!':'오늘 공부 완료!'}</h2>
+      <p class="muted">${done.status==='success'?'틀렸던 유형도 새 숫자 문제로 스스로 해결했어요.':'오늘 배운 과정은 끝났어요. 혼자 풀기 확인은 다음 미션에서 이어서 해요.'}</p>
+      <p class="muted">단원: ${esc(unitById[done.unitId]?.title||'')}</p></div>`;
+  } else if (A) {
+    todayCard = `<div class="card"><h2>오늘의 미션 진행 중</h2><p class="muted">${esc(unitById[A.unitId].title)} · 지금 단계: <b>${STEP_NAMES[A.step]}</b></p>${stepChips(A)}<button class="btn" onclick="go('mission')">이어서 하기 →</button></div>`;
+  } else {
+    const u = S.unitId ? unitById[S.unitId] : null;
+    todayCard = `<div class="card"><h2>오늘의 미션</h2><p class="muted">약 30분 · 연산 → 개념 → 기본 → 응용 → 오답 확인 → 돌아보기</p>
+      ${u ? `<p>공부할 단원: <b>${u.g}-${u.s} ${esc(u.title)}</b></p><button class="btn" onclick="startMission()">미션 시작하기 →</button>` : `<p>아래에서 공부할 단원을 먼저 골라 주세요.</p>`}</div>`;
+  }
+  const sat = openWrong.length ? `<div class="card"><h2>${isSaturday()?'🗓️ 오늘은 토요일 복습 날!':'🗓️ 토요일 복습 목록'}</h2>
+     <p class="muted">처음에 틀렸던 문제 ${openWrong.length}개가 모여 있어요. 토요일에 해설 없이 다시 풀어 보고, 기억하는지 확인해요.</p>
+     ${isSaturday()?`<button class="btn green" onclick="startReview()">복습 시작하기 →</button>`:`<button class="btn ghost small" onclick="startReview()">미리 해 보기</button>`}</div>` : '';
+  const units = D.units.filter(u => u.g === S.grade);
+  const crs = PROGRESS.course(S, D), showBanner = crs.steps.some(x => x.done) && (!A || crs.next?.key !== 'mission');
+  return `${showBanner ? PROGRESS.courseBanner(S, D) : ''}${levelCard()}${todayCard}${sat}
+  <div class="card"><h3>최근 7일</h3>${weekStrip()}</div>
+  <div class="card"><h3>공부할 단원 고르기</h3><div class="tabs" style="margin-bottom:10px">${[4,5,6].map(g=>`<button class="${S.grade===g?'sel':''}" onclick="setGrade(${g})">${g}학년</button>`).join('')}</div>
+  <p class="muted" style="margin:0 0 8px">단원은 순서대로 열려요. 앞 단원이 🌿 익숙이 되면 다음 단원이 열리고, 🌳 능숙이 되면 심화 문제가 나와요.</p>
+  <div class="units">${units.map(u => { const st = PROGRESS.unitStage(S, D, u.id), open = PROGRESS.unitOpen(S, D, u.id);
+    return `<button class="${S.unitId===u.id?'sel':''}" ${open?'':'disabled style="opacity:.5"'} onclick="setUnit('${u.id}')"><b>${open?st.icon:'🔒'} ${u.g}-${u.s}</b> ${esc(u.title)}<br><span class="muted">${open?esc(st.name)+(u.id===S.unitId?' · 👉 지금 단원':''):'앞 단원 🌿 익숙이 되면 열려요'}</span></button>`; }).join('')}</div></div>`;
+}
+function unitStatus(uid){ const n = Object.values(S.days).filter(d => d.unitId === uid && d.status === 'success').length; return n ? `미션 성공 ${n}회` : '아직 시작 전'; }
+function setGrade(g){ S.grade = g; S.settings.daily = Object.assign({}, S.settings.daily, {grade: g}); S.daily = Object.assign({log:[]}, S.daily, {unit: null}); if (!S.unitId || unitById[S.unitId].g !== g) S.unitId = PROGRESS.recommendedUnit(S, D, g); save(); render(); }
+function setUnit(id){ if (!PROGRESS.unitOpen(S, D, id)) { alert('앞 단원을 🌿 익숙까지 하면 열려요.'); return; } if (S.active && S.active.date === today() && S.active.unitId !== id && !confirm('진행 중인 미션이 있어요. 단원을 바꾸면 오늘 미션을 새로 시작해요. 바꿀까요?')) return; if (S.active && S.active.unitId !== id) S.active = null; S.unitId = id; S.daily = Object.assign({log:[]}, S.daily, {unit: id}); save(); render(); }   // 매일 학습도 같은 단원
+function startMission(){ if (!S.active || S.active.date !== today()) { S.active = newMission(S.unitId); S.days[today()] = Object.assign(S.days[today()] || {}, {status:'in_progress', unitId:S.unitId}); save(); } go('mission'); }
+function stepChips(A){ const i = STEP_ORDER.indexOf(A.step); return `<div class="steps">${STEP_ORDER.slice(0,6).map((s,k)=>`<span class="${k<i?'ok':(k===i?'on':'')}">${k<i?'✓ ':''}${STEP_NAMES[s]}</span>`).join('')}</div>`; }
+
+/* ---- 미션 진행 ---- */
+function currentList(A){ if (A.step==='arith') return A.arith; if (A.step==='basic') return A.basic.map(id=>byId[id]); if (A.step==='app') return A.app.map(id=>byId[id]); return []; }
+function missionView(){
+  const A = S.active; if (!A) { page='home'; return home(); }
+  if (A.step === 'arith' && !A.arithStart) { A.arithStart = Date.now(); A.arithWrong = 0; save(); }
+  const head = `<div class="card"><h2>${esc(unitById[A.unitId].title)} · ${STEP_NAMES[A.step]}</h2>${stepChips(A)}</div>`;
+  if (A.step === 'concept') { const u = unitById[A.unitId];
+    const ar = A.arithSec != null ? `<div class="fb ${A.arithWrong ? 'info' : 'ok'}" style="margin:0 0 14px">⏱ 연산 준비 ${A.arith.length}문제: <b>${mmss(A.arithSec)}</b> · ${arithNote(A)}<br><a href="drill.html">⚡ 연산 훈련</a>에서 더 연습할 수 있어요.</div>` : '';
+    // 예제: 오늘 풀 문제가 아닌 기본 문제 1개를 풀이와 함께 보여 줌 (처음 배우는 단원도 혼자 시작할 수 있게)
+    const ex = (byUnit[A.unitId] || []).find(q => q.d === 1 && !A.basic.includes(q.id) && !A.app.includes(q.id) && q.steps && q.steps.length);
+    const exHTML = ex ? `<div class="fb ok" style="margin-top:12px"><b>📖 예제</b> ${esc(ex.stem)}${ex.img ? `<img src="${esc(ex.img.src)}" alt="${esc(ex.img.alt)}">` : ''}<ol style="margin:8px 0 4px">${ex.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol><div>답: <b>${esc(ex.a.display)}${ex.a.unit ? ' ' + esc(ex.a.unit) : ''}</b></div></div>` : '';
+    return head + `<div class="card">${ar}<h3>💡 오늘의 핵심 개념</h3><p class="q">${esc(u.concept)}</p>
+      ${u.mis?`<div class="fb info">⚠️ 자주 하는 실수: ${esc(u.mis)}</div>`:''}${exHTML}${u.ask?`<p class="muted" style="margin-top:12px">생각해 보기: ${esc(u.ask)}</p>`:''}
+      <button class="btn" onclick="finishStep('concept')">이해했어요! 문제 풀러 가기 →</button></div>`; }
+  if (A.step === 'repair') return head + repairView(A);
+  if (A.step === 'reflect') return head + reflectView(A);
+  if (A.step === 'done') return head;
+  const c = sheetCtx(); return head + (c.sh.graded ? gradedCard(c) : sheetCard(c));
+}
+/* ---- 시험지 방식: 문제 사이를 오가며 답을 고치고, 📝 제출할 때 한꺼번에 채점 (2026-11-12 피드백) ---- */
+function sheetCtx(){
+  if (page === 'review') { const R = S.review; R.sh = R.sh || {inp:[], hint:[], graded:null, startAt: Date.now()}; return {list: R.items.map(id => byId[id]), sh: R.sh, hold: R, allowHint: false, kind: 'review'}; }
+  const A = S.active; if (!A.sh || A.sh.step !== A.step) A.sh = {step: A.step, inp: [], hint: [], graded: null, startAt: Date.now()};
+  return {list: currentList(A), sh: A.sh, hold: A, allowHint: A.step !== 'arith', kind: 'step'};
+}
+function shInput(v){ const c = sheetCtx(); c.sh.inp[c.hold.idx] = v; cur.msg = ''; const m = $('shmsg'); if (m) m.textContent = ''; const ch = $('chip' + c.hold.idx); if (ch) ch.classList.toggle('filled', !!v.trim()); save(); }
+function shGo(k){ const c = sheetCtx(); if (c.sh.graded || k < 0 || k >= c.list.length) return; c.hold.idx = k; cur.msg = ''; save(); render(); }
+function shHint(){ const c = sheetCtx(); c.sh.hint[c.hold.idx] = true; save(); render(); }
+function sheetCard(c){
+  const i = c.hold.idx, q = c.list[i], n = c.list.length, last = i === n - 1;
+  const chips = c.list.map((x, k) => `<button class="qchip ${(c.sh.inp[k] || '').trim() ? 'filled' : ''} ${k === i ? 'now' : ''}" id="chip${k}" onclick="shGo(${k})">${k + 1}</button>`).join('');
+  const blanks = c.list.filter((x, k) => !(c.sh.inp[k] || '').trim()).length;
+  return `<div class="card"><div class="chips">${chips}<span class="muted">번호를 누르면 그 문제로 가서 고칠 수 있어요</span></div>
+    <div class="muted">${i + 1} / ${n}${q.skill ? ' · ' + esc(q.skill) : ''}</div>
+    <div class="q">${esc(q.stem)}${q.img ? `<img src="${esc(q.img.src)}" alt="${esc(q.img.alt)}">` : ''}</div>
+    <div class="answer"><input id="ans" value="${esc(c.sh.inp[i] || '')}" placeholder="답 (숫자)" autocomplete="off" oninput="shInput(this.value)">${q.a.unit ? `<span class="unit">${esc(q.a.unit)}</span>` : ''}</div>
+    <p class="muted" id="shmsg" style="color:var(--red)">${esc(cur.msg || '')}</p>
+    ${c.sh.hint[i] && q.hints[1] ? `<div class="hint">💡 ${esc(q.hints[1])}</div>` : ''}
+    <div style="margin-top:12px"><button class="btn ghost" ${i ? '' : 'disabled'} onclick="shGo(${i - 1})">◀ 이전</button>${last ? '' : `<button class="btn" id="checkBtn" onclick="shGo(${i + 1})">다음 ▶</button>`}${c.allowHint && q.hints[1] && !c.sh.hint[i] ? `<button class="btn ghost" onclick="shHint()">힌트 보기</button>` : ''}</div>
+    <div class="submitbox"><button class="btn ${last ? 'green' : 'ghost'}" onclick="shSubmit()">📝 제출하기 (${n}문제 채점)</button>
+      <span class="muted">${blanks ? `아직 빈칸 ${blanks}개 · ` : '모두 풀었어요! 한 번 더 훑어보고 · '}제출 전까지는 언제든 고칠 수 있어요</span></div></div>`;
+}
+function shSubmit(){
+  const c = sheetCtx(); if (c.sh.graded) return;
+  for (let k = 0; k < c.list.length; k++) { const text = (c.sh.inp[k] || '').trim(); if (!text) continue; const r = grade(c.list[k], text);
+    if (r.retry) { c.hold.idx = k; cur.msg = `${k + 1}번: ${r.msg}`; save(); render(); return; } }
+  const blanks = c.list.filter((x, k) => !(c.sh.inp[k] || '').trim()).length;
+  if (blanks && !confirm(`아직 안 푼 문제가 ${blanks}개 있어요. 그래도 제출할까요?\n(제출하면 더 고칠 수 없어요)`)) return;
+  if (!blanks && !confirm('제출하면 채점하고, 더 고칠 수 없어요. 제출할까요?')) return;
+  c.sh.graded = c.list.map((q, k) => { const text = (c.sh.inp[k] || '').trim(); return {ok: text ? grade(q, text).ok : false, ans: text}; });
+  c.list.forEach((q, k) => {
+    const g = c.sh.graded[k], hint = !!c.sh.hint[k];
+    if (c.kind === 'review') { const R = c.hold; R.results[q.id] = g.ok; logAttempt(q, g.ans, g.ok, false, 'saturday');
+      const w = S.wrong.find(x => x.qid === q.id); if (w) { w.satTries = (w.satTries || 0) + 1; if (g.ok) { w.sat = 'done'; w.satDate = today(); } } return; }
+    const A = c.hold;
+    if (q.arith) { if (!g.ok) A.arithWrong = (A.arithWrong || 0) + 1; return; }
+    S.seen[q.id] = true; logAttempt(q, g.ans, g.ok, hint, A.step); A.res[q.id] = {ok: g.ok, hint};
+    if (!g.ok) addWrong(q, g.ans);
+  });
+  // 제출 직후 칭찬·조언 재료 (같은 종류의 지난 제출과 비교)
+  const kind = c.kind === 'review' ? 'saturday' : c.hold.step, sec = c.sh.startAt ? Math.round((Date.now() - c.sh.startAt) / 1000) : null, okN = c.sh.graded.filter(g => g.ok).length;
+  S.sheetLog = S.sheetLog || [];
+  c.sh.fbk = {n: c.list.length, ok: okN, sec, prev: S.sheetLog.filter(x => x.kind === kind).map(x => ({n: x.n, ok: x.ok, sec: x.sec})),
+    blanks: c.sh.graded.filter(g => !g.ans).length, hints: c.sh.hint.filter(Boolean).length};
+  if (sec != null) { S.sheetLog.push({date: today(), kind, n: c.list.length, ok: okN, sec}); S.sheetLog = S.sheetLog.slice(-120); }
+  if (c.kind === 'step' && c.hold.step === 'arith' && c.hold.arithStart) c.hold.arithSec = Math.round((Date.now() - c.hold.arithStart) / 1000);
+  cur.msg = ''; save(); render(); window.scrollTo(0,0);
+}
+function gradedCard(c){
+  const n = c.list.length, ok = c.sh.graded.filter(g => g.ok).length;
+  const rows = c.list.map((q, k) => { const g = c.sh.graded[k], ans = esc(q.a.display) + (q.a.unit && !String(q.a.display).endsWith(q.a.unit) ? ' ' + esc(q.a.unit) : '');
+    return `<div class="fb ${g.ok ? 'ok' : 'no'}"><b>${k + 1}번 ${g.ok ? '⭕' : '❌'}</b> ${esc(q.stem)}${q.img ? `<img src="${esc(q.img.src)}" alt="${esc(q.img.alt)}">` : ''}
+      <div style="margin-top:6px">내 답 <b>${g.ans ? esc(g.ans) : '빈칸'}</b>${g.ok ? '' : ` → 정답 <b>${ans}</b>`}</div>
+      ${!g.ok && q.steps && q.steps.length ? `<div style="margin-top:8px"><b>📖 해설</b><ol>${q.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : ''}</div>`; }).join('');
+  const wrongNote = c.kind === 'step' && c.hold.step !== 'arith' && ok < n ? '<p class="muted">괜찮아요! 틀린 유형은 조금 뒤 <b>오답 확인</b>에서 숫자를 바꾼 새 문제로 다시 도전해요.</p>' : '';
+  const btn = c.kind === 'review' ? `<button class="btn" id="nextBtn" onclick="endReview()">홈으로</button>` : `<button class="btn" id="nextBtn" onclick="finishStep('${c.hold.step}')">다음 단계 →</button>`;
+  return `<div class="card"><h3>📝 채점 결과: ${ok} / ${n} ${ok === n ? '🎉' : ''}</h3>${c.sh.fbk ? PROGRESS.feedbackHTML(c.sh.fbk) : ''}${wrongNote}${rows}<div style="margin-top:12px">${btn}</div></div>`;
+}
+function finishStep(step){
+  const A = S.active;
+  const keyMap = {arith:'arithmetic', concept:'concept', basic:'basic', app:'application', reflect:'reflection'};
+  if (step === 'arith' && A.arithStart) { if (A.arithSec == null) A.arithSec = Math.round((Date.now() - A.arithStart) / 1000);
+    const d = S.days[A.date] || (S.days[A.date] = {status:'in_progress', unitId:A.unitId}); d.arith = {sec:A.arithSec, wrong:A.arithWrong||0, grade:A.grade}; }
+  if (keyMap[step]) award(keyMap[step]);
+  const order = STEP_ORDER; let next = order[order.indexOf(step)+1];
+  if (next === 'repair') { buildRepairs(A); if (!A.repairs.some(r => r.status !== 'success' && r.status !== 'pending')) next = 'reflect'; }
+  A.step = next; A.idx = 0; cur = {input:'', fb:null, hint:false}; save(); render(); window.scrollTo(0,0);
+}
+function logAttempt(q, ans, ok, hint, mode){ S.attempts.push({qid:q.id, v:q.v, f:q.f, u:q.u, date:today(), at:new Date().toISOString(), ans:String(ans), ok, hint:!!hint, mode}); }
+function addWrong(q, ans){
+  if (S.wrong.some(w => w.qid === q.id)) return;              // 같은 문제는 한 번만 오답 목록에
+  S.wrong.push({qid:q.id, v:q.v, f:q.f, u:q.u, date:today(), repair:'todo', sat:'todo', ans: ans == null ? '' : String(ans)});
+}
+
+/* ---- 오답 확인: 같은 유형, 숫자만 바뀐 새 문제를 도움 없이 ---- */
+function buildRepairs(A){
+  const todayWrongFams = [...new Set(Object.entries(A.res).filter(([,r]) => !r.ok).map(([id]) => byId[id].f))];
+  todayWrongFams.forEach(f => { if (!A.repairs.some(r => r.fam === f)) A.repairs.push({fam:f, orig: Object.keys(A.res).find(id => byId[id].f===f && !A.res[id].ok), tries:[], status:'todo'}); });
+  A.repairs.forEach(r => { if (r.status === 'todo' && !r.cur) r.cur = pickRepairQ(r); });
+}
+function pickRepairQ(r){ const avoid = [r.orig, ...r.tries.map(t=>t.qid)]; const q = pickFromFamily(r.fam, avoid); return q ? q.id : null; }
+function repairView(A){
+  const r = A.repairs.find(x => x.status === 'todo' || x.status === 'studying');
+  if (!r) { return `<div class="card center"><p>오답 확인을 모두 마쳤어요!</p><button class="btn" onclick="finishStep('repair')">돌아보기로 →</button></div>`; }
+  const k = A.repairs.indexOf(r) + 1, n = A.repairs.length;
+  if (!r.cur) { r.status = 'pending'; save(); return `<div class="card"><p>이 유형은 확인 문제가 아직 준비 중이에요. 다음에 이어서 해요.</p><button class="btn" onclick="render()">다음 →</button></div>`; }
+  const q = byId[r.cur], orig = byId[r.orig];
+  const intro = `<div class="card"><h3>🔁 오답 확인 ${k} / ${n}${r.carried?' <span class="tag y">지난번에 이어서</span>':''}</h3>
+    <p class="muted">${orig?`아까 틀린 문제: “${esc(orig.stem)}”<br>`:''}해설로 배운 방법을 써서, <b>숫자가 바뀐 새 문제</b>를 힌트 없이 혼자 풀어 봐요. (${r.tries.length+1}번째 도전, 최대 ${MAX_REPAIR_TRIES}번)</p></div>`;
+  return intro + questionCardRepair(q);
+}
+function questionCardRepair(q){
+  const fb = cur.fb;
+  let fbHtml = '';
+  if (fb) {
+    fbHtml = fb.ok ? `<div class="fb ok pop">🎉 스스로 해결했어요! 정답 <b>${esc(q.a.display)}${q.a.unit?' '+esc(q.a.unit):''}</b></div>`
+      : `<div class="fb no pop">❌ 정답은 <b>${esc(q.a.display)}${q.a.unit?' '+esc(q.a.unit):''}</b>예요.<div style="margin-top:8px"><b>📖 해설</b><ol>${q.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol></div></div>`;
+    fbHtml += `<button class="btn" id="nextBtn" onclick="nextRepair()">다음 →</button>`;
+  }
+  return `<div class="card"><div class="q">${esc(q.stem)}${q.img?`<img src="${esc(q.img.src)}" alt="${esc(q.img.alt)}">`:''}</div>
+    <div class="answer"><input id="ans" ${fb?'disabled':''} value="${esc(cur.input)}" placeholder="답" autocomplete="off" oninput="cur.input=this.value">${q.a.unit?`<span class="unit">${esc(q.a.unit)}</span>`:''}</div>
+    ${cur.msg?`<p class="muted" style="color:var(--red)">${esc(cur.msg)}</p>`:''}
+    ${fb ? '' : `<div style="margin-top:12px"><button class="btn" id="checkBtn" onclick="checkRepair()">정답 확인</button></div>`}${fbHtml}</div>`;
+}
+function checkRepair(){
+  const A = S.active, r = A.repairs.find(x => x.status === 'todo'), q = byId[r.cur], g = grade(q, cur.input);
+  if (g.empty || g.retry) { cur.msg = g.msg; render(); return; }
+  cur.msg = ''; cur.fb = g; S.seen[q.id] = true; logAttempt(q, cur.input, g.ok, false, 'repair');
+  r.tries.push({qid:q.id, ok:g.ok});
+  save(); render();
+}
+function nextRepair(){
+  const A = S.active, r = A.repairs.find(x => x.status === 'todo'), last = r.tries[r.tries.length-1];
+  if (last.ok) { r.status = 'success'; S.wrong.filter(w => w.f === r.fam && w.repair !== 'success').forEach(w => { w.repair = 'success'; w.repairDate = today(); }); }
+  else if (r.tries.length >= MAX_REPAIR_TRIES) { r.status = 'pending'; S.wrong.filter(w => w.f === r.fam).forEach(w => { if (w.repair !== 'success') w.repair = 'pending'; });
+    alert('이 유형은 오늘 여기까지 해요. 해설을 한 번 더 읽어 두고, 다음 미션에서 다시 확인해요. 충분히 잘하고 있어요!'); }
+  else { r.cur = pickRepairQ(r); if (!r.cur) r.status = 'pending'; }
+  cur = {input:'', fb:null, hint:false};
+  if (!A.repairs.some(x => x.status === 'todo')) { finishStep('repair'); return; }
+  save(); render();
+}
+
+/* ---- 돌아보기 & 완료 ---- */
+function reflectView(A){
+  const f = A.reflect.feel;
+  return `<div class="card"><h3>🪞 오늘 공부 돌아보기</h3><p>오늘 공부는 어땠나요?</p>
+    <div class="feel">${['😀','🙂','😐','😣'].map(e=>`<button class="${f===e?'sel':''}" onclick="S.active.reflect.feel='${e}';save();render()">${e}</button>`).join('')}</div>
+    <p style="margin-top:14px">오늘 새로 알게 된 것이나 헷갈렸던 것을 한 줄로 써 보세요.</p>
+    <textarea id="refl" oninput="S.active.reflect.text=this.value;save()">${esc(A.reflect.text)}</textarea>
+    <button class="btn green" onclick="completeMission()" ${f?'':'disabled'}>미션 마치기 ✓</button></div>`;
+}
+function completeMission(){
+  const A = S.active; if (!A.reflect.text.trim() && !confirm('한 줄 돌아보기를 비워 둘까요?')) return;
+  award('reflection');
+  const pending = A.repairs.some(r => r.status === 'pending');
+  const total = Object.keys(A.res).length, first = Object.values(A.res).filter(r=>r.ok && !r.hint).length;
+  S.days[A.date] = Object.assign(S.days[A.date] || {}, {status: pending ? 'learning_done_check_pending' : 'success', unitId: A.unitId, firstOk:first, total, repairs:A.repairs.map(r=>({fam:r.fam,status:r.status})), feel:A.reflect.feel, note:A.reflect.text});
+  S.active = null; save(); go('home');
+}
+
+/* ---- 토요일 복습: 처음 틀린 원래 문제를 해설 없이 ---- */
+function startReview(){ const items = S.wrong.filter(w => w.sat !== 'done').map(w => w.qid).slice(0, 10); /* 한 번에 최대 10문제 (오래된 것부터), 나머지는 다음 토요일 */ if (!items.length) return; S.review = {date:today(), items, idx:0, results:{}}; save(); go('review'); }
+function reviewView(){
+  const R = S.review; if (!R) { page='home'; return home(); }
+  if (R.idx >= R.items.length) {
+    const ok = Object.values(R.results).filter(Boolean).length;
+    return `<div class="card center pop"><div class="big">🗓️</div><h2>토요일 복습 끝!</h2><p>${R.items.length}문제 중 <b>${ok}문제</b>를 해설 없이 다시 맞혔어요.</p>
+      <p class="muted">다시 틀린 문제는 목록에 남겨 두고, 다음 복습 때 또 확인해요.</p><button class="btn" onclick="endReview()">홈으로</button></div>`;
+  }
+  const c = sheetCtx();
+  return `<div class="card"><h2>🗓️ 토요일 복습 · ${R.items.length}문제</h2><p class="muted">처음에 틀렸던 문제예요. 해설 없이 다시 풀어 보고, 다 풀면 📝 제출해요.</p></div>` + (c.sh.graded ? gradedCard(c) : sheetCard(c));
+}
+function endReview(){ if (S.review && S.review.sh && S.review.sh.graded) award('saturday_review'); S.review = null; save(); go('home'); }
+
+/* ---- 부모님 ---- */
+function parentView(){
+  const rows = [...S.wrong].reverse().map(w => { const q = byId[w.qid]; if (!q) return '';
+    const rep = {success:'<span class="tag g">혼자 풀기 확인</span>', pending:'<span class="tag y">다음에 확인</span>', todo:'<span class="tag">확인 전</span>'}[w.repair] || '';
+    const sat = w.sat === 'done' ? '<span class="tag g">토요일 기억 확인</span>' : '<span class="tag r">토요일 복습 대기</span>';
+    return `<tr><td>${fmtDate(w.date)}</td><td>${esc(unitById[w.u]?.title||'')}<br><span class="muted">${esc(q.skill)}</span></td><td>${esc(q.stem)}</td><td>${rep}<br>${sat}</td></tr>`; }).join('');
+  const days = Object.entries(S.days).sort().reverse().slice(0,14).map(([d,x]) => `<tr><td>${fmtDate(d)}</td><td>${esc(unitById[x.unitId]?.title||'')}</td><td>${{success:'⭐ 성공',learning_done_check_pending:'📘 공부 완료·확인 대기',in_progress:'⏳ 진행 중',daily_done:'🏃 매일 학습',paused:'⏸ 멈춤'}[x.status]||x.status}</td><td>${x.total?`첫 시도 정답 ${x.firstOk}/${x.total}`:''}${x.note?`<br><span class="muted">“${esc(x.note)}”</span>`:''}</td></tr>`).join('');
+  return `<div class="card"><a class="btn" href="parent.html">👪 진행 상황·틀린 문제 한눈에 보기 →</a></div><div class="card"><h2>부모님 확인</h2><p class="muted">레벨은 꾸준히 공부한 활동의 누적이에요. 실력 등급이나 학년 수준이 아니에요. 개념을 익혔는지는 아래 ‘혼자 풀기 확인’과 ‘토요일 기억 확인’으로 보세요. 문제은행 v${esc(D.bank_version)} · 문항은 교사 검토 전 초안이에요.</p></div>
+  ${drillSummary()}
+  <div class="card"><h3>최근 미션</h3>${days?`<table><tr><th>날짜</th><th>단원</th><th>결과</th><th>메모</th></tr>${days}</table>`:'<p class="muted">아직 기록이 없어요.</p>'}</div>
+  <div class="card"><h3>오답 목록 (${S.wrong.length})</h3>${rows?`<table><tr><th>날짜</th><th>단원</th><th>문제</th><th>상태</th></tr>${rows}</table>`:'<p class="muted">아직 틀린 문제가 없어요.</p>'}</div>
+  <div class="card"><h3>단원 순서 설정</h3><p class="muted">기본은 4-1 큰 수부터 순서대로 열려요. 학교 진도에 맞춰 바로 공부해야 할 단원이 있으면 직접 열 수 있어요. 직접 열어도 숙달 단계 기준은 그대로예요.</p>
+  <label style="display:block;margin:8px 0"><input type="checkbox" ${S.settings.openAll?'checked':''} onchange="S.settings.openAll=this.checked;save();render()"> 모든 단원 열기</label>
+  <div class="units">${D.units.filter(u=>u.g===S.grade).map(u=>`<label style="font-size:14px"><input type="checkbox" ${S.settings.opened[u.id]?'checked':''} onchange="S.settings.opened['${u.id}']=this.checked;save()"> ${u.g}-${u.s} ${esc(u.title)}</label>`).join('')}</div></div>
+  <div class="card"><h3>기록 보관</h3><p class="muted">기록은 이 기기 브라우저에만 저장돼요. 기기를 바꾸거나 브라우저 기록을 지우기 전에 내보내 두세요.</p>
+  <button class="btn ghost" onclick="exportData()">기록 내보내기</button><label class="btn ghost">기록 가져오기<input type="file" accept=".json" style="display:none" onchange="importData(this.files[0])"></label>
+  <button class="btn ghost" style="color:var(--red)" onclick="resetAll()">모든 기록 지우기</button></div>`;
+}
+function drillSummary(){
+  const L = ((S.drill && S.drill.log) || []).filter(r => r.date >= lastNDays(14)[0]), names = Object.fromEntries(PROGRESS.DRILL.skills.map(k => [k.id, k.name]));
+  const arith = Object.entries(S.days).filter(([d,x]) => x.arith && d >= lastNDays(14)[0]);
+  const n = L.reduce((a,r)=>a+r.n,0), w = L.reduce((a,r)=>a+r.wrong,0);
+  const aw = arith.reduce((a,[,x])=>a+x.wrong,0);
+  return `<div class="card"><h3>⚡ 연산 정확도 (최근 2주)</h3>
+    ${L.length ? `<p style="margin:0">연산 훈련 <b>${L.length}세트</b> · 실수 <b>${w}/${n}문제 (${Math.round(w/n*100)}%)</b> · 실수 0 세트 ${L.filter(r=>!r.wrong).length}개</p>
+    <p class="muted" style="margin:4px 0">시간 제한 없이 기록만 재요. 기술별 속도 변화는 <a href="parent.html">부모님 확인 화면</a>에서 볼 수 있어요.</p>
+    <table><tr><th>날짜</th><th>훈련</th><th>결과</th><th>틀린 문제 (내 답 → 정답)</th></tr>${[...L].reverse().slice(0,10).map(r=>`<tr><td>${fmtDate(r.date)}</td><td>${esc(names[r.skill]||r.skill)}</td><td>${'⭐'.repeat(r.stars)}<br><span class="muted">${mmss(r.sec)}</span></td><td>${r.miss.map(m=>`${esc(m.q)} : ${esc(m.a)} → <b>${esc(m.c)}</b>`).join('<br>')||'—'}</td></tr>`).join('')}</table>`
+      : '<p class="muted">아직 연산 훈련 기록이 없어요.</p>'}
+    ${arith.length ? `<p class="muted" style="margin:8px 0 0">미션 연산 준비: ${arith.length}일 · 실수 ${aw}개</p>` : ''}
+    <a class="btn ghost small" href="drill.html">⚡ 연산 훈련 화면</a></div>`;
+}
+function exportData(){ const blob = new Blob([JSON.stringify({app:'hajun-math-mission', version:1, exported:new Date().toISOString(), data:S}, null, 1)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `수학미션기록_${today()}.json`; a.click(); }
+function importData(file){ if (!file) return; const r = new FileReader(); r.onload = () => { try { const j = JSON.parse(r.result); if (j.app !== 'hajun-math-mission') throw 0; if (!confirm('지금 기록을 가져온 기록으로 바꿀까요?')) return; S = Object.assign(blank(), j.data); save(); go('home'); } catch(e) { alert('이 앱에서 내보낸 기록 파일이 아니에요.'); } }; r.readAsText(file); }
+function resetAll(){ if (confirm('정말 모든 기록(레벨·오답·미션)을 지울까요? 되돌릴 수 없어요.') && confirm('한 번 더 확인할게요. 지울까요?')) { S = blank(); save(); go('home'); } }
+
+/* ---- 시작 ---- */
+if (!D) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 파일을 찾지 못했어요. 같은 폴더에 있는지 확인해 주세요.</div>';
+else { S.settings = Object.assign({openAll:false, opened:{}}, S.settings||{}); S.grade = PROGRESS.dailyGrade(S); if (!(S.active && S.active.date === today()) || !S.unitId) S.unitId = PROGRESS.dailyUnit(S, D);   // 오늘의 단원은 한 곳(매일 학습과 같음)에서 정함
+  if (S.active && S.active.date !== today()) { const old = S.active; if (S.days[old.date]?.status === 'in_progress') S.days[old.date].status = 'paused'; S.active = null; save(); }
+  const h = location.hash.slice(1);
+  const doneT = S.days[today()] && ['success','learning_done_check_pending'].includes(S.days[today()].status);
+  if (h === 'course') {                 // 오늘의 코스에서 옴: 매일 학습과 같은 단원으로 미션
+    if (doneT) render();
+    else { if (!(S.active && S.active.date === today())) { S.grade = PROGRESS.dailyGrade(S); S.unitId = PROGRESS.dailyUnit(S, D); } startMission(); } }
+  else if (h === 'mission' && S.unitId && !(S.days[today()] && ['success','learning_done_check_pending'].includes(S.days[today()].status))) startMission();
+  else if (h === 'review' && S.wrong.some(w => w.sat !== 'done')) startReview();
+  else if (h === 'parent') go('parent'); else render(); }
+</script>
+</body>
+</html>

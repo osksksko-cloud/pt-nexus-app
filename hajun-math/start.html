@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>하준이 수학 탐험 · 시작</title>
+<style>
+:root{--ink:#1d2a44;--sub:#5a6680;--line:#dfe5f0;--bg:#f5f7fb;--blue:#2f5bd3;--green:#1f9d63;--gold:#f2b632;--soft:#eef3ff}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);font-size:17px;line-height:1.55}
+.top{background:linear-gradient(135deg,#2f5bd3,#4f7cf0);color:#fff;padding:22px 18px 70px}
+.top h1{margin:0;font-size:26px}.top p{margin:4px 0 0;opacity:.9}
+main{max-width:760px;margin:-56px auto 0;padding:0 14px 30px}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:14px}
+h2{font-size:19px;margin:0 0 10px}
+.muted{color:var(--sub);font-size:14px}
+.btn{display:inline-block;text-decoration:none;border:0;border-radius:14px;padding:14px 20px;font-size:18px;font-weight:800;background:var(--blue);color:#fff;cursor:pointer}
+.btn.ghost{background:var(--soft);color:var(--blue);font-size:15px;padding:10px 14px}
+.btn.green{background:var(--green)}
+.level{display:flex;align-items:center;gap:16px}
+.badge{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#ffd76a,#f2a516);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#5a3a00;font-weight:800;flex:none}
+.badge small{font-size:12px}.badge span{font-size:30px;line-height:1}
+.bar{height:14px;background:#e8edf7;border-radius:10px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;background:linear-gradient(90deg,#4f7cf0,#2f5bd3)}
+.today{display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.ladder{display:flex;flex-direction:column-reverse;gap:8px}
+.floor{display:flex;gap:12px;align-items:flex-start;border:2px solid var(--line);border-radius:14px;padding:12px}
+.floor .n{width:44px;height:44px;border-radius:12px;background:#eef1f7;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;flex:none}
+.floor.open{border-color:#bfe8d2;background:#f4fbf7}.floor.open .n{background:var(--green);color:#fff}
+.floor.here{border-color:var(--blue);background:var(--soft)}.floor.here .n{background:var(--blue);color:#fff}
+.floor b{font-size:17px}.floor ul{margin:4px 0 0;padding-left:18px;font-size:14px;color:var(--sub)}
+.floor li.ok{color:var(--green)}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,100%),1fr));gap:8px}
+.u{border:1px solid var(--line);border-radius:12px;padding:10px;font-size:14px;background:#fff}
+.u .t{font-weight:700;font-size:15px}.u.lock{opacity:.5;background:#f7f8fb}.u.now{border:2px solid var(--blue);background:var(--soft)}
+.u .bar{height:8px;margin:6px 0 0}
+.tabs button{border:0;background:#eef1f7;border-radius:10px;padding:8px 14px;margin-right:6px;font-size:15px}.tabs button.sel{background:var(--blue);color:#fff}
+.box{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;text-align:center}
+.box div{background:#f7f8fb;border-radius:12px;padding:10px 4px;font-size:13px;color:var(--sub)}.box b{display:block;font-size:24px;color:var(--ink)}
+.box .g b{color:var(--green)}
+.legend{font-size:13px;color:var(--sub);margin-top:8px}
+.course{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:16px;padding:12px 14px;text-decoration:none;color:var(--ink);background:#fff}
+.step .n{width:46px;height:46px;border-radius:50%;background:#eef1f7;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;flex:none;color:var(--sub)}
+.step b{font-size:18px}.step .go{margin-left:auto;font-weight:900;white-space:nowrap}
+.step.done{background:#f2fbf6;border-color:#bfe8d2}.step.done .n{background:var(--green);color:#fff}
+.step.now{border:3px solid #ff7a1a;background:#fff6ee}.step.now .n{background:linear-gradient(135deg,#ff7a1a,#ff4d6d);color:#fff}
+.step.now .go{background:linear-gradient(135deg,#ff7a1a,#ff4d6d);color:#fff;border-radius:12px;padding:10px 14px;font-size:17px}
+.step.wait{opacity:.55;pointer-events:none}
+.order{counter-reset:s;list-style:none;padding:0;margin:0}
+.order li{counter-increment:s;padding:6px 0 6px 34px;position:relative;font-size:15px}
+.order li:before{content:counter(s);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--soft);color:var(--blue);font-weight:800;text-align:center;font-size:13px;line-height:24px}
+</style>
+</head>
+<body>
+<div class="top"><h1>🧭 하준이 수학 탐험</h1><p>기본을 탄탄하게 → 틀린 문제는 졸업까지 → 경시까지 한 층씩</p></div>
+<main id="app"><div class="card">불러오는 중…</div></main>
+<script src="mission_data.js"></script>
+<script src="progress.js"></script>
+<script>
+const D = window.MISSION_DATA, P = window.PROGRESS, STORE = 'hajun_math_mission_v1';
+let S; try { S = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { S = {}; }
+S = Object.assign({grade:4, unitId:null, xpAwards:{}, attempts:[], wrong:[], days:{}, settings:{openAll:false, opened:{}}}, S);
+let grade = P.dailyGrade(S);   // 시작화면·매일 학습·미션·연산 훈련이 모두 같은 학년
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function today(){ const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function totalXP(){ return Object.values(S.xpAwards).reduce((a,b)=>a+b,0); }
+function dayXP(){ return Object.entries(S.xpAwards).filter(([k])=>k.startsWith(today()+'|') && !k.endsWith('|drill')).reduce((a,[,v])=>a+v,0); }
+const unitById = Object.fromEntries(D.units.map(u => [u.id, u]));
+
+function courseCard(){
+  const c = P.course(S, D), u = unitById[P.dailyUnit(S, D)];
+  const steps = c.steps.map(st => { const cls = st.done ? 'done' : (c.next && st.key === c.next.key ? 'now' : 'wait');
+    return `<a class="step ${cls}" href="${st.href}"><div class="n">${st.done ? '✓' : st.no}</div>
+      <div><b>${st.icon} ${st.name}</b> <span class="muted">· 약 ${st.min}분</span><div class="muted">${esc(st.desc)}</div></div>
+      <span class="go">${st.done ? '다시 보기' : cls === 'now' ? '시작 ▶' : '🔒'}</span></a>`; }).join('');
+  return `<div class="card" style="border:3px solid #ff7a1a"><h2>🗺️ 오늘의 학습 코스 <span class="muted" style="font-weight:400">· ${c.done}/${c.total} 완료 · 약 ${c.min}분</span></h2>
+    <p class="muted" style="margin-top:0">위에서부터 하나씩 눌러서 진행해요. 하나를 마치면 다음 단계가 열려요. 오늘 단원: <b>${u.g}-${u.s} ${esc(u.title)}</b></p>
+    <div class="bar"><i style="width:${c.done / c.total * 100}%;background:linear-gradient(90deg,#ff7a1a,#1f9d63)"></i></div>
+    <div class="course">${steps}</div>
+    ${!c.next ? '<div style="text-align:center;font-size:22px;font-weight:900;margin:14px 0 0">🎉 오늘 학습 완료! 정말 잘했어요</div>' : ''}
+    ${P.reportHTML(S, D, c.next ? '지금까지 오늘의 피드백' : '오늘의 피드백')}</div>`;
+}
+function dailyCard(){
+  S.daily = S.daily || {log:[]}; const L = S.daily.log || [], td = L.filter(r => r.date === today());
+  const st = L.reduce((a,r)=>a+r.stars,0);
+  return `<div class="card" style="border:3px solid #ff7a1a"><h2>🏃 매일 학습 레이스 <span class="muted" style="font-weight:400">· 코스 2단계 · 한 판 약 7분, 2·3판은 선택</span></h2>
+    <div class="today"><div>${td.length ? `<b>오늘 ${td.length}판 완주 ${td.map(r=>'⭐'.repeat(r.stars)).join(' ')}</b>` : '<b>오늘의 레이스가 기다려요!</b>'}
+      <div class="muted">5학년 준비 · 짧게 여러 판 · 판이 끝날 때마다 실력 게이지 확인 · 모은 별 ${st}개</div></div>
+    <a class="btn" style="background:linear-gradient(135deg,#ff7a1a,#ff4d6d)" href="daily.html">${td.length >= 3 ? '기록 보기' : td.length ? '▶ 한 판 더' : '▶ 레이스 시작'}</a></div></div>`;
+}
+function drillCard(){
+  S.drill = S.drill || {log:[]};
+  const flu = P.fluency(S, grade), td = S.drill.log.filter(r => r.date === today());
+  const rec = P.drillRecommend(S, D, grade);
+  const lv = rec && P.drillLevel(S, rec.id);
+  return `<div class="card"><h2>⚡ 연산 훈련 <span class="muted" style="font-weight:400">· 코스 1단계 · 하루 5분</span></h2>
+    <div class="today"><div>
+      ${td.length ? `<b>오늘 ${td.length}세트 · ${td.map(r=>'⭐'.repeat(r.stars)).join(' ')}</b><br>` : ''}
+      ${rec ? `<span>추천: <b>${esc(rec.name)}</b>${lv.best != null ? ` · 🏅 내 최고 기록 ${Math.floor(lv.best/60)}:${String(lv.best%60).padStart(2,'0')}` : ' · 첫 기록 만들기'}</span>` : '<b>🏆 이 학년 연산 모두 익힘!</b>'}
+      <div class="muted">시간 제한 없이 <b>내 기록 깨기</b>. 기록은 실수 0일 때만 인정돼요. · 익힘 ${flu.passed}/${flu.total}</div></div>
+    <a class="btn" style="background:#6a3fd1" href="drill.html${rec?'#'+rec.id:''}">⏱ 기록 깨기</a></div></div>`;
+}
+function render(){
+  const t = totalXP(), lv = 1 + Math.floor(t/100), prog = t % 100;
+  const td = S.days[today()], rec = P.recommendedUnit(S, D, grade), recU = unitById[rec];
+  const cur = grade === P.dailyGrade(S) ? P.dailyUnit(S, D) : (S.unitId && unitById[S.unitId] && unitById[S.unitId].g === grade ? S.unitId : rec), curU = unitById[cur], curSt = P.unitStage(S, D, cur);
+  const doneToday = td && (td.status === 'success' || td.status === 'learning_done_check_pending');
+  const inProg = S.active && S.active.date === today();
+  const lad = P.ladder(S, D, grade), here = Math.max(...lad.filter(f => f.open).map(f => f.floor));
+  const box = P.wrongBox(S), sat = new Date().getDay() === 6;
+  const units = D.units.filter(u => u.g === grade);
+
+  document.getElementById('app').innerHTML = `
+  <div class="card"><div class="level"><div class="badge"><small>레벨</small><span>${lv}</span></div>
+    <div style="flex:1"><b>수학 탐험 레벨 ${lv}</b><div class="bar"><i style="width:${prog}%"></i></div>
+    <div class="muted">다음 레벨까지 ${prog} / 100 XP · 오늘 미션 ${dayXP()} / 50 XP${S.xpAwards[today()+'|drill']?' · ⚡ +10':''}</div></div></div>
+    <p class="muted" style="margin:10px 0 0">레벨은 꾸준히 공부한 기록이에요. 실력은 아래 단원 지도의 🌱🌿🌳⭐로 봐요.</p></div>
+
+  ${courseCard()}
+
+  ${dailyCard()}
+
+  <div class="card"><h2>📚 오늘의 미션 <span class="muted" style="font-weight:400">· 코스 3단계 · 약 15~20분</span></h2>
+    <div class="today"><div>
+      ${doneToday ? `<b>${td.status==='success'?'⭐ 오늘 미션 성공!':'📘 오늘 공부 완료!'}</b><div class="muted">${esc(unitById[td.unitId]?.title||'')} · 내일 또 만나요</div>`
+        : `<b>${curSt.icon} ${curU.g}-${curU.s} ${esc(curU.title)}</b><div class="muted">${inProg ? '진행 중인 미션이 있어요' : '개념 → 기본 → 응용 → 오답 확인 → 돌아보기 (연산 훈련을 했으면 연산 준비는 건너뛰어요)'}</div>
+           <div class="muted">다음 단계까지: ${esc(curSt.next)}</div>`}
+    </div>
+    ${doneToday ? `<a class="btn ghost" href="mission.html">미션 홈 보기</a>` : `<a class="btn" href="mission.html#course">${inProg?'이어서 하기':'미션 시작'} →</a>`}</div>
+    ${box.saturday || box.todayCheck ? `<div style="margin-top:12px"><a class="btn ${sat?'green':'ghost'}" href="mission.html#review">🗓️ 토요일 복습 ${sat?'시작':'미리 보기'} (${box.saturday + box.todayCheck}문제)</a></div>` : ''}
+  </div>
+
+  ${drillCard()}
+
+  <div class="card"><h2>🪜 경시까지 가는 사다리</h2>
+    <p class="muted" style="margin-top:0">아래층부터 차근차근. 조건을 채우면 위층이 열려요.</p>
+    <div class="ladder">${lad.map(f => `<div class="floor ${f.floor===here?'here':(f.open?'open':'')}"><div class="n">${f.open?f.floor:'🔒'}</div>
+      <div><b>${f.floor}층 ${esc(f.name)}</b> ${f.floor===here?'<span class="muted">← 지금 여기</span>':''}<div class="muted">${esc(f.desc)}</div>
+      ${f.floor>1?`<ul>${f.conds.map(c=>`<li class="${c.ok?'ok':''}">${c.ok?'✅':'⬜'} ${esc(c.text)}</li>`).join('')}</ul>`:''}</div></div>`).join('')}</div>
+  </div>
+
+  <div class="card"><h2>🗺️ 단원 지도</h2>
+    <div class="tabs" style="margin-bottom:10px">${[4,5,6].map(g=>`<button class="${g===grade?'sel':''}" onclick="grade=${g};render()">${g}학년</button>`).join('')}</div>
+    <div class="map">${units.map(u => { const st = P.unitStage(S, D, u.id), open = P.unitOpen(S, D, u.id);
+      return `<div class="u ${open?'':'lock'} ${u.id===cur?'now':''}"><div class="t">${open?st.icon:'🔒'} ${u.g}-${u.s} ${esc(u.title)}</div>
+        <div class="muted">${open?esc(st.name)+(u.id===cur?' · 👉 지금 단원':''):'앞 단원 🌿 이후'}</div><div class="bar"><i style="width:${st.stage*25}%"></i></div></div>`; }).join('')}</div>
+    <div class="legend">🌱 해 봄 → 🌿 익숙(기본 80%, 다음 단원 열림) → 🌳 능숙(응용 70%, 심화 열림) → ⭐ 숙달(서로 다른 3일 혼자 정답)</div>
+  </div>
+
+  <div class="card"><h2>🎓 오답 졸업 상자</h2>
+    <div class="box"><div><b>${box.total}</b>모은 오답</div><div><b>${box.todayCheck}</b>새 숫자 확인 대기</div><div><b>${box.saturday}</b>토요일 재확인 대기</div><div class="g"><b>${box.graduated}</b>졸업</div></div>
+    <p class="muted" style="margin:10px 0 0">틀린 문제 → 해설 → 숫자 바꾼 새 문제로 혼자 확인 → 토요일에 원래 문제를 해설 없이 다시 → 졸업!</p></div>
+
+  <div class="card"><h2>📋 공부 순서 (매일 같은 순서)</h2><ol class="order">
+    <li>⚡ 연산 기록 깨기 5분: 시간 제한 없이 내 기록 깨기. 별은 정확도로만, 최고 기록도 실수 0일 때만 인정.</li>
+    <li>🏃 매일 학습 레이스 1판 7분: 6문제를 풀고 📝 제출 → 칭찬·조언과 실력 게이지 확인 → 틀린 문제 고치기.</li>
+    <li>📚 오늘의 미션 15~20분: 같은 단원의 개념 → 기본 → 응용 → 오답 확인 → 돌아보기.</li>
+    <li>🗓️ 토요일에는 처음 틀렸던 문제를 해설 없이 다시 풀어 졸업시켜요.</li>
+    <li>힘이 남으면 레이스 2·3판(선택). 단원은 순서대로, 앞 단원이 🌿가 되면 다음 단원이 열려요.</li></ol></div>
+
+  <div class="card" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="parent.html">👪 부모님 확인 (진행 상황·틀린 문제)</a><a class="btn ghost" href="index.html">첫 진단 앱(예전)</a></div>`;
+}
+if (!D || !P) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 또는 progress.js 를 찾지 못했어요.</div>'; else render();
+</script>
+</body>
+</html>

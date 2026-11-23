@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>부모님 확인 · 하준이 수학</title>
+<style>
+:root{--ink:#1d2a44;--sub:#5a6680;--line:#dfe5f0;--bg:#f4f6fa;--blue:#2f5bd3;--green:#1f9d63;--red:#d44a4a;--gold:#f2b632;--soft:#eef3ff}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.55}
+header{background:#24324f;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+header b{font-size:19px}
+header nav a{color:#fff;text-decoration:none;background:rgba(255,255,255,.16);border-radius:10px;padding:7px 11px;font-size:14px;margin-left:6px}
+main{max-width:900px;margin:0 auto;padding:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:14px}
+h2{font-size:19px;margin:0 0 10px}h3{font-size:16px;margin:0 0 8px}
+.muted{color:var(--sub);font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.kpi b{display:block;font-size:24px}.kpi span{font-size:13px;color:var(--sub)}
+.kpi .up{color:var(--green);font-size:13px;font-weight:700}.kpi .down{color:var(--red);font-size:13px;font-weight:700}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--sub);font-weight:600;font-size:13px}
+.mini{display:inline-block;height:8px;border-radius:5px;background:#e8edf7;width:70px;vertical-align:middle;overflow:hidden;margin-right:6px}
+.mini i{display:block;height:100%;background:var(--green)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tabs button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 12px;font-size:14px;cursor:pointer;font-family:inherit}
+.tabs button.sel{background:var(--ink);color:#fff;border-color:var(--ink)}
+.wq{border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;break-inside:avoid}
+.wq.done{background:#f6fbf8}
+.wq .meta{font-size:13px;color:var(--sub);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.wq .stem{font-size:17px;font-weight:600;margin:6px 0}
+.wq img{display:block;max-width:100%;max-height:260px;margin:6px 0;border:1px solid var(--line);border-radius:10px}
+.wq .ans{display:flex;gap:18px;flex-wrap:wrap;font-size:15px}
+.wq .ans .my{color:var(--red);font-weight:700}.wq .ans .ok{color:var(--green);font-weight:700}
+.wq details{margin-top:6px;font-size:14px}.wq summary{cursor:pointer;color:var(--blue)}
+.wq ol{margin:6px 0 0;padding-left:20px}
+.wq label{font-size:14px;cursor:pointer}
+.tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:10px;background:#eef1f7;color:var(--sub)}
+.tag.g{background:#dff5ea;color:var(--green)}.tag.y{background:#fff4d9;color:#9a6a00}.tag.r{background:#fdeeee;color:var(--red)}.tag.b{background:#e5ecff;color:var(--blue)}
+.btn{display:inline-block;border:0;border-radius:12px;padding:9px 14px;font-size:15px;font-weight:700;background:var(--soft);color:var(--blue);text-decoration:none;cursor:pointer;margin:3px 4px 3px 0;font-family:inherit}
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:8px}
+.units div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px}
+.units div.lock{opacity:.45}
+details.day{border-bottom:1px solid var(--line);padding:6px 0}details.day summary{cursor:pointer}
+.print-only{display:none}
+@media print{header,.noprint{display:none!important}body{background:#fff}.card{border:0;padding:0}.wq{border:1px solid #999}.print-only{display:block}main{max-width:none}}
+</style>
+</head>
+<body>
+<header><b>👪 부모님 확인 · 하준이 수학</b><nav class="noprint"><a href="start.html">시작화면</a><a href="daily.html#parent">매일 학습 설정</a><a href="mission.html#parent">미션 설정·기록 보관</a></nav></header>
+<main id="app"><div class="card">불러오는 중…</div></main>
+<script src="mission_data.js"></script>
+<script src="progress.js"></script>
+<script>
+/* 부모님 확인 화면 — 아이가 공부한 진행 상황과 틀린 문제를 한곳에서 (읽기 전용 + '같이 봤어요' 표시만 저장)
+   기록: localStorage 'hajun_math_mission_v1' (매일 학습·미션·연산 훈련이 함께 쓰는 저장소). 기록은 이 기기·이 브라우저에만 있어요. */
+const D = window.MISSION_DATA, P = window.PROGRESS, STORE = 'hajun_math_mission_v1';
+let S; try { S = JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { S = {}; }
+S = Object.assign({attempts:[], wrong:[], days:{}, settings:{}, daily:{log:[]}, drill:{log:[]}}, S);
+S.daily = Object.assign({log:[]}, S.daily); S.drill = Object.assign({log:[]}, S.drill || {});
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { alert('저장에 실패했어요.'); } }
+const byId = {}; D.questions.forEach(q => byId[q.id] = q);
+const unitById = Object.fromEntries(D.units.map(u => [u.id, u]));
+const esc = t => String(t ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ds = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today = () => ds(new Date());
+const daysAgo = n => { const d = new Date(); d.setDate(d.getDate() - n); return ds(d); };
+const md = d => { const x = new Date(d + 'T00:00'); return `${x.getMonth()+1}/${x.getDate()}(${'일월화수목금토'[x.getDay()]})`; };
+const pct = (a, b) => b ? Math.round(a / b * 100) : null;
+const uname = uid => unitById[uid] ? `${unitById[uid].g}-${unitById[uid].s} ${unitById[uid].title}` : '';
+const ansOf = q => esc(q.a.display) + (q.a.unit && !String(q.a.display).endsWith(q.a.unit) ? ' ' + esc(q.a.unit) : '');
+const CAUSE = {calc:'😵 계산 실수', read:'📖 문제 잘못 읽음', dontknow:'🤔 몰랐어요'};
+const MODE = {basic:'기본', app:'응용', repair:'오답 다시 도전', saturday:'토요일 복습'};
+let tab = 'open';
+
+/* 처음 푼 시도(다시 도전·복습 제외) */
+function firstTries(from, to){ const seen = new Set(), out = [];
+  S.attempts.forEach(a => { if ((a.mode === 'basic' || a.mode === 'app') && !seen.has(a.qid)) { seen.add(a.qid); if (a.date >= from && a.date <= to) out.push(a); } });
+  return out; }
+function weekStats(from, to){
+  const ft = firstTries(from, to), ok = ft.filter(a => a.ok).length;
+  const studyDays = new Set([...S.attempts.filter(a => a.date >= from && a.date <= to).map(a => a.date), ...S.daily.log.filter(r => r.date >= from && r.date <= to).map(r => r.date), ...S.drill.log.filter(r => r.date >= from && r.date <= to).map(r => r.date)]).size;
+  const rounds = S.daily.log.filter(r => r.date >= from && r.date <= to), stars = rounds.reduce((a, r) => a + r.stars, 0);
+  const sureWrong = ft.filter(a => !a.ok && a.conf === 'sure').length;
+  const dr = S.drill.log.filter(r => r.date >= from && r.date <= to), dn = dr.reduce((a, r) => a + r.n, 0), dw = dr.reduce((a, r) => a + r.wrong, 0);
+  return {n: ft.length, ok, acc: pct(ok, ft.length), studyDays, rounds: rounds.length, stars, sureWrong, drillSets: dr.length, drillErr: pct(dw, dn)};
+}
+function delta(now, was, lowerBetter){ if (now == null || was == null || now === was) return ''; const up = now > was, good = lowerBetter ? !up : up; return `<span class="${good ? 'up' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(now - was)} (지난주 대비)</span>`; }
+
+function summaryCard(){
+  const w = weekStats(daysAgo(6), today()), p = weekStats(daysAgo(13), daysAgo(7));
+  return `<div class="card"><h2>📊 최근 7일 한눈에</h2><div class="kpis">
+    <div class="kpi"><span>공부한 날</span><b>${w.studyDays}일</b>${delta(w.studyDays, p.studyDays)}</div>
+    <div class="kpi"><span>처음 푼 문제 정답률</span><b>${w.acc == null ? '–' : w.acc + '%'}</b><span>${w.ok}/${w.n}문제</span> ${delta(w.acc, p.acc)}</div>
+    <div class="kpi"><span>매일 학습</span><b>${w.rounds}판 · ⭐${w.stars}</b><span>주간 목표 ⭐${(S.settings.daily && S.settings.daily.weekGoal) || 15}</span></div>
+    <div class="kpi"><span>‘확실해요’ 했는데 틀림</span><b>${w.sureWrong}개</b><span>덜렁 실수 신호 · 줄면 좋아요</span> ${delta(w.sureWrong, p.sureWrong, true)}</div>
+    <div class="kpi"><span>연산 훈련 실수율</span><b>${w.drillErr == null ? '–' : w.drillErr + '%'}</b><span>${w.drillSets}세트</span> ${delta(w.drillErr, p.drillErr, true)}</div>
+  </div><p class="muted" style="margin:10px 0 0">정답률은 매일 학습·미션에서 <b>처음 푼</b> 문제만 셉니다(다시 도전·복습 제외). 기록은 이 기기·이 브라우저에만 있어요.</p></div>`;
+}
+
+function unitsCard(){
+  const g = (S.settings.daily && S.settings.daily.grade) || 5;
+  const grades = [...new Set([g, ...S.attempts.map(a => unitById[a.u] && unitById[a.u].g).filter(Boolean)])].sort();
+  return `<div class="card"><h2>📚 단원 진도</h2><p class="muted" style="margin-top:0">🌱 해 봄 → 🌿 익숙(다음 단원 열림) → 🌳 능숙(심화 문제) → ⭐ 숙달(다른 날에도 혼자 정답). 점수는 최근 처음 푼 문제 기준 0~100.</p>
+    ${grades.map(gr => `<h3>${gr}학년${gr === g ? ' (지금 매일 학습 학년)' : ''}</h3><div class="units">${D.units.filter(u => u.g === gr).map(u => {
+      const st = P.unitStage(S, D, u.id), open = P.unitOpen(S, D, u.id), sc = P.unitScore(S, D, u.id), n = S.attempts.filter(a => a.u === u.id).length;
+      return `<div class="${open || n ? '' : 'lock'}"><b>${open ? (st.stage ? st.icon : '🏁') : '🔒'} ${u.g}-${u.s} ${esc(u.title)}</b><br>
+        <span class="mini"><i style="width:${sc}%"></i></span><span class="muted">${n ? `${sc}점 · ${n}문제 · ${esc(st.name)}` : open ? '아직 안 풂' : '잠김'}</span></div>`; }).join('')}</div>`).join('')}</div>`;
+}
+
+/* 날짜별 푼 문제 (최근 14일) */
+function daysCard(){
+  const dates = [...Array(14)].map((_, i) => daysAgo(i));
+  const rows = dates.map(d => {
+    const at = S.attempts.filter(a => a.date === d), rounds = S.daily.log.filter(r => r.date === d), dr = S.drill.log.filter(r => r.date === d), day = S.days[d];
+    if (!at.length && !rounds.length && !dr.length && !day) return '';
+    const ok = at.filter(a => a.ok).length;
+    const parts = [];
+    if (rounds.length) parts.push(`🏃 매일 학습 ${rounds.length}판 (${rounds.map(r => '⭐'.repeat(r.stars) + ` ${r.firstOk}/${r.n}`).join(', ')}) · 게이지 ${rounds[0].startScore}→${rounds[rounds.length-1].score}`);
+    if (day && day.status && day.status !== 'daily_done') parts.push({success:'📘 미션 성공', learning_done_check_pending:'📘 미션 공부 완료(오답 확인 대기)', in_progress:'⏳ 미션 진행 중', paused:'⏸ 미션 멈춤'}[day.status] || '');
+    if (dr.length) parts.push(`⚡ 연산 훈련 ${dr.length}세트 (실수 ${dr.reduce((a,r)=>a+r.wrong,0)}개)`);
+    if (day && day.note) parts.push(`🪞 “${esc(day.note)}”`);
+    const list = at.map(a => { const q = byId[a.qid]; if (!q) return '';
+      return `<tr><td>${a.ok ? '⭕' : '❌'}</td><td>${esc(q.stem.length > 60 ? q.stem.slice(0, 60) + '…' : q.stem)}<br><span class="muted">${esc(uname(q.u))} · ${MODE[a.mode] || ''}${a.conf === 'maybe' ? ' · 🤔 아마도' : ''}${a.hint ? ' · 💡 힌트' : ''}</span></td><td>${a.ok ? esc(a.ans) : `<span style="color:var(--red)">${esc(a.ans || '빈칸')}</span><br>→ ${ansOf(q)}`}</td></tr>`; }).join('');
+    return `<details class="day"><summary><b>${md(d)}</b> · ${at.length ? `문제 ${at.length}개 중 ${ok}개 정답` : '문제 기록 없음'} <span class="muted">${parts.filter(Boolean).join(' · ')}</span></summary>
+      ${list ? `<table><tr><th></th><th>문제</th><th>아이 답 → 정답</th></tr>${list}</table>` : ''}</details>`; }).join('');
+  return `<div class="card"><h2>🗓️ 날짜별 공부 (최근 14일)</h2><p class="muted" style="margin-top:0">날짜를 누르면 그날 푼 문제와 아이가 쓴 답이 모두 보여요.</p>${rows || '<p class="muted">아직 기록이 없어요.</p>'}</div>`;
+}
+
+/* 틀린 문제: 아이 답·정답·풀이·이유·고쳤는지 */
+function wrongState(w){
+  if (w.repair === 'success' && w.sat === 'done') return ['done', '<span class="tag g">🎓 졸업 (새 숫자 문제 + 토요일 원래 문제 모두 맞힘)</span>'];
+  if (w.repair === 'success') return ['fixed', '<span class="tag g">✅ 새 숫자 문제로 고침</span> <span class="tag y">토요일 원래 문제 확인 남음</span>'];
+  if (w.repair === 'pending') return ['open', '<span class="tag r">🔁 다시 도전했지만 아직 헷갈림</span>'];
+  return ['open', '<span class="tag y">아직 다시 안 풀어 봄</span>'];
+}
+function wrongCard(){
+  const list = [...S.wrong].reverse().filter(w => byId[w.qid]);
+  const cls = w => wrongState(w)[0];
+  const cnt = {open: list.filter(w => cls(w) === 'open').length, fixed: list.filter(w => cls(w) === 'fixed').length, done: list.filter(w => cls(w) === 'done').length};
+  const show = list.filter(w => tab === 'all' || (tab === 'unseen' ? !w.parentSeen : cls(w) === tab));
+  const items = show.map(w => {
+    const q = byId[w.qid], st = wrongState(w)[1];
+    const my = w.ans != null && w.ans !== '' ? w.ans : (S.attempts.find(a => a.qid === w.qid && !a.ok) || {}).ans;
+    const att = S.attempts.find(a => a.qid === w.qid && !a.ok) || {};
+    const tries = S.attempts.filter(a => a.f === w.f && a.qid !== w.qid && a.date >= w.date && a.mode === 'repair');
+    return `<div class="wq ${cls(w) === 'done' ? 'done' : ''}"><div class="meta"><b>${md(w.date)}</b><span>${esc(uname(q.u))}</span><span class="tag b">${q.d === 1 ? '기본' : q.d === 2 ? '응용' : '심화'}</span>${st}
+        ${w.cause || att.cause ? `<span class="tag">${CAUSE[w.cause || att.cause]}</span>` : ''}${att.conf === 'sure' ? '<span class="tag r">😮 확실하다고 했는데 틀림</span>' : ''}</div>
+      <div class="stem">${esc(q.stem)}</div>${q.img ? `<img src="${esc(q.img.src)}" alt="${esc(q.img.alt)}">` : ''}
+      <div class="ans"><span>아이 답: <span class="my">${my ? esc(my) : '빈칸'}</span></span><span>정답: <span class="ok">${ansOf(q)}</span></span></div>
+      ${q.mis ? `<div class="muted">⚠️ 자주 하는 실수: ${esc(q.mis)}</div>` : ''}
+      <details><summary>📖 풀이 보기${tries.length ? ` · 같은 유형 다시 도전 ${tries.length}번 (${tries.map(a => a.ok ? '⭕' : '❌').join('')})` : ''}</summary>${q.steps && q.steps.length ? `<ol>${q.steps.map(s => `<li>${esc(s)}</li>`).join('')}</ol>` : '<p class="muted">풀이가 없어요.</p>'}
+        ${tries.length ? `<p class="muted">다시 도전한 문제: ${tries.map(a => byId[a.qid] ? `${esc(byId[a.qid].stem.slice(0, 40))}… → 아이 답 ${esc(a.ans)} ${a.ok ? '⭕' : '❌'}` : '').join('<br>')}</p>` : ''}</details>
+      <label class="noprint"><input type="checkbox" ${w.parentSeen ? 'checked' : ''} onchange="markSeen('${esc(w.qid)}', this.checked)"> 👪 아이와 같이 봤어요</label></div>`; }).join('');
+  const T = (k, l) => `<button class="${tab === k ? 'sel' : ''}" onclick="tab='${k}';render()">${l}</button>`;
+  return `<div class="card" id="wrong"><h2>❌ 틀린 문제 (${list.length})</h2>
+    <p class="muted" style="margin-top:0">처음 틀린 날 → 같은 유형 <b>새 숫자 문제</b>로 다시 도전 → 토요일에 <b>원래 문제</b>를 해설 없이 다시 맞히면 졸업이에요. 아이와 함께 보고 ‘같이 봤어요’를 눌러 두세요.</p>
+    <div class="tabs noprint">${T('open', `아직 못 고침 ${cnt.open}`)}${T('fixed', `고침·토요일 확인 남음 ${cnt.fixed}`)}${T('done', `졸업 ${cnt.done}`)}${T('unseen', `같이 안 본 것 ${list.filter(w => !w.parentSeen).length}`)}${T('all', '전체')}
+      <button onclick="window.print()">🖨️ 인쇄</button></div>
+    <div class="print-only"><h3>하준이 틀린 문제 (${md(today())} 출력)</h3></div>
+    ${items || '<p class="muted">이 목록에는 문제가 없어요.</p>'}</div>`;
+}
+function markSeen(qid, v){ S.wrong.filter(w => w.qid === qid).forEach(w => { w.parentSeen = v; w.parentSeenDate = v ? today() : null; }); save(); }
+
+function arithCard(){
+  const dm = (S.daily.arithMiss || []).filter(m => m.date >= daysAgo(13));
+  const drm = S.drill.log.filter(r => r.date >= daysAgo(13)).flatMap(r => (r.miss || []).map(m => ({date: r.date, q: m.q, a: m.a, c: m.c, why: m.why, fixed: m.fixed})));
+  const all = [...dm.map(m => ({...m, src: '매일 학습'})), ...drm.map(m => ({...m, src: '연산 훈련'}))].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
+  const mm = s => s == null ? '–' : Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+  const skills = P.DRILL.skills.map(k => ({k, lv: P.drillLevel(S, k.id)})).filter(x => x.lv.tries);
+  const rate = L => { const n = L.reduce((a,r)=>a+r.n,0); return n ? Math.round(L.reduce((a,r)=>a+r.wrong,0) / n * 100) : null; };
+  const recTable = skills.length ? `<table><tr><th>기술</th><th>처음 기록</th><th>최고 기록</th><th>최근</th><th>실수율 (처음 5세트 → 최근 5세트)</th></tr>${skills.map(({k, lv}) => {
+      const gain = lv.firstClean != null && lv.best != null ? lv.firstClean - lv.best : 0, a = rate(lv.log.slice(0, 5)), b = rate(lv.log.slice(-5));
+      return `<tr><td>${lv.done ? '✅ ' : ''}${esc(k.name)}<br><span class="muted">${lv.tries}세트</span></td><td>${mm(lv.firstClean)}</td><td><b>${mm(lv.best)}</b>${gain > 0 ? `<br><span style="color:var(--green);font-weight:700">⚡ ${gain}초 빨라짐</span>` : ''}</td><td>${mm(lv.last.sec)}${lv.last.wrong ? ` <span class="muted">(실수 ${lv.last.wrong})</span>` : ''}</td><td>${lv.log.length > 5 ? `${a}% → <b>${b}%</b>` : `${b}%`}</td></tr>`; }).join('')}</table>
+    <p class="muted">시간 제한 없이 기록만 재요. 기록(처음·최고)은 <b>실수 0 세트만</b> 셉니다.</p>` : '';
+  return `${recTable ? `<div class="card"><h2>⚡ 연산 기록 변화 (빨라지고 정확해졌는지)</h2>${recTable}</div>` : ''}<div class="card"><h2>⚡ 연산 실수 (최근 14일)</h2>${all.length ? `<table><tr><th>날짜</th><th>문제</th><th>아이 답 → 정답</th><th>이유</th></tr>${all.map(m => `<tr><td>${md(m.date)}<br><span class="muted">${m.src}</span></td><td>${esc(m.q)}</td><td><span style="color:var(--red)">${esc(m.a)}</span> → <b>${esc(m.c)}</b></td><td class="muted">${esc(m.why || '')}${m.fixed ? ' · 고침' : ''}</td></tr>`).join('')}</table>` : '<p class="muted">최근 2주 연산 실수가 없어요. 👍</p>'}</div>`;
+}
+
+function render(){
+  const c = P.course(S, D);
+  const courseHTML = `<div class="card"><h2>🗺️ 오늘의 학습 코스 ${c.done}/${c.total}</h2><p style="margin:0">${c.steps.map(x => `${x.done ? '✅' : '⬜'} ${x.no}. ${x.icon} ${esc(x.name)}`).join(' &nbsp; ')}</p>${P.reportHTML(S, D, '오늘 아이에게 보여 준 피드백') || '<p class="muted">오늘은 아직 공부 기록이 없어요.</p>'}</div>`;
+  document.getElementById('app').innerHTML = courseHTML + summaryCard() + wrongCard() + daysCard() + unitsCard() + arithCard() +
+    `<div class="card noprint"><h3>설정</h3><a class="btn" href="daily.html#parent">🏃 매일 학습: 학년·단원·문제 수·주간 보상</a><a class="btn" href="drill.html">⚡ 연산 훈련</a><a class="btn" href="mission.html#parent">📚 미션 단원 열기 · 기록 내보내기/가져오기</a></div>`;
+}
+if (!D || !P) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 또는 progress.js 를 찾지 못했어요.</div>';
+else { if (!S.wrong.some(w => byId[w.qid] && wrongState(w)[0] === 'open')) tab = 'all';
+  render(); if (location.hash === '#wrong') document.getElementById('wrong').scrollIntoView(); }
+</script>
+</body>
+</html>
