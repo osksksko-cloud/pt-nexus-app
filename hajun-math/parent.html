@@ -53,6 +53,7 @@ details.day{border-bottom:1px solid var(--line);padding:6px 0}details.day summar
 <main id="app"><div class="card">불러오는 중…</div></main>
 <script src="mission_data.js"></script>
 <script src="progress.js"></script>
+<script src="notify.js"></script>
 <script>
 /* 부모님 확인 화면 — 아이가 공부한 진행 상황과 틀린 문제를 한곳에서 (읽기 전용 + '같이 봤어요' 표시만 저장)
    기록: localStorage 'hajun_math_mission_v1' (매일 학습·미션·연산 훈련이 함께 쓰는 저장소). 기록은 이 기기·이 브라우저에만 있어요. */
@@ -182,7 +183,15 @@ function render(){
   const c = P.course(S, D);
   const courseHTML = `<div class="card"><h2>🗺️ 오늘의 학습 코스 ${c.done}/${c.total}</h2><p style="margin:0">${c.steps.map(x => `${x.done ? '✅' : '⬜'} ${x.no}. ${x.icon} ${esc(x.name)}`).join(' &nbsp; ')}</p>${P.reportHTML(S, D, '오늘 아이에게 보여 준 피드백') || '<p class="muted">오늘은 아직 공부 기록이 없어요.</p>'}</div>`;
   document.getElementById('app').innerHTML = courseHTML + summaryCard() + wrongCard() + daysCard() + unitsCard() + arithCard() +
-    `<div class="card noprint"><h3>설정</h3><a class="btn" href="daily.html#parent">🏃 매일 학습: 학년·단원·문제 수·주간 보상</a><a class="btn" href="drill.html">⚡ 연산 훈련</a><a class="btn" href="mission.html#parent">📚 미션 단원 열기 · 기록 내보내기/가져오기</a></div>`;
+    `<div class="card noprint"><h3>설정</h3><a class="btn" href="daily.html#parent">🏃 매일 학습: 학년·단원·문제 수·주간 보상</a><a class="btn" href="drill.html">⚡ 연산 훈련</a><a class="btn" href="mission.html#parent">📚 미션 단원 열기 · 기록 내보내기/가져오기</a></div>` + notifyCard();
+}
+// 📱 부모님 휴대폰 알림 상태 (notify.js)
+function notifyCard(){
+  const on = window.NOTIFY && NOTIFY.on();
+  return `<div class="card noprint"><h3>📱 휴대폰 알림 ${on ? '<span style="color:#1f9d63">켜짐</span>' : '<span class="muted">꺼짐</span>'}</h3>
+    <p class="muted" style="margin:0 0 8px">${on ? '이 기기에서 공부 단계를 마칠 때마다 부모님 휴대폰(ntfy 앱)으로 결과가 가요.' : '이 기기는 알림이 꺼져 있어요. 부모님께 받은 알림 연결 링크를 이 기기에서 한 번 열면 켜져요.'}</p>
+    ${on ? `<button class="btn" onclick="NOTIFY.test().then(ok=>alert(ok?'시험 알림을 보냈어요. 휴대폰을 확인해 보세요.':'보내지 못했어요. 인터넷 연결을 확인해 주세요.'))">🧪 시험 알림 보내기</button>
+      <button class="btn" onclick="if(confirm('이 기기의 휴대폰 알림을 끌까요?')){localStorage.removeItem('hajun_notify_topic');render()}">알림 끄기</button>` : ''}</div>`;
 }
 if (!D || !P) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 또는 progress.js 를 찾지 못했어요.</div>';
 else { if (!S.wrong.some(w => byId[w.qid] && wrongState(w)[0] === 'open')) tab = 'all';
