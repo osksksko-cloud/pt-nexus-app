@@ -107,9 +107,9 @@ function totalXP(){ return Object.values(S.xpAwards).reduce((a,b)=>a+b,0); }
 function dayXP(date){ return Object.entries(S.xpAwards).filter(([k])=>k.startsWith(date+'|') && !k.endsWith('|drill')).reduce((a,[,v])=>a+v,0); }  // ⚡연산 훈련 XP는 한도와 별도
 function level(){ const t = totalXP(); return {lv: 1 + Math.floor(t / XP_LEVEL), prog: t % XP_LEVEL, total: t}; }
 function award(key){
-  const date = today(), k = date+'|'+key;
-  if (S.xpAwards[k]) return 0;                       // 같은 날 같은 활동은 한 번만
-  const room = XP_DAY_MAX - dayXP(date); if (room <= 0) return 0;
+  const date = today(), k = date+'|'+PROGRESS.xpKey(S, key);   // 내일 수업을 미리 하면 그 수업 몫의 경험치도 따로
+  if (S.xpAwards[k]) return 0;                       // 같은 수업에서 같은 활동은 한 번만
+  const room = PROGRESS.xpCap(S) - dayXP(date); if (room <= 0) return 0;
   const before = level().lv; S.xpAwards[k] = Math.min(XP_PER, room); save();
   const after = level().lv; if (after > before) S._levelUp = after;
   return S.xpAwards[k];
@@ -177,9 +177,10 @@ function newMission(unitId){
   const famsBy = d => fams.filter(f => byFam[f][0].d === d);
   const used = [];
   const take = f => { const q = pickFromFamily(f, used); if (q) used.push(q.id); return q && q.id; };
-  const basic = famsBy(1).slice(0,2).map(take).filter(Boolean);
+  const cnt = PROGRESS.missionCounts(S), spread = (fs, k) => fs.length ? Array.from({length:k}, (_, i) => fs[i % fs.length]) : [];   // 유형을 번갈아 k문제 (기본 10 → 5+5, 응용 5 → 3+2)
+  const basic = spread(famsBy(1).slice(0,2), cnt.basic).map(take).filter(Boolean);
   const advOpen = PROGRESS.unitStage(S, D, unitId).stage >= 3;              // 🌳 이상일 때만 심화
-  const app = (advOpen ? [...famsBy(2).slice(0,1), ...famsBy(3).slice(0,1)] : famsBy(2).slice(0,2)).map(take).filter(Boolean);
+  const app = spread(advOpen ? [...famsBy(2).slice(0,1), ...famsBy(3).slice(0,1)] : famsBy(2).slice(0,2), cnt.app).map(take).filter(Boolean);
   // 지난번 '혼자 풀기 확인'을 못 마친 유형은 오늘 오답 확인에 먼저 넣는다
   const carry = S.wrong.filter(w => w.repair === 'pending').map(w => ({fam:w.f, orig:w.qid, tries:[], status:'todo', carried:true}));
   // 오늘 ⚡ 연산 훈련을 이미 했으면 미션의 연산 준비는 건너뜀 (오늘의 코스에서 이미 함)
@@ -231,7 +232,7 @@ function levelCard(){
   const L = level(), dx = dayXP(today());
   return `<div class="card"><div class="level"><div class="badge"><small>레벨</small><span>${L.lv}</span></div>
   <div style="flex:1"><h3>수학 탐험 레벨 ${L.lv}</h3><div class="bar"><i style="width:${L.prog}%"></i></div>
-  <div class="muted">다음 레벨까지 ${L.prog} / ${XP_LEVEL} XP · 오늘 ${dx} / ${XP_DAY_MAX} XP</div></div></div></div>`;
+  <div class="muted">다음 레벨까지 ${L.prog} / ${XP_LEVEL} XP · 오늘 ${dx} / ${PROGRESS.xpCap(S)} XP</div></div></div></div>`;
 }
 function weekStrip(){
   return `<div class="week">${lastNDays(7).map(d => { const st = S.days[d]?.status; const cls = st==='success'?'s':(st?'p':''); const icon = st==='success'?'⭐':(st==='learning_done_check_pending'?'📘':(st?'⏳':'·'));
@@ -239,18 +240,18 @@ function weekStrip(){
     <p class="muted" style="margin:8px 0 0">⭐ 미션 성공 · 📘 공부 완료(혼자 풀기 확인은 다음에) · ⏳ 진행 중</p>`;
 }
 function home(){
-  const t = today(), A = S.active && S.active.date === t ? S.active : null, done = S.days[t];
+  const t = today(), A = S.active && S.active.date === t ? S.active : null, done = PROGRESS.missionsToday(S) >= PROGRESS.lessonNo(S) ? S.days[t] : null;
   const openWrong = S.wrong.filter(w => w.sat !== 'done');
   let todayCard;
   if (done && (done.status === 'success' || done.status === 'learning_done_check_pending')) {
     todayCard = `<div class="card center pop"><div class="big">${done.status==='success'?'🏆':'📘'}</div><h2>${done.status==='success'?'오늘 미션 성공!':'오늘 공부 완료!'}</h2>
       <p class="muted">${done.status==='success'?'틀렸던 유형도 새 숫자 문제로 스스로 해결했어요.':'오늘 배운 과정은 끝났어요. 혼자 풀기 확인은 다음 미션에서 이어서 해요.'}</p>
-      <p class="muted">단원: ${esc(unitById[done.unitId]?.title||'')}</p></div>`;
+      <p class="muted">단원: ${esc(unitById[done.unitId]?.title||'')}${(done.missions||1) > 1 ? ` · 오늘 미션 ${done.missions}번 완료` : ''}</p>${PROGRESS.nextLessonHTML(S, D)}</div>`;
   } else if (A) {
     todayCard = `<div class="card"><h2>오늘의 미션 진행 중</h2><p class="muted">${esc(unitById[A.unitId].title)} · 지금 단계: <b>${STEP_NAMES[A.step]}</b></p>${stepChips(A)}<button class="btn" onclick="go('mission')">이어서 하기 →</button></div>`;
   } else {
     const u = S.unitId ? unitById[S.unitId] : null;
-    todayCard = `<div class="card"><h2>오늘의 미션</h2><p class="muted">약 30분 · 연산 → 개념 → 기본 → 응용 → 오답 확인 → 돌아보기</p>
+    todayCard = `<div class="card"><h2>${PROGRESS.lessonNo(S) > 1 ? PROGRESS.lessonNo(S) + '번째 수업 미션' : '오늘의 미션'}</h2><p class="muted">약 ${PROGRESS.missionCounts(S).min}분 · 기본 ${PROGRESS.missionCounts(S).basic}문제 · 응용 ${PROGRESS.missionCounts(S).app}문제 · 연산 → 개념 → 기본 → 응용 → 오답 확인 → 돌아보기</p>
       ${u ? `<p>공부할 단원: <b>${u.g}-${u.s} ${esc(u.title)}</b></p><button class="btn" onclick="startMission()">미션 시작하기 →</button>` : `<p>아래에서 공부할 단원을 먼저 골라 주세요.</p>`}</div>`;
   }
   const sat = openWrong.length ? `<div class="card"><h2>${isSaturday()?'🗓️ 오늘은 토요일 복습 날!':'🗓️ 토요일 복습 목록'}</h2>
@@ -268,7 +269,8 @@ function home(){
 function unitStatus(uid){ const n = Object.values(S.days).filter(d => d.unitId === uid && d.status === 'success').length; return n ? `미션 성공 ${n}회` : '아직 시작 전'; }
 function setGrade(g){ S.grade = g; S.settings.daily = Object.assign({}, S.settings.daily, {grade: g}); S.daily = Object.assign({log:[]}, S.daily, {unit: null}); if (!S.unitId || unitById[S.unitId].g !== g) S.unitId = PROGRESS.recommendedUnit(S, D, g); save(); render(); }
 function setUnit(id){ if (!PROGRESS.unitOpen(S, D, id)) { alert('앞 단원을 🌿 익숙까지 하면 열려요.'); return; } if (S.active && S.active.date === today() && S.active.unitId !== id && !confirm('진행 중인 미션이 있어요. 단원을 바꾸면 오늘 미션을 새로 시작해요. 바꿀까요?')) return; if (S.active && S.active.unitId !== id) S.active = null; S.unitId = id; S.daily = Object.assign({log:[]}, S.daily, {unit: id}); save(); render(); }   // 매일 학습도 같은 단원
-function startMission(){ if (!S.active || S.active.date !== today()) { S.active = newMission(S.unitId); S.days[today()] = Object.assign(S.days[today()] || {}, {status:'in_progress', unitId:S.unitId}); save(); } go('mission'); }
+function startMission(){ if (!S.active || S.active.date !== today()) { if (PROGRESS.missionsToday(S) >= PROGRESS.lessonNo(S)) { go('home'); return; }
+  const m = PROGRESS.missionsToday(S); S.active = newMission(S.unitId); S.days[today()] = Object.assign(S.days[today()] || {}, {status:'in_progress', unitId:S.unitId, missions:m}); save(); } go('mission'); }
 function stepChips(A){ const i = STEP_ORDER.indexOf(A.step); return `<div class="steps">${STEP_ORDER.slice(0,6).map((s,k)=>`<span class="${k<i?'ok':(k===i?'on':'')}">${k<i?'✓ ':''}${STEP_NAMES[s]}</span>`).join('')}</div>`; }
 
 /* ---- 미션 진행 ---- */
@@ -427,7 +429,10 @@ function completeMission(){
   award('reflection');
   const pending = A.repairs.some(r => r.status === 'pending');
   const total = Object.keys(A.res).length, first = Object.values(A.res).filter(r=>r.ok && !r.hint).length;
-  S.days[A.date] = Object.assign(S.days[A.date] || {}, {status: pending ? 'learning_done_check_pending' : 'success', unitId: A.unitId, firstOk:first, total, repairs:A.repairs.map(r=>({fam:r.fam,status:r.status})), feel:A.reflect.feel, note:A.reflect.text});
+  const prev = S.days[A.date] || {}, m = prev.missions || 0;   // 같은 날 미션을 두 번 하면(내일 수업 미리 하기) 기록을 더해 둠
+  S.days[A.date] = Object.assign(prev, {status: pending ? 'learning_done_check_pending' : 'success', unitId: A.unitId, missions: m + 1,
+    firstOk: (m ? prev.firstOk || 0 : 0) + first, total: (m ? prev.total || 0 : 0) + total, repairs:A.repairs.map(r=>({fam:r.fam,status:r.status})), feel:A.reflect.feel,
+    note: m && prev.note ? prev.note + ' / ' + A.reflect.text : A.reflect.text});
   S.active = null; save(); go('home');
 }
 
@@ -485,11 +490,11 @@ if (!D) document.getElementById('app').innerHTML = '<div class="card">mission_da
 else { S.settings = Object.assign({openAll:false, opened:{}}, S.settings||{}); S.grade = PROGRESS.dailyGrade(S); if (!(S.active && S.active.date === today()) || !S.unitId) S.unitId = PROGRESS.dailyUnit(S, D);   // 오늘의 단원은 한 곳(매일 학습과 같음)에서 정함
   if (S.active && S.active.date !== today()) { const old = S.active; if (S.days[old.date]?.status === 'in_progress') S.days[old.date].status = 'paused'; S.active = null; save(); }
   const h = location.hash.slice(1);
-  const doneT = S.days[today()] && ['success','learning_done_check_pending'].includes(S.days[today()].status);
+  const doneT = PROGRESS.missionsToday(S) >= PROGRESS.lessonNo(S);
   if (h === 'course') {                 // 오늘의 코스에서 옴: 매일 학습과 같은 단원으로 미션
     if (doneT) render();
     else { if (!(S.active && S.active.date === today())) { S.grade = PROGRESS.dailyGrade(S); S.unitId = PROGRESS.dailyUnit(S, D); } startMission(); } }
-  else if (h === 'mission' && S.unitId && !(S.days[today()] && ['success','learning_done_check_pending'].includes(S.days[today()].status))) startMission();
+  else if (h === 'mission' && S.unitId && !doneT) startMission();
   else if (h === 'review' && S.wrong.some(w => w.sat !== 'done')) startReview();
   else if (h === 'parent') go('parent'); else render(); }
 </script>

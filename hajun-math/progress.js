@@ -177,9 +177,37 @@
      → (토요일·복습할 오답이 있으면) ④ 🗓️ 토요일 복습. 오늘 단원은 매일 학습과 미션이 같은 단원. */
   function ymd(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function dailyGrade(S) { return (S.settings && S.settings.daily && S.settings.daily.grade) || 5; }
+  /* ---------- 하루 공부양(2배) · 내일 수업 미리 하기 (2026-11-24) ----------
+     dose: 한 수업에서 연산·레이스는 dose판, 미션 문제도 유형마다 dose개 (기본 2배, 부모님이 1배로 바꿀 수 있음)
+     lessonNo: 오늘 몇 번째 수업인지. 오늘 코스를 다 마치면 '내일 수업 미리 하기'로 다음 수업(최대 MAX_LESSONS)을 이어서 함 */
+  const MAX_LESSONS = 3;
+  function dose(S) { return (S.settings && S.settings.dose) === 1 ? 1 : 2; }
+  function lessonNo(S) { const L = S.lessons; return L && L.date === ymd() && L.n > 1 ? L.n : 1; }
+  function missionsToday(S) { const d = (S.days || {})[ymd()] || {};
+    return d.missions || (d.status === 'success' || d.status === 'learning_done_check_pending' ? 1 : 0); }
+  // 미션 문제 수: 많이(기본) = 기본 10·응용 5 (2026-11-24 요청), 적게 = 기본 2·응용 2 (예전 양)
+  function missionCounts(S) { return dose(S) === 2 ? { basic: 10, app: 5, min: 35 } : { basic: 2, app: 2, min: 15 }; }
+  function xpCap(S) { return 50 * lessonNo(S); }
+  function xpKey(S, key) { const n = lessonNo(S); return n > 1 ? key + '#' + n : key; }
+  // 하루가 바뀐 것처럼 단원을 새로 정함: 고른 단원이 아직 🌳 전이면 그대로, 🌳가 되었으면 순서상 다음 단원
+  function freshUnit(S, D) {
+    const g = dailyGrade(S), units = Object.fromEntries(D.units.map(x => [x.id, x])), u = S.daily && S.daily.unit;
+    if (u && units[u] && units[u].g === g && unitOpen(S, D, u) && unitStage(S, D, u).stage < 3) return u;
+    return recommendedUnit(S, D, g);
+  }
+  function canNextLesson(S, D) { return !course(S, D).next && lessonNo(S) < MAX_LESSONS; }
+  function startNextLesson(S, D) {
+    if (!canNextLesson(S, D)) return false;
+    const unit = freshUnit(S, D);
+    S.lessons = { date: ymd(), n: lessonNo(S) + 1, unit };
+    if (!(S.active && S.active.date === ymd())) S.unitId = unit;
+    return true;
+  }
   function dailyUnit(S, D) {
     const g = dailyGrade(S), t = ymd(), units = Object.fromEntries(D.units.map(x => [x.id, x]));
     const okU = u => !!(u && units[u] && units[u].g === g);
+    // 0) '내일 수업 미리 하기' 중이면 그 수업을 시작할 때 정한 단원
+    if (lessonNo(S) > 1 && okU(S.lessons.unit)) return S.lessons.unit;
     // 1) 오늘 이미 시작한 단원이 있으면 그 단원으로 하루 고정 (하루 중간에 🌳가 되어도 단원이 바뀌지 않게)
     const log = ((S.daily && S.daily.log) || []).filter(r => r.date === t);
     const cur = S.daily && S.daily.cur && S.daily.cur.date === t ? S.daily.cur.unit : null;
@@ -200,24 +228,28 @@
     return list.find(k => !drillLevel(S, k.id).done) || list[list.length - 1] || null;
   }
   function course(S, D) {
-    const t = ymd(), day = (S.days || {})[t] || {}, sat = new Date().getDay() === 6;
+    const t = ymd(), sat = new Date().getDay() === 6, k = lessonNo(S), n = dose(S);
     const rec = drillRecommend(S, D, dailyGrade(S)), dToday = ((S.drill && S.drill.log) || []).filter(r => r.date === t);
-    const doneNames = [...new Set(dToday.map(r => (DRILL.skills.find(k => k.id === r.skill) || {}).name))].join(', ');
+    const rToday = ((S.daily && S.daily.log) || []).filter(r => r.date === t);
+    const inLesson = cnt => Math.max(0, Math.min(n, cnt - n * (k - 1)));    // 이번 수업에서 한 판 수
+    const dN = inLesson(dToday.length), rN = inLesson(rToday.length), prog = x => n > 1 ? ` · ${x}/${n}판` : '';
     const steps = [
-      { key: 'drill', icon: '⚡', name: '연산 기록 깨기', min: 5, desc: dToday.length ? `오늘 한 것: ${doneNames}` : rec ? rec.name + ' · 시간 제한 없이 내 기록 깨기' : '',
-        href: 'drill.html' + (rec ? '#' + rec.id : ''), done: ((S.drill && S.drill.log) || []).some(r => r.date === t) },
-      { key: 'daily', icon: '🏃', name: '매일 학습 레이스 1판', min: 7, desc: '6문제 · 끝나면 실력 게이지 확인',
-        href: 'daily.html#start', done: ((S.daily && S.daily.log) || []).some(r => r.date === t) },
-      { key: 'mission', icon: '📚', name: '오늘의 미션', min: 15, desc: '개념 → 기본 → 응용 → 오답 확인 → 돌아보기',
-        href: 'mission.html#course', done: day.status === 'success' || day.status === 'learning_done_check_pending' },
+      { key: 'drill', icon: '⚡', name: `연산 기록 깨기${n > 1 ? ' ' + n + '판' : ''}`, min: 5 * n,
+        desc: (rec ? rec.name + ' · 시간 제한 없이 내 기록 깨기' : '') + prog(dN),
+        href: 'drill.html' + (rec ? '#' + rec.id : ''), done: dN >= n },
+      { key: 'daily', icon: '🏃', name: `매일 학습 레이스 ${n}판`, min: 7 * n, desc: '한 판 6문제 · 끝나면 실력 게이지 확인' + prog(rN),
+        href: 'daily.html#start', done: rN >= n },
+      { key: 'mission', icon: '📚', name: k > 1 ? `${k}번째 수업 미션` : '오늘의 미션', min: missionCounts(S).min,
+        desc: `개념 → 기본 ${missionCounts(S).basic}문제 → 응용 ${missionCounts(S).app}문제 → 오답 확인 → 돌아보기`,
+        href: 'mission.html#course', done: missionsToday(S) >= k },
     ];
     const satWait = (S.wrong || []).filter(w => w.sat !== 'done').length;
-    if (sat && (satWait || (S.xpAwards || {})[t + '|saturday_review']))
+    if (k === 1 && sat && (satWait || (S.xpAwards || {})[t + '|saturday_review']))
       steps.push({ key: 'review', icon: '🗓️', name: '토요일 복습', min: 10, desc: `처음 틀렸던 문제 ${satWait}개를 해설 없이 다시`,
         href: 'mission.html#review', done: !!(S.xpAwards || {})[t + '|saturday_review'] });
     steps.forEach((s, i) => { s.no = i + 1; });
     const next = steps.find(s => !s.done) || null;
-    return { steps, next, done: steps.filter(s => s.done).length, total: steps.length, min: steps.reduce((a, s) => a + s.min, 0) };
+    return { steps, next, done: steps.filter(s => s.done).length, total: steps.length, min: steps.reduce((a, s) => a + s.min, 0), lesson: k, dose: n };
   }
   /* ---------- 💬 오늘의 피드백: 오늘 기록으로 칭찬할 점·더 잘할 점을 바로 알려 줌 (기기 안에서 규칙으로 계산) ---------- */
   function todayReport(S, D) {
@@ -334,13 +366,24 @@
     const c = course(S, D), home = startHref || 'start.html';
     const dots = c.steps.map(s => `<span style="display:inline-block;width:28px;height:28px;border-radius:50%;line-height:28px;text-align:center;font-size:15px;margin-right:4px;background:${s.done ? '#1f9d63' : '#e8edf7'};color:${s.done ? '#fff' : '#5a6680'}">${s.done ? '✓' : s.no}</span>`).join('');
     if (!c.next) return `<div style="border:3px solid #1f9d63;background:#e6f7ee;border-radius:18px;padding:16px;margin:0 0 14px;text-align:center">
-      <div>${dots}</div><div style="font-size:22px;font-weight:900;margin:8px 0">🎉 오늘의 학습 코스 완료!</div>${reportHTML(S, D)}
+      <div>${dots}</div><div style="font-size:22px;font-weight:900;margin:8px 0">🎉 ${c.lesson > 1 ? c.lesson + '번째 수업까지' : '오늘의 학습 코스'} 완료!</div>${reportHTML(S, D)}
+      ${nextLessonHTML(S, D)}
       <a href="${home}" style="display:inline-block;background:#1f9d63;color:#fff;text-decoration:none;border-radius:14px;padding:12px 20px;font-weight:800;font-size:18px">시작화면으로 →</a></div>`;
     return `<div style="border:3px solid #ff7a1a;background:#fff6ee;border-radius:18px;padding:16px;margin:0 0 14px;text-align:center">
       <div>${dots}</div><div style="font-size:17px;margin:8px 0">🗺️ 오늘의 코스 <b>${c.done}/${c.total}</b> 완료 · 다음은 <b>${c.next.no}. ${c.next.icon} ${c.next.name}</b></div>
       <a href="${c.next.href}" style="display:inline-block;background:linear-gradient(135deg,#ff7a1a,#ff4d6d);color:#fff;text-decoration:none;border-radius:14px;padding:14px 22px;font-weight:900;font-size:20px">${c.next.icon} ${c.next.name} 하러 가기 →</a>${reportHTML(S, D, '지금까지 오늘의 피드백')}</div>`;
   }
 
+  // 코스를 다 마쳤을 때: 힘이 남으면 내일 수업을 오늘 미리 (시작화면 #next 에서 시작)
+  function nextLessonHTML(S, D) {
+    if (!canNextLesson(S, D)) return lessonNo(S) >= MAX_LESSONS ? '<p style="color:#5a6680;margin:6px 0">오늘은 정말 많이 했어요! 푹 쉬고 내일 만나요 😴</p>' : '';
+    const u = index(D).unitById[freshUnit(S, D)];
+    return `<div style="border:2px dashed #6a3fd1;background:#f5f0ff;border-radius:16px;padding:12px;margin:10px 0">
+      <div style="font-weight:900;font-size:17px">⏭️ 시간이 남았나요? 내일 수업을 미리 해요</div>
+      <div style="color:#5a6680;font-size:14px;margin:4px 0 8px">${u ? u.g + '-' + u.s + ' ' + u.title + ' · ' : ''}연산 → 레이스 → 미션을 한 번 더. 힘들면 오늘은 여기까지 해도 충분해요.</div>
+      <a href="start.html#next" style="display:inline-block;background:#6a3fd1;color:#fff;text-decoration:none;border-radius:14px;padding:12px 20px;font-weight:900;font-size:18px">⏭️ ${lessonNo(S) + 1}번째 수업 시작 →</a></div>`;
+  }
+
   window.PROGRESS = { RULES, STAGES, unitStage, unitOpen, recommendedUnit, ladder, wrongBox, index,
-    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, reportHTML, submitFeedback, feedbackHTML };
+    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, reportHTML, submitFeedback, feedbackHTML };
 })();

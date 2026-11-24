@@ -74,27 +74,27 @@ function courseCard(){
     return `<a class="step ${cls}" href="${st.href}"><div class="n">${st.done ? '✓' : st.no}</div>
       <div><b>${st.icon} ${st.name}</b> <span class="muted">· 약 ${st.min}분</span><div class="muted">${esc(st.desc)}</div></div>
       <span class="go">${st.done ? '다시 보기' : cls === 'now' ? '시작 ▶' : '🔒'}</span></a>`; }).join('');
-  return `<div class="card" style="border:3px solid #ff7a1a"><h2>🗺️ 오늘의 학습 코스 <span class="muted" style="font-weight:400">· ${c.done}/${c.total} 완료 · 약 ${c.min}분</span></h2>
+  return `<div class="card" style="border:3px solid #ff7a1a"><h2>🗺️ ${c.lesson > 1 ? `오늘의 ${c.lesson}번째 수업 (내일 수업 미리)` : '오늘의 학습 코스'} <span class="muted" style="font-weight:400">· ${c.done}/${c.total} 완료 · 약 ${c.min}분</span></h2>
     <p class="muted" style="margin-top:0">위에서부터 하나씩 눌러서 진행해요. 하나를 마치면 다음 단계가 열려요. 오늘 단원: <b>${u.g}-${u.s} ${esc(u.title)}</b></p>
     <div class="bar"><i style="width:${c.done / c.total * 100}%;background:linear-gradient(90deg,#ff7a1a,#1f9d63)"></i></div>
     <div class="course">${steps}</div>
-    ${!c.next ? '<div style="text-align:center;font-size:22px;font-weight:900;margin:14px 0 0">🎉 오늘 학습 완료! 정말 잘했어요</div>' : ''}
+    ${!c.next ? `<div style="text-align:center;font-size:22px;font-weight:900;margin:14px 0 0">🎉 ${c.lesson > 1 ? c.lesson + '번째 수업까지' : '오늘 학습'} 완료! 정말 잘했어요</div><div style="text-align:center">${P.nextLessonHTML(S, D)}</div>` : ''}
     ${P.reportHTML(S, D, c.next ? '지금까지 오늘의 피드백' : '오늘의 피드백')}</div>`;
 }
 function dailyCard(){
   S.daily = S.daily || {log:[]}; const L = S.daily.log || [], td = L.filter(r => r.date === today());
   const st = L.reduce((a,r)=>a+r.stars,0);
-  return `<div class="card" style="border:3px solid #ff7a1a"><h2>🏃 매일 학습 레이스 <span class="muted" style="font-weight:400">· 코스 2단계 · 한 판 약 7분, 2·3판은 선택</span></h2>
+  return `<div class="card" style="border:3px solid #ff7a1a"><h2>🏃 매일 학습 레이스 <span class="muted" style="font-weight:400">· 코스 2단계 · 한 판 약 7분, 오늘 ${P.dose(S) * P.lessonNo(S)}판은 꼭</span></h2>
     <div class="today"><div>${td.length ? `<b>오늘 ${td.length}판 완주 ${td.map(r=>'⭐'.repeat(r.stars)).join(' ')}</b>` : '<b>오늘의 레이스가 기다려요!</b>'}
       <div class="muted">5학년 준비 · 짧게 여러 판 · 판이 끝날 때마다 실력 게이지 확인 · 모은 별 ${st}개</div></div>
-    <a class="btn" style="background:linear-gradient(135deg,#ff7a1a,#ff4d6d)" href="daily.html">${td.length >= 3 ? '기록 보기' : td.length ? '▶ 한 판 더' : '▶ 레이스 시작'}</a></div></div>`;
+    <a class="btn" style="background:linear-gradient(135deg,#ff7a1a,#ff4d6d)" href="daily.html">${td.length >= P.dose(S) * P.lessonNo(S) + 1 ? '기록 보기' : td.length ? '▶ 한 판 더' : '▶ 레이스 시작'}</a></div></div>`;
 }
 function drillCard(){
   S.drill = S.drill || {log:[]};
   const flu = P.fluency(S, grade), td = S.drill.log.filter(r => r.date === today());
   const rec = P.drillRecommend(S, D, grade);
   const lv = rec && P.drillLevel(S, rec.id);
-  return `<div class="card"><h2>⚡ 연산 훈련 <span class="muted" style="font-weight:400">· 코스 1단계 · 하루 5분</span></h2>
+  return `<div class="card"><h2>⚡ 연산 훈련 <span class="muted" style="font-weight:400">· 코스 1단계 · ${P.dose(S)}판 약 ${5 * P.dose(S)}분</span></h2>
     <div class="today"><div>
       ${td.length ? `<b>오늘 ${td.length}세트 · ${td.map(r=>'⭐'.repeat(r.stars)).join(' ')}</b><br>` : ''}
       ${rec ? `<span>추천: <b>${esc(rec.name)}</b>${lv.best != null ? ` · 🏅 내 최고 기록 ${Math.floor(lv.best/60)}:${String(lv.best%60).padStart(2,'0')}` : ' · 첫 기록 만들기'}</span>` : '<b>🏆 이 학년 연산 모두 익힘!</b>'}
@@ -105,7 +105,7 @@ function render(){
   const t = totalXP(), lv = 1 + Math.floor(t/100), prog = t % 100;
   const td = S.days[today()], rec = P.recommendedUnit(S, D, grade), recU = unitById[rec];
   const cur = grade === P.dailyGrade(S) ? P.dailyUnit(S, D) : (S.unitId && unitById[S.unitId] && unitById[S.unitId].g === grade ? S.unitId : rec), curU = unitById[cur], curSt = P.unitStage(S, D, cur);
-  const doneToday = td && (td.status === 'success' || td.status === 'learning_done_check_pending');
+  const doneToday = td && P.missionsToday(S) >= P.lessonNo(S);
   const inProg = S.active && S.active.date === today();
   const lad = P.ladder(S, D, grade), here = Math.max(...lad.filter(f => f.open).map(f => f.floor));
   const box = P.wrongBox(S), sat = new Date().getDay() === 6;
@@ -114,16 +114,16 @@ function render(){
   document.getElementById('app').innerHTML = `
   <div class="card"><div class="level"><div class="badge"><small>레벨</small><span>${lv}</span></div>
     <div style="flex:1"><b>수학 탐험 레벨 ${lv}</b><div class="bar"><i style="width:${prog}%"></i></div>
-    <div class="muted">다음 레벨까지 ${prog} / 100 XP · 오늘 미션 ${dayXP()} / 50 XP${S.xpAwards[today()+'|drill']?' · ⚡ +10':''}</div></div></div>
+    <div class="muted">다음 레벨까지 ${prog} / 100 XP · 오늘 미션 ${dayXP()} / ${P.xpCap(S)} XP${S.xpAwards[today()+'|drill']?' · ⚡ +10':''}</div></div></div>
     <p class="muted" style="margin:10px 0 0">레벨은 꾸준히 공부한 기록이에요. 실력은 아래 단원 지도의 🌱🌿🌳⭐로 봐요.</p></div>
 
   ${courseCard()}
 
   ${dailyCard()}
 
-  <div class="card"><h2>📚 오늘의 미션 <span class="muted" style="font-weight:400">· 코스 3단계 · 약 15~20분</span></h2>
+  <div class="card"><h2>📚 오늘의 미션 <span class="muted" style="font-weight:400">· 코스 3단계 · 약 ${P.missionCounts(S).min}분 · 기본 ${P.missionCounts(S).basic}·응용 ${P.missionCounts(S).app}문제</span></h2>
     <div class="today"><div>
-      ${doneToday ? `<b>${td.status==='success'?'⭐ 오늘 미션 성공!':'📘 오늘 공부 완료!'}</b><div class="muted">${esc(unitById[td.unitId]?.title||'')} · 내일 또 만나요</div>`
+      ${doneToday ? `<b>${td.status==='success'?'⭐ 오늘 미션 성공!':'📘 오늘 공부 완료!'}</b><div class="muted">${esc(unitById[td.unitId]?.title||'')} · 힘이 남으면 위 코스에서 내일 수업을 미리 할 수 있어요</div>`
         : `<b>${curSt.icon} ${curU.g}-${curU.s} ${esc(curU.title)}</b><div class="muted">${inProg ? '진행 중인 미션이 있어요' : '개념 → 기본 → 응용 → 오답 확인 → 돌아보기 (연산 훈련을 했으면 연산 준비는 건너뛰어요)'}</div>
            <div class="muted">다음 단계까지: ${esc(curSt.next)}</div>`}
     </div>
@@ -153,15 +153,22 @@ function render(){
     <p class="muted" style="margin:10px 0 0">틀린 문제 → 해설 → 숫자 바꾼 새 문제로 혼자 확인 → 토요일에 원래 문제를 해설 없이 다시 → 졸업!</p></div>
 
   <div class="card"><h2>📋 공부 순서 (매일 같은 순서)</h2><ol class="order">
-    <li>⚡ 연산 기록 깨기 5분: 시간 제한 없이 내 기록 깨기. 별은 정확도로만, 최고 기록도 실수 0일 때만 인정.</li>
-    <li>🏃 매일 학습 레이스 1판 7분: 6문제를 풀고 📝 제출 → 칭찬·조언과 실력 게이지 확인 → 틀린 문제 고치기.</li>
-    <li>📚 오늘의 미션 15~20분: 같은 단원의 개념 → 기본 → 응용 → 오답 확인 → 돌아보기.</li>
+    <li>⚡ 연산 기록 깨기 2판 10분: 시간 제한 없이 내 기록 깨기. 별은 정확도로만, 최고 기록도 실수 0일 때만 인정.</li>
+    <li>🏃 매일 학습 레이스 2판 14분: 한 판 6문제를 풀고 📝 제출 → 칭찬·조언과 실력 게이지 확인 → 틀린 문제 고치기.</li>
+    <li>📚 오늘의 미션 약 35분: 같은 단원의 개념 → 기본 10문제 → 응용 5문제 → 오답 확인 → 돌아보기.</li>
     <li>🗓️ 토요일에는 처음 틀렸던 문제를 해설 없이 다시 풀어 졸업시켜요.</li>
-    <li>힘이 남으면 레이스 2·3판(선택). 단원은 순서대로, 앞 단원이 🌿가 되면 다음 단원이 열려요.</li></ol></div>
+    <li>⏭️ 다 끝내고 시간이 남으면 <b>내일 수업 미리 하기</b>(하루 최대 3번째 수업까지). 단원은 순서대로, 앞 단원이 🌿가 되면 다음 단원이 열려요.</li></ol></div>
 
   <div class="card" style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="parent.html">👪 부모님 확인 (진행 상황·틀린 문제)</a><a class="btn ghost" href="index.html">첫 진단 앱(예전)</a></div>`;
 }
-if (!D || !P) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 또는 progress.js 를 찾지 못했어요.</div>'; else render();
+function save(){ try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) { alert('기록 저장에 실패했어요.'); } }
+if (!D || !P) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 또는 progress.js 를 찾지 못했어요.</div>';
+else {
+  // '내일 수업 미리 하기' 버튼(start.html#next): 오늘 코스를 다 마쳤을 때만 다음 수업을 시작
+  const nextLesson = () => { if (location.hash !== '#next') return; if (P.startNextLesson(S, D)) save(); history.replaceState(null, '', 'start.html'); render(); window.scrollTo(0, 0); };
+  window.addEventListener('hashchange', nextLesson);   // 시작화면 안에서 버튼을 누르면 페이지가 다시 열리지 않으므로
+  render(); nextLesson();
+}
 </script>
 </body>
 </html>
