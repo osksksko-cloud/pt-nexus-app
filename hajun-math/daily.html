@@ -277,7 +277,7 @@ function submitRound(){
       if (!g.ok && (it.role === 'unit' || it.role === 'review')) { if (!S.wrong.some(w => w.qid === q.id)) S.wrong.push({qid:q.id, v:q.v, f:q.f, u:q.u, date:today(), repair:'todo', sat:'todo', ans:text}); }
       if (it.role === 'repair') S.wrong.filter(w => w.f === q.f && w.repair !== 'success').forEach(w => { if (g.ok) { w.repair = 'success'; w.repairDate = today(); } else w.repair = 'pending'; });
     } else if (!g.ok) {
-      (S.daily.arithMiss ||= []).push({date:today(), q:plainArith(it.p.html), a:text || '(빈칸)', c:AR.textFrac(it.p.ans), why:g.why});
+      (S.daily.arithMiss ||= []).push({date:today(), at:new Date().toISOString(), q:plainArith(it.p.html), a:text || '(빈칸)', c:AR.textFrac(it.p.ans), why:g.why});
       S.daily.arithMiss = S.daily.arithMiss.slice(-60);
     }
   });
