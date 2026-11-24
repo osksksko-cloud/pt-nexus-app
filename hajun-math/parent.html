@@ -191,7 +191,9 @@ function notifyCard(){
   return `<div class="card noprint"><h3>📱 휴대폰 알림 ${on ? '<span style="color:#1f9d63">켜짐</span>' : '<span class="muted">꺼짐</span>'}</h3>
     <p class="muted" style="margin:0 0 8px">${on ? '이 기기에서 공부 단계를 마칠 때마다 부모님 휴대폰(ntfy 앱)으로 결과가 가요.' : '이 기기는 알림이 꺼져 있어요. 부모님께 받은 알림 연결 링크를 이 기기에서 한 번 열면 켜져요.'}</p>
     ${on ? `<button class="btn" onclick="NOTIFY.test().then(ok=>alert(ok?'시험 알림을 보냈어요. 휴대폰을 확인해 보세요.':'보내지 못했어요. 인터넷 연결을 확인해 주세요.'))">🧪 시험 알림 보내기</button>
-      <button class="btn" onclick="if(confirm('이 기기의 휴대폰 알림을 끌까요?')){localStorage.removeItem('hajun_notify_topic');render()}">알림 끄기</button>` : ''}</div>`;
+      <button class="btn" onclick="if(confirm('이 기기의 휴대폰 알림을 끌까요?')){localStorage.removeItem('hajun_notify_topic');render()}">알림 끄기</button>`
+      : `<div style="display:flex;gap:8px;flex-wrap:wrap"><input id="ntopic" placeholder="알림 채널 이름 (예: hajun-math-...)" autocomplete="off" autocapitalize="off" style="flex:1;min-width:220px;font-size:16px;padding:10px;border:2px solid #dfe5f0;border-radius:12px">
+        <button class="btn" onclick="NOTIFY.connect(document.getElementById('ntopic').value).then(ok=>{alert(ok?'연결했어요! 휴대폰에 연결 완료 알림이 왔는지 확인해 보세요.':'채널 이름이 맞는지, 인터넷이 연결됐는지 확인해 주세요.');render()})">연결</button></div>`}</div>`;
 }
 if (!D || !P) document.getElementById('app').innerHTML = '<div class="card">mission_data.js 또는 progress.js 를 찾지 못했어요.</div>';
 else { if (!S.wrong.some(w => byId[w.qid] && wrongState(w)[0] === 'open')) tab = 'all';

@@ -78,5 +78,7 @@
   Storage.prototype.setItem = function (k, v) { rawSet.call(this, k, v); if (this === ls && k === STORE) setTimeout(check, 50); };
   window.addEventListener('online', check);
   setTimeout(check, 500);
-  window.NOTIFY = { on: () => !!topic(), test: () => send('🧪 시험 알림', '하준이 수학 알림이 잘 와요!', ['bell']), check, events };
+  function connect(t) { t = String(t || '').trim(); if (!/^[A-Za-z0-9_-]{12,64}$/.test(t)) return Promise.resolve(false);
+    put(TKEY, t); return send('🔔 알림 연결 완료', '이제 하준이가 공부 단계를 마칠 때마다 이 휴대폰으로 알려 드려요.', ['white_check_mark']).then(ok => { check(); return ok; }); }
+  window.NOTIFY = { on: () => !!topic(), connect, test: () => send('🧪 시험 알림', '하준이 수학 알림이 잘 와요!', ['bell']), check, events };
 })();
