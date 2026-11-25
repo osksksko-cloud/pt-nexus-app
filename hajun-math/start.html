@@ -171,5 +171,7 @@ else {
   render(); nextLesson();
 }
 </script>
+
+<script>/* 다른 탭(아이가 공부 중인 화면)이 기록을 바꾸면 이 화면도 새 기록으로 (옛 기록으로 덮어쓰지 않게) */window.addEventListener('storage', e => { if (e.key === 'hajun_math_mission_v1') location.reload(); });</script>
 </body>
 </html>

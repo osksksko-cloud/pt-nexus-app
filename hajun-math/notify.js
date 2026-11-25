@@ -71,15 +71,16 @@
         const mw = firstWrong('');
         out.push({ key: pre + 'mission', title: `📚 미션 완료${tag}`, marks: mw.map(wk),
           msg: `${unitName(d.unitId)}\n${res}\n오늘 처음 푼 문제 정답 ${d.firstOk || 0}/${d.total || 0}${d.feel ? '\n기분 ' + d.feel : ''}${d.note ? '\n돌아보기: “' + d.note + '”' : ''}` + wrongBlock(mw.map(a => bankLine(S, a, '')).filter(Boolean)) }); }
-      if (st.key === 'test') { const r = P.testToday(S); if (r) { const v = P.testVerdict(r);
-        const tw = fresh((S.attempts || []).filter(a => a.date === t && a.mode === 'test' && !a.ok)), lvName = { 1: '기본', 2: '응용', 3: '심화' }, idx = P.index(D).byId;
-        out.push({ key: t + '|test|' + r.uid, title: `🏁 단원 마무리 테스트 · ${unitName(r.uid)}`, marks: tw.map(wk),
-          msg: `${v.icon} ${v.name}\n기본 ${r.b[0]}/${r.b[1]} · 응용 ${r.a[0]}/${r.a[1]} · 심화 ${r.v[0]}/${r.v[1]} (총 ${r.ok}/${r.n})${r.sec ? ' · ' + mm(r.sec) : ''}\n${v.tip}\n➡️ ${P.testNext(S, D, r.uid, r)}`
-            + wrongBlock(tw.map(a => { const l = bankLine(S, a, '__none'); return l && idx[a.qid] ? l.replace('• ', `• [${lvName[idx[a.qid].d] || ''}] `) : l; }).filter(Boolean)) }); } }
       if (st.key === 'review') { const ok = (S.wrong || []).filter(w => w.satDate === t).length;
         const rw = fresh((S.attempts || []).filter(a => a.date === t && a.mode === 'saturday' && !a.ok));
         out.push({ key: pre + 'review', title: '🗓️ 토요일 복습 완료', marks: rw.map(wk), msg: `처음 틀렸던 문제 중 ${ok}개를 해설 없이 다시 맞혔어요` + wrongBlock(rw.map(a => bankLine(S, a, '__none')).filter(Boolean)).replace('❌ 틀린 문제', '❌ 아직 헷갈리는 문제') }); }
     });
+    /* 테스트 알림은 코스 단계와 상관없이 (수업이 바뀐 뒤 다시 연결돼도 보냄) */
+    { const r = P.testToday(S); if (r) { const v = P.testVerdict(r);
+        const tw = fresh((S.attempts || []).filter(a => a.date === t && a.mode === 'test' && !a.ok)), lvName = { 1: '기본', 2: '응용', 3: '심화' }, idx = P.index(D).byId;
+        out.push({ key: t + '|test|' + r.uid, title: `🏁 단원 마무리 테스트 · ${unitName(r.uid)}`, marks: tw.map(wk),
+          msg: `${v.icon} ${v.name}\n기본 ${r.b[0]}/${r.b[1]} · 응용 ${r.a[0]}/${r.a[1]} · 심화 ${r.v[0]}/${r.v[1]} (총 ${r.ok}/${r.n})${r.sec ? ' · ' + mm(r.sec) : ''}\n${v.tip}\n➡️ ${P.testNext(S, D, r.uid, r)}`
+            + wrongBlock(tw.map(a => { const l = bankLine(S, a, '__none'); return l && idx[a.qid] ? l.replace('• ', `• [${lvName[idx[a.qid].d] || ''}] `) : l; }).filter(Boolean)) }); } }
     if (!c.next) {
       const r = P.todayReport(S, D), st = P.unitStage(S, D, P.dailyUnit(S, D));
       out.push({ key: pre + 'all', title: `🎉 ${k > 1 ? k + '번째 수업까지' : '오늘 학습 코스'} 모두 완료!`, tags: ['tada'],

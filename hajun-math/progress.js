@@ -192,6 +192,7 @@
   // 하루가 바뀐 것처럼 단원을 새로 정함: 고른 단원이 아직 🌳 전이면 그대로, 🌳가 되었으면 순서상 다음 단원
   function freshUnit(S, D) {
     const g = dailyGrade(S), units = Object.fromEntries(D.units.map(x => [x.id, x])), u = S.daily && S.daily.unit;
+    const rem = remedialUnit(S, D); if (rem) return rem;
     if (u && units[u] && units[u].g === g && unitOpen(S, D, u) && !unitDone(S, D, u)) return u;
     return recommendedUnit(S, D, g);
   }
@@ -213,6 +214,8 @@
     const cur = S.daily && S.daily.cur && S.daily.cur.date === t ? S.daily.cur.unit : null;
     const pinned = cur || (log.length && log[0].unit) || ((S.days || {})[t] || {}).unitId;
     if (okU(pinned)) return pinned;
+    // 1.5) 🎯 테스트를 통과 못 한 단원이 있으면 그 단원 보충이 먼저
+    const rem = remedialUnit(S, D); if (rem) return rem;
     // 2) 부모님·아이가 고른 단원: 아직 🌳가 아닐 때만 (🌳가 되면 다음 단원으로 자동 진행)
     const u = S.daily && S.daily.unit;
     if (okU(u) && unitOpen(S, D, u) && !unitDone(S, D, u)) return u;
@@ -233,13 +236,13 @@
   function testToday(S) { const t = ymd(); for (const [uid, list] of Object.entries(S.tests || {})) { const r = list.find(x => x.date === t); if (r) return Object.assign({ uid }, r); } return null; }
   // 테스트 차례인 단원: 지금 학년에서 🌳 이상인데 아직 테스트를 안 본 첫 단원 (하루 1번까지)
   function testDue(S, D) {
-    if (S.utest && S.utest.date === ymd()) return S.utest.uid;
+    if (S.utest && S.utest.date === ymd() && !(S.utest.sh && S.utest.sh.graded)) return S.utest.uid;   // 푸는 중인 시험
     if (testToday(S)) return null;
     const { order } = index(D);
     return (order[dailyGrade(S)] || []).find(uid => {
-      if (unitStage(S, D, uid).stage < 3) return false;
-      const last = lastTest(S, uid); if (!last) return true;                          // 🌳가 되었는데 아직 테스트 안 봄
-      return testRank(last) < 3 && practiceDaysSince(S, uid, last.date) >= RETEST_DAYS;  // 통과 못 했으면 2일 더 연습한 뒤 재시험
+      const last = lastTest(S, uid);
+      if (!last) return unitStage(S, D, uid).stage >= 3;                               // 🌳가 되었는데 아직 테스트 안 봄
+      return testRank(last) < 3 && practiceDaysSince(S, uid, last.date) >= RETEST_DAYS;  // 통과 못 했으면 2일 더 연습한 뒤 재시험 (연습 중 진도가 내려가도 막히지 않게 🌳 조건 없음)
     }) || null;
   }
   /* ---------- 🎯 레벨 맞춤 (2026-11-25): 테스트 결과가 다음 공부를 바꾼다 ----------
@@ -250,7 +253,9 @@
   function testRank(r) { return { '📘': 1, '🌿': 2, '🌳': 3, '🔥': 4, '🏆': 5 }[testVerdict(r).icon]; }
   function practiceDaysSince(S, uid, date) { return new Set((S.attempts || []).filter(a => a.u === uid && a.date > date && a.mode !== 'test').map(a => a.date)).size; }
   // 단원 끝 = 🌳 능숙 + 마무리 테스트 통과(🌳 이상). 테스트 전이거나 통과 못 하면 그 단원을 계속 공부
-  function unitDone(S, D, uid) { const t = lastTest(S, uid); return unitStage(S, D, uid).stage >= 3 && !!t && testRank(t) >= 3; }
+  function unitDone(S, D, uid) { const t = lastTest(S, uid); return !!t && testRank(t) >= 3; }   // 첫 테스트는 🌳가 되어야 열리므로, 통과 기록 = 단원 끝
+  // 테스트를 통과 못 한 단원 (지금 학년, 순서상 첫 단원): 다른 단원을 골라 두었어도 이 단원부터 보충
+  function remedialUnit(S, D) { return (index(D).order[dailyGrade(S)] || []).find(uid => { const t = lastTest(S, uid); return t && testRank(t) < 3; }) || null; }
   // 최근 테스트 2번(1번뿐이면 그 1번)이 모두 🔥 이상이면 '심화 빠른 길'
   function fastTrack(S) { const all = Object.values(S.tests || {}).flat().sort((a, b) => (a.at || '').localeCompare(b.at || '')).slice(-2);
     return all.length > 0 && all.every(r => testRank(r) >= 4); }
@@ -267,11 +272,11 @@
   // 테스트 뒤 다음 공부 안내 (결과 화면·알림)
   function testNext(S, D, uid, r) { const rk = testRank(r), U = index(D).unitById, o = index(D).order[U[uid].g] || [], nx = U[o[o.indexOf(uid) + 1]];
     if (rk <= 2) return `같은 단원을 ${rk === 1 ? '기본' : '응용'} 문제 위주로 ${RETEST_DAYS}일 더 공부한 뒤 다시 테스트해요`;
-    if (rk >= 4) return `통과! ${nx ? '다음 단원 ' + nx.g + '-' + nx.s + ' ' + nx.title + '으로 가요. ' : ''}실력이 좋아서 심화 문제를 일찍 섞어요 🚀`;
+    if (rk >= 4 && fastTrack(S)) return `통과! ${nx ? '다음 단원 ' + nx.g + '-' + nx.s + ' ' + nx.title + '으로 가요. ' : ''}실력이 좋아서 심화 문제를 일찍 섞어요 🚀`;
     return `통과! ${nx ? '다음 단원 ' + nx.g + '-' + nx.s + ' ' + nx.title + '으로 가요' : '이 학년 마지막 단원이에요'}`; }
   // 점수 → 수준 (각 5문제 기준). 문제은행 안에서의 상대 위치일 뿐, 전국 백분위가 아님
   function testVerdict(r) {
-    const b = r.b[0] / (r.b[1] || 1), a = r.a[0] / (r.a[1] || 1), v = r.v[1] ? r.v[0] / r.v[1] : 0;
+    const b = r.b[1] ? r.b[0] / r.b[1] : 1, a = r.a[1] ? r.a[0] / r.a[1] : 1, v = r.v[1] ? r.v[0] / r.v[1] : 0;   // 문제은행에 없는 난이도는 판정에서 빼기 (심화는 없으면 인정 안 함)
     if (b < 0.8) return { icon: '📘', name: '기본 다시 다지기', tip: '기본 개념에서 실수가 있어요. 레이스·미션의 기본 문제를 조금 더 풀고 넘어가요.' };
     if (a < 0.6) return { icon: '🌿', name: '기본 탄탄 · 응용 연습 더', tip: '기본은 잘 알아요. 문장이 긴 응용 문제를 천천히 읽는 연습이 필요해요.' };
     if (v < 0.6) return { icon: '🌳', name: '교과서 수준 완성', tip: '기본·응용은 탄탄해요. 심화는 여러 단계를 이어 생각하는 연습을 하면 올라가요.' };
@@ -344,6 +349,9 @@
       if (r >= 0.8) praise.push(`🎯 처음 푼 문제 ${first.length}개 중 ${ok}개 정답 (${Math.round(r * 100)}%)`);
       else improve.push(`🎯 처음 푼 문제 정답 ${ok}/${first.length} — 틀린 문제의 풀이를 한 번 더 읽어 봐요`);
     }
+    const tt = testToday(S);
+    if (tt) { const v = testVerdict(tt), rk = testRank(tt);
+      (rk >= 3 ? praise : improve).push(`🏁 단원 마무리 테스트 ${tt.ok}/${tt.n} · ${v.icon} ${v.name}${rk >= 3 ? '' : ' → ' + v.tip}`); }
     const fixedOk = fixes.filter(a => a.ok).length;
     if (fixedOk) praise.push(`🔧 틀렸던 유형 ${fixedOk}개를 숫자 바뀐 새 문제로 스스로 고쳤어요`);
     if (day.status === 'success') praise.push('📚 오늘의 미션 성공 — 오답 확인까지 혼자 해냈어요');
@@ -441,5 +449,5 @@
   }
 
   window.PROGRESS = { RULES, STAGES, unitStage, unitOpen, recommendedUnit, ladder, wrongBox, index,
-    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, TEST, unitTests, testToday, testDue, testVerdict, RETEST_DAYS, lastTest, testRank, unitDone, fastTrack, focus, testNext, reportHTML, submitFeedback, feedbackHTML };
+    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, TEST, unitTests, testToday, testDue, testVerdict, RETEST_DAYS, lastTest, testRank, unitDone, remedialUnit, fastTrack, focus, testNext, reportHTML, submitFeedback, feedbackHTML };
 })();
