@@ -65,14 +65,14 @@
     if (S.settings && S.settings.opened && S.settings.opened[uid]) return true;
     const list = order[u.g], i = list.indexOf(uid);
     if (i <= 0) return true;
-    return unitStage(S, D, list[i - 1]).stage >= 2 || unitStage(S, D, uid).stage >= 1;
+    return unitStage(S, D, list[i - 1]).stage >= 2 || unitDone(S, D, list[i - 1]) || unitStage(S, D, uid).stage >= 1;   // 앞 단원 테스트 통과도 열림
   }
 
   // 순서상 지금 공부할 단원: 열린 단원 중 아직 🌳가 아닌 첫 단원
   function recommendedUnit(S, D, grade) {
     const { order } = index(D);
     const list = order[grade];
-    return list.find(uid => unitOpen(S, D, uid) && !unitDone(S, D, uid)) || list[list.length - 1];
+    return list.find(uid => unitOpen(S, D, uid) && !unitDone(S, D, uid)) || [...list].reverse().find(uid => unitOpen(S, D, uid)) || list[0];   // 다 끝났으면 열린 마지막 단원 (잠긴 단원으로 건너뛰지 않음)
   }
 
   // 경시 사다리 4층
@@ -236,7 +236,7 @@
   function testToday(S) { const t = ymd(); for (const [uid, list] of Object.entries(S.tests || {})) { const r = list.find(x => x.date === t); if (r) return Object.assign({ uid }, r); } return null; }
   // 테스트 차례인 단원: 지금 학년에서 🌳 이상인데 아직 테스트를 안 본 첫 단원 (하루 1번까지)
   function testDue(S, D) {
-    if (S.utest && S.utest.date === ymd() && !(S.utest.sh && S.utest.sh.graded)) return S.utest.uid;   // 푸는 중인 시험
+    if (S.utest && !(S.utest.sh && S.utest.sh.graded) && (S.utest.date === ymd() || !testToday(S))) return S.utest.uid;   // 푸는 중인 시험 (자정을 넘겨도 이어서)
     if (testToday(S)) return null;
     const { order } = index(D);
     return (order[dailyGrade(S)] || []).find(uid => {
@@ -351,7 +351,7 @@
     }
     const tt = testToday(S);
     if (tt) { const v = testVerdict(tt), rk = testRank(tt);
-      (rk >= 3 ? praise : improve).push(`🏁 단원 마무리 테스트 ${tt.ok}/${tt.n} · ${v.icon} ${v.name}${rk >= 3 ? '' : ' → ' + v.tip}`); }
+      (rk >= 3 ? praise : improve).unshift(`🏁 단원 마무리 테스트 ${tt.ok}/${tt.n} · ${v.icon} ${v.name}${rk >= 3 ? '' : ' → ' + v.tip}`); }
     const fixedOk = fixes.filter(a => a.ok).length;
     if (fixedOk) praise.push(`🔧 틀렸던 유형 ${fixedOk}개를 숫자 바뀐 새 문제로 스스로 고쳤어요`);
     if (day.status === 'success') praise.push('📚 오늘의 미션 성공 — 오답 확인까지 혼자 해냈어요');

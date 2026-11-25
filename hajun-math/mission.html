@@ -324,7 +324,7 @@ function sheetCard(c){
 function shSubmit(){
   const c = sheetCtx(); if (c.sh.graded) return;
   for (let k = 0; k < c.list.length; k++) { const text = (c.sh.inp[k] || '').trim(); if (!text) continue; const r = grade(c.list[k], text);
-    if (r.retry) { c.hold.idx = k; cur.msg = c.kind === 'test' ? `${k + 1}번: 답 쓰는 형식을 확인해요 (분수는 3/4처럼 기약분수로, 대분수는 1과 3/4처럼)` : `${k + 1}번: ${r.msg}`; save(); render(); return; } }   // 테스트에서는 정답 여부를 미리 알려 주지 않음
+    if (r.retry && !(c.kind === 'test' && /기약분수/.test(r.msg || ''))) { c.hold.idx = k; cur.msg = c.kind === 'test' ? `${k + 1}번: 답 쓰는 형식을 확인해요 (분수는 3/4처럼 기약분수로, 대분수는 1과 3/4처럼)` : `${k + 1}번: ${r.msg}`; save(); render(); return; } }   // 테스트에서는 정답 여부를 미리 알려 주지 않음
   const blanks = c.list.filter((x, k) => !(c.sh.inp[k] || '').trim()).length;
   if (blanks && !confirm(`아직 안 푼 문제가 ${blanks}개 있어요. 그래도 제출할까요?\n(제출하면 더 고칠 수 없어요)`)) return;
   if (!blanks && !confirm('제출하면 채점하고, 더 고칠 수 없어요. 제출할까요?')) return;
@@ -373,7 +373,7 @@ function finishStep(step){
 function logAttempt(q, ans, ok, hint, mode){ S.attempts.push({qid:q.id, v:q.v, f:q.f, u:q.u, date:today(), at:new Date().toISOString(), ans:String(ans), ok, hint:!!hint, mode}); }
 function addWrong(q, ans){
   const old = S.wrong.find(w => w.qid === q.id);
-  if (old) { if (old.repair === 'success' && old.sat === 'done') Object.assign(old, {date: today(), repair: 'todo', sat: 'todo', ans: ans == null ? '' : String(ans)}); return; }   // 같은 문제는 한 번만 · 졸업했던 문제를 다시 틀리면 다시 복습 대상으로
+  if (old) { if (old.repair === 'success' && old.sat === 'done') Object.assign(old, {date: today(), repair: 'todo', sat: 'todo', parentSeen: false, parentSeenDate: null, ans: ans == null ? '' : String(ans)}); return; }   // 같은 문제는 한 번만 · 졸업했던 문제를 다시 틀리면 다시 복습 대상으로
   S.wrong.push({qid:q.id, v:q.v, f:q.f, u:q.u, date:today(), repair:'todo', sat:'todo', ans: ans == null ? '' : String(ans)});
 }
 
@@ -532,7 +532,7 @@ if (!D) document.getElementById('app').innerHTML = '<div class="card">mission_da
 else { S.settings = Object.assign({openAll:false, opened:{}}, S.settings||{}); S.grade = PROGRESS.dailyGrade(S); if (!(S.active && S.active.date === today()) || !S.unitId) S.unitId = PROGRESS.dailyUnit(S, D);   // 오늘의 단원은 한 곳(매일 학습과 같음)에서 정함
   if (S.active && S.active.date !== today()) { const old = S.active; if (S.days[old.date]?.status === 'in_progress') S.days[old.date].status = 'paused'; S.active = null; save(); }
   const h = location.hash.slice(1);
-  if (S.utest && S.utest.sh && S.utest.sh.graded && !(h === 'test' && S.utest.date === today())) { S.utest = null; save(); }   // 채점 끝난 시험지는 결과가 저장돼 있으니 정리
+  if (S.utest && S.utest.sh && S.utest.sh.graded && !(h === 'test' && S.utest.date === today())) { if (S.utest.date === today()) award('unit_test'); S.utest = null; save(); }   // 채점 끝난 시험지는 결과가 저장돼 있으니 정리
   const doneT = PROGRESS.missionsToday(S) >= PROGRESS.lessonNo(S);
   if (h === 'course') {                 // 오늘의 코스에서 옴: 매일 학습과 같은 단원으로 미션
     if (doneT) render();

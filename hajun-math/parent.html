@@ -213,6 +213,6 @@ else { if (!S.wrong.some(w => byId[w.qid] && wrongState(w)[0] === 'open')) tab =
   render(); if (location.hash === '#wrong') document.getElementById('wrong').scrollIntoView(); }
 </script>
 
-<script>/* 다른 탭(아이가 공부 중인 화면)이 기록을 바꾸면 이 화면도 새 기록으로 (옛 기록으로 덮어쓰지 않게) */window.addEventListener('storage', e => { if (e.key === 'hajun_math_mission_v1') location.reload(); });</script>
+<script>/* 다른 탭(아이가 공부 중인 화면)이 기록을 바꾸면 이 화면도 새 기록으로 (옛 기록으로 덮어쓰지 않게) */window.addEventListener('storage', e => { if (e.key !== 'hajun_math_mission_v1') return; try { S = JSON.parse(e.newValue) || {}; } catch (x) { return; } S = Object.assign({attempts:[], wrong:[], days:{}, settings:{}, daily:{log:[]}, drill:{log:[]}}, S); S.daily = Object.assign({log:[]}, S.daily); S.drill = Object.assign({log:[]}, S.drill || {}); const ip = document.getElementById('ntopic'), keep = ip && ip.value; render(); const ip2 = document.getElementById('ntopic'); if (ip2 && keep) ip2.value = keep; });</script>
 </body>
 </html>
