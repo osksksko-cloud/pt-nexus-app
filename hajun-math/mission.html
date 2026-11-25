@@ -181,7 +181,10 @@ function newMission(unitId){
   const cnt = PROGRESS.missionCounts(S), spread = (fs, k) => fs.length ? Array.from({length:k}, (_, i) => fs[i % fs.length]) : [];   // 유형을 번갈아 k문제 (기본 10 → 5+5, 응용 5 → 3+2)
   const fc = PROGRESS.focus(S, D, unitId), advOpen = fc.adv;                // 🎯 진도 + 마무리 테스트 결과에 맞춘 난이도
   const basic = spread(fc.mode === 'app' && PROGRESS.lastTest(S, unitId) ? [famsBy(1)[0], famsBy(2)[0], famsBy(1)[1], famsBy(2)[1]].filter(Boolean) : famsBy(1).slice(0,2), cnt.basic).map(take).filter(Boolean);   // 🌿 응용 연습 중이면 기본 자리 절반을 응용으로
-  const app = spread(advOpen ? [...famsBy(2).slice(0,1), ...famsBy(3).slice(0,1)] : famsBy(2).slice(0,2), cnt.app).map(take).filter(Boolean);
+  // 심화는 아직 덜 풀어 본 유형부터 2개 (2026-11-25 심화 유형 보강: 단원마다 5개)
+  const tried = f => S.attempts.filter(a => a.f === f).length, fresh = fs => shuffle(fs).sort((x, y) => tried(x) - tried(y));
+  const d2 = fresh(famsBy(2)), d3 = fresh(famsBy(3));
+  const app = spread(advOpen ? [d2[0], d3[0], d2[1], d3[1]].filter(Boolean) : d2.slice(0,2), cnt.app).map(take).filter(Boolean);
   // 지난번 '혼자 풀기 확인'을 못 마친 유형은 오늘 오답 확인에 먼저 넣는다
   const carry = S.wrong.filter(w => w.repair === 'pending').map(w => ({fam:w.f, orig:w.qid, tries:[], status:'todo', carried:true}));
   // 오늘 ⚡ 연산 훈련을 이미 했으면 미션의 연산 준비는 건너뜀 (오늘의 코스에서 이미 함)
