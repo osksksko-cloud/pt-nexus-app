@@ -174,7 +174,7 @@ function reviewUnit(uid){
 }
 function buildRound(){
   const uid = curUnit(), st = P.unitStage(S, D, uid).stage, n = S.settings.daily.perRound;
-  const pattern = st >= 3 ? [2,3,2,3] : st >= 2 ? [1,2,2,2] : [1,1,2,1];
+  const pattern = P.focus(S, D, uid).pattern;   // 🎯 단원 진도 + 마무리 테스트 결과에 맞춘 난이도 순서
   const items = [], avoid = [], usedFam = [];
   const add = (q, role, extra) => { if (!q) return; avoid.push(q.id); usedFam.push(q.f); items.push(Object.assign({kind:'bank', qid:q.id, role}, extra||{})); };
   // 0) 연산 몸풀기 1문제

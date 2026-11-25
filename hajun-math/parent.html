@@ -116,7 +116,9 @@ function testsCard(){
   const rows = Object.entries(S.tests || {}).flatMap(([uid, list]) => list.map(r => ({ uid, ...r }))).sort((a, b) => (b.at || '').localeCompare(a.at || ''));
   const due = P.testDue(S, D), du = due && unitById[due];
   const f = x => `${x[0]}/${x[1]}`;
-  return `<div class="card"><h2>🏁 단원 마무리 테스트</h2><p class="muted" style="margin-top:0">단원이 🌳 능숙이 되면 기본 5 · 응용 5 · 심화 5문제를 힌트·해설 없이 풀어요. 매일 공부의 정답률보다 실제 실력에 가까운 점수예요. 판정은 이 문제은행 안에서의 수준이고, 전국 등수는 아니에요.</p>
+  return `<div class="card"><h2>🏁 단원 마무리 테스트</h2><p class="muted" style="margin-top:0">단원이 🌳 능숙이 되면 기본 5 · 응용 5 · 심화 5문제를 힌트·해설 없이 풀어요. 매일 공부의 정답률보다 실제 실력에 가까운 점수예요. 판정은 이 문제은행 안에서의 수준이고, 전국 등수는 아니에요. <b>📘·🌿이면 다음 단원으로 넘어가지 않고</b> 그 난이도 위주로 2일 더 공부한 뒤 재시험, 🌳 이상이면 다음 단원으로 가요.</p>
+    ${(() => { const cu = P.dailyUnit(S, D), fc = P.focus(S, D, cu), u = unitById[cu], lv = { basic: '기본 위주', app: '응용 위주', adv: '응용 + 심화' }[fc.mode];
+      return `<p style="background:#f5f0ff;border-radius:10px;padding:8px 10px">🎯 <b>지금 맞춤 학습</b>: ${u ? esc(u.g + '-' + u.s + ' ' + u.title) : ''} · ${lv}${fc.note ? '<br>' + esc(fc.note) : ''}${P.fastTrack(S) ? '<br>🚀 심화 빠른 길: 최근 테스트가 심화 수준이라 새 단원에서 심화를 일찍 섞어요' : ''}</p>`; })()}
     ${du ? `<p>👉 지금 테스트 차례: <b>${du.g}-${du.s} ${esc(du.title)}</b> (오늘의 코스 첫 단계)</p>` : ''}
     ${rows.length ? `<table><tr><th>날짜</th><th>단원</th><th>기본</th><th>응용</th><th>심화</th><th>판정</th></tr>${rows.map(r => { const v = P.testVerdict(r), u = unitById[r.uid];
       return `<tr><td>${md(r.date)}</td><td>${u ? esc(u.g + '-' + u.s + ' ' + u.title) : ''}</td><td>${f(r.b)}</td><td>${f(r.a)}</td><td><b>${f(r.v)}</b></td><td>${v.icon} ${esc(v.name)}</td></tr>`; }).join('')}</table>` : '<p class="muted">아직 본 테스트가 없어요.</p>'}</div>`;

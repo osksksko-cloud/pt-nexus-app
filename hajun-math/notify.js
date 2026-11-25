@@ -74,7 +74,7 @@
       if (st.key === 'test') { const r = P.testToday(S); if (r) { const v = P.testVerdict(r);
         const tw = fresh((S.attempts || []).filter(a => a.date === t && a.mode === 'test' && !a.ok)), lvName = { 1: '기본', 2: '응용', 3: '심화' }, idx = P.index(D).byId;
         out.push({ key: t + '|test|' + r.uid, title: `🏁 단원 마무리 테스트 · ${unitName(r.uid)}`, marks: tw.map(wk),
-          msg: `${v.icon} ${v.name}\n기본 ${r.b[0]}/${r.b[1]} · 응용 ${r.a[0]}/${r.a[1]} · 심화 ${r.v[0]}/${r.v[1]} (총 ${r.ok}/${r.n})${r.sec ? ' · ' + mm(r.sec) : ''}\n${v.tip}`
+          msg: `${v.icon} ${v.name}\n기본 ${r.b[0]}/${r.b[1]} · 응용 ${r.a[0]}/${r.a[1]} · 심화 ${r.v[0]}/${r.v[1]} (총 ${r.ok}/${r.n})${r.sec ? ' · ' + mm(r.sec) : ''}\n${v.tip}\n➡️ ${P.testNext(S, D, r.uid, r)}`
             + wrongBlock(tw.map(a => { const l = bankLine(S, a, '__none'); return l && idx[a.qid] ? l.replace('• ', `• [${lvName[idx[a.qid].d] || ''}] `) : l; }).filter(Boolean)) }); } }
       if (st.key === 'review') { const ok = (S.wrong || []).filter(w => w.satDate === t).length;
         const rw = fresh((S.attempts || []).filter(a => a.date === t && a.mode === 'saturday' && !a.ok));

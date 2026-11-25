@@ -179,8 +179,8 @@ function newMission(unitId){
   const used = [];
   const take = f => { const q = pickFromFamily(f, used); if (q) used.push(q.id); return q && q.id; };
   const cnt = PROGRESS.missionCounts(S), spread = (fs, k) => fs.length ? Array.from({length:k}, (_, i) => fs[i % fs.length]) : [];   // 유형을 번갈아 k문제 (기본 10 → 5+5, 응용 5 → 3+2)
-  const basic = spread(famsBy(1).slice(0,2), cnt.basic).map(take).filter(Boolean);
-  const advOpen = PROGRESS.unitStage(S, D, unitId).stage >= 3;              // 🌳 이상일 때만 심화
+  const fc = PROGRESS.focus(S, D, unitId), advOpen = fc.adv;                // 🎯 진도 + 마무리 테스트 결과에 맞춘 난이도
+  const basic = spread(fc.mode === 'app' && PROGRESS.lastTest(S, unitId) ? [...famsBy(1).slice(0,2), ...famsBy(2).slice(0,2)] : famsBy(1).slice(0,2), cnt.basic).map(take).filter(Boolean);   // 🌿 응용 연습 중이면 기본 자리 절반을 응용으로
   const app = spread(advOpen ? [...famsBy(2).slice(0,1), ...famsBy(3).slice(0,1)] : famsBy(2).slice(0,2), cnt.app).map(take).filter(Boolean);
   // 지난번 '혼자 풀기 확인'을 못 마친 유형은 오늘 오답 확인에 먼저 넣는다
   const carry = S.wrong.filter(w => w.repair === 'pending').map(w => ({fam:w.f, orig:w.qid, tries:[], status:'todo', carried:true}));
@@ -479,7 +479,8 @@ function testResultHTML(r){
   if (!r) return ''; const v = PROGRESS.testVerdict(r), bar = (name, x) => `<div style="margin:4px 0"><b style="display:inline-block;width:44px">${name}</b> ${'🟩'.repeat(x[0])}${'⬜'.repeat(x[1] - x[0])} <b>${x[0]}/${x[1]}</b></div>`;
   return `<div class="card center pop" style="background:#fffbea"><div class="big">${v.icon}</div><h2 style="margin:4px 0">${esc(v.name)}</h2>
     <div style="display:inline-block;text-align:left;margin:6px 0">${bar('기본', r.b)}${bar('응용', r.a)}${bar('심화', r.v)}</div>
-    <p class="muted">총 ${r.ok}/${r.n}${r.sec ? ` · ${Math.floor(r.sec / 60)}분 ${r.sec % 60}초` : ''}<br>${esc(v.tip)}</p></div>`;
+    <p class="muted">총 ${r.ok}/${r.n}${r.sec ? ` · ${Math.floor(r.sec / 60)}분 ${r.sec % 60}초` : ''}<br>${esc(v.tip)}</p>
+    <p style="font-weight:800;margin:6px 0 0">➡️ ${esc(PROGRESS.testNext(S, D, r.uid || (S.utest && S.utest.uid), r))}</p></div>`;
 }
 function testView(){
   const T = S.utest; if (!T) { page = 'home'; return home(); }
