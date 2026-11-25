@@ -223,6 +223,7 @@ function render(){
   if (page === 'home') app.innerHTML = home();
   else if (page === 'mission') app.innerHTML = missionView();
   else if (page === 'review') app.innerHTML = reviewView();
+  else if (page === 'test') app.innerHTML = testView();
   else if (page === 'parent') app.innerHTML = parentView();
   drawTimer();
   const inp = $('ans'); if (inp) { inp.focus(); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); (cur.fb ? $('nextBtn') : $('checkBtn'))?.click(); } }); }
@@ -258,9 +259,11 @@ function home(){
   const sat = openWrong.length ? `<div class="card"><h2>${isSaturday()?'🗓️ 오늘은 토요일 복습 날!':'🗓️ 토요일 복습 목록'}</h2>
      <p class="muted">처음에 틀렸던 문제 ${openWrong.length}개가 모여 있어요. 토요일에 해설 없이 다시 풀어 보고, 기억하는지 확인해요.</p>
      ${isSaturday()?`<button class="btn green" onclick="startReview()">복습 시작하기 →</button>`:`<button class="btn ghost small" onclick="startReview()">미리 해 보기</button>`}</div>` : '';
+  const due = PROGRESS.testDue(S, D), dueU = due && unitById[due];
+  const testCard = dueU ? `<div class="card" style="border:2px solid #f0b400"><h2>🏁 단원 마무리 테스트</h2><p class="muted"><b>${dueU.g}-${dueU.s} ${esc(dueU.title)}</b>이(가) 🌳 능숙이 되었어요! 기본 5 · 응용 5 · 심화 5문제를 힌트 없이 풀어서 진짜 실력을 확인해요. (약 20분)</p><button class="btn green" onclick="startTest('${due}')">${S.utest && S.utest.date === today() ? '이어서 풀기' : '테스트 시작하기'} →</button></div>` : '';
   const units = D.units.filter(u => u.g === S.grade);
   const crs = PROGRESS.course(S, D), showBanner = crs.steps.some(x => x.done) && (!A || crs.next?.key !== 'mission');
-  return `${showBanner ? PROGRESS.courseBanner(S, D) : ''}${levelCard()}${todayCard}${sat}
+  return `${showBanner ? PROGRESS.courseBanner(S, D) : ''}${levelCard()}${testCard}${todayCard}${sat}
   <div class="card"><h3>최근 7일</h3>${weekStrip()}</div>
   <div class="card"><h3>공부할 단원 고르기</h3><div class="tabs" style="margin-bottom:10px">${[4,5,6].map(g=>`<button class="${S.grade===g?'sel':''}" onclick="setGrade(${g})">${g}학년</button>`).join('')}</div>
   <p class="muted" style="margin:0 0 8px">단원은 순서대로 열려요. 앞 단원이 🌿 익숙이 되면 다음 단원이 열리고, 🌳 능숙이 되면 심화 문제가 나와요.</p>
@@ -295,6 +298,7 @@ function missionView(){
 }
 /* ---- 시험지 방식: 문제 사이를 오가며 답을 고치고, 📝 제출할 때 한꺼번에 채점 (2026-11-12 피드백) ---- */
 function sheetCtx(){
+  if (page === 'test') { const T = S.utest; T.sh = T.sh || {inp:[], hint:[], graded:null, startAt: Date.now()}; return {list: T.items.map(id => byId[id]), sh: T.sh, hold: T, allowHint: false, kind: 'test'}; }
   if (page === 'review') { const R = S.review; R.sh = R.sh || {inp:[], hint:[], graded:null, startAt: Date.now()}; return {list: R.items.map(id => byId[id]), sh: R.sh, hold: R, allowHint: false, kind: 'review'}; }
   const A = S.active; if (!A.sh || A.sh.step !== A.step) A.sh = {step: A.step, inp: [], hint: [], graded: null, startAt: Date.now()};
   return {list: currentList(A), sh: A.sh, hold: A, allowHint: A.step !== 'arith', kind: 'step'};
@@ -328,13 +332,15 @@ function shSubmit(){
     const g = c.sh.graded[k], hint = !!c.sh.hint[k];
     if (c.kind === 'review') { const R = c.hold; R.results[q.id] = g.ok; logAttempt(q, g.ans, g.ok, false, 'saturday');
       const w = S.wrong.find(x => x.qid === q.id); if (w) { w.satTries = (w.satTries || 0) + 1; if (g.ok) { w.sat = 'done'; w.satDate = today(); } } return; }
+    if (c.kind === 'test') { S.seen[q.id] = true; logAttempt(q, g.ans, g.ok, false, 'test'); if (!g.ok) addWrong(q, g.ans); return; }
     const A = c.hold;
     if (q.arith) { if (!g.ok) A.arithWrong = (A.arithWrong || 0) + 1; return; }
     S.seen[q.id] = true; logAttempt(q, g.ans, g.ok, hint, A.step); A.res[q.id] = {ok: g.ok, hint};
     if (!g.ok) addWrong(q, g.ans);
   });
   // 제출 직후 칭찬·조언 재료 (같은 종류의 지난 제출과 비교)
-  const kind = c.kind === 'review' ? 'saturday' : c.hold.step, sec = c.sh.startAt ? Math.round((Date.now() - c.sh.startAt) / 1000) : null, okN = c.sh.graded.filter(g => g.ok).length;
+  if (c.kind === 'test') saveTestResult(c);
+  const kind = c.kind === 'review' ? 'saturday' : c.kind === 'test' ? 'test' : c.hold.step, sec = c.sh.startAt ? Math.round((Date.now() - c.sh.startAt) / 1000) : null, okN = c.sh.graded.filter(g => g.ok).length;
   S.sheetLog = S.sheetLog || [];
   c.sh.fbk = {n: c.list.length, ok: okN, sec, prev: S.sheetLog.filter(x => x.kind === kind).map(x => ({n: x.n, ok: x.ok, sec: x.sec})),
     blanks: c.sh.graded.filter(g => !g.ans).length, hints: c.sh.hint.filter(Boolean).length};
@@ -349,8 +355,9 @@ function gradedCard(c){
       <div style="margin-top:6px">내 답 <b>${g.ans ? esc(g.ans) : '빈칸'}</b>${g.ok ? '' : ` → 정답 <b>${ans}</b>`}</div>
       ${!g.ok && q.steps && q.steps.length ? `<div style="margin-top:8px"><b>📖 해설</b><ol>${q.steps.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>` : ''}</div>`; }).join('');
   const wrongNote = c.kind === 'step' && c.hold.step !== 'arith' && ok < n ? '<p class="muted">괜찮아요! 틀린 유형은 조금 뒤 <b>오답 확인</b>에서 숫자를 바꾼 새 문제로 다시 도전해요.</p>' : '';
-  const btn = c.kind === 'review' ? `<button class="btn" id="nextBtn" onclick="endReview()">홈으로</button>` : `<button class="btn" id="nextBtn" onclick="finishStep('${c.hold.step}')">다음 단계 →</button>`;
-  return `<div class="card"><h3>📝 채점 결과: ${ok} / ${n} ${ok === n ? '🎉' : ''}</h3>${c.sh.fbk ? PROGRESS.feedbackHTML(c.sh.fbk) : ''}${wrongNote}${rows}<div style="margin-top:12px">${btn}</div></div>`;
+  const btn = c.kind === 'test' ? `<button class="btn" id="nextBtn" onclick="endTest()">테스트 마치기 →</button>` : c.kind === 'review' ? `<button class="btn" id="nextBtn" onclick="endReview()">홈으로</button>` : `<button class="btn" id="nextBtn" onclick="finishStep('${c.hold.step}')">다음 단계 →</button>`;
+  const testTop = c.kind === 'test' ? testResultHTML(c.hold.result) + (ok < n ? '<p class="muted">틀린 문제는 해설을 읽어 보세요. 같은 유형을 숫자만 바꿔 레이스와 토요일 복습에서 다시 만나요.</p>' : '') : '';
+  return `<div class="card"><h3>📝 채점 결과: ${ok} / ${n} ${ok === n ? '🎉' : ''}</h3>${testTop}${c.sh.fbk && c.kind !== 'test' ? PROGRESS.feedbackHTML(c.sh.fbk) : ''}${wrongNote}${rows}<div style="margin-top:12px">${btn}</div></div>`;
 }
 function finishStep(step){
   const A = S.active;
@@ -451,6 +458,36 @@ function reviewView(){
 }
 function endReview(){ if (S.review && S.review.sh && S.review.sh.graded) award('saturday_review'); S.review = null; save(); go('home'); }
 
+/* ---- 🏁 단원 마무리 테스트: 🌳 능숙이 된 단원을 기본 5 · 응용 5 · 심화 5, 힌트·해설 없이 (2026-11-25) ---- */
+function shuffle(a){ a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function startTest(uid){
+  if (S.utest && S.utest.date === today()) { go('test'); return; }
+  if (!uid) return;
+  const fams = [...new Set((byUnit[uid] || []).map(q => q.f))], items = [], lv = [];
+  [1, 2, 3].forEach(d => { const fs = shuffle(fams.filter(f => byFam[f][0].d === d)), want = PROGRESS.TEST.per[d];
+    for (let i = 0, got = 0; fs.length && got < want && i < want * 4; i++) { const q = pickFromFamily(fs[i % fs.length], items); if (q) { items.push(q.id); lv.push(d); got++; } } });
+  if (!items.length) { alert('이 단원은 테스트 문제가 아직 없어요.'); return; }
+  S.utest = {date: today(), uid, items, lv, idx: 0}; save(); go('test');
+}
+function saveTestResult(c){
+  const T = c.hold, cnt = d => { const k = T.lv.map((x, i) => x === d ? i : -1).filter(i => i >= 0); return [k.filter(i => c.sh.graded[i].ok).length, k.length]; };
+  const r = {date: today(), k: PROGRESS.lessonNo(S), at: new Date().toISOString(), b: cnt(1), a: cnt(2), v: cnt(3), sec: c.sh.startAt ? Math.round((Date.now() - c.sh.startAt) / 1000) : null};
+  r.ok = r.b[0] + r.a[0] + r.v[0]; r.n = r.b[1] + r.a[1] + r.v[1]; r.verdict = PROGRESS.testVerdict(r).name; T.result = r;
+  S.tests = S.tests || {}; (S.tests[T.uid] ||= []).push(r);
+}
+function testResultHTML(r){
+  if (!r) return ''; const v = PROGRESS.testVerdict(r), bar = (name, x) => `<div style="margin:4px 0"><b style="display:inline-block;width:44px">${name}</b> ${'🟩'.repeat(x[0])}${'⬜'.repeat(x[1] - x[0])} <b>${x[0]}/${x[1]}</b></div>`;
+  return `<div class="card center pop" style="background:#fffbea"><div class="big">${v.icon}</div><h2 style="margin:4px 0">${esc(v.name)}</h2>
+    <div style="display:inline-block;text-align:left;margin:6px 0">${bar('기본', r.b)}${bar('응용', r.a)}${bar('심화', r.v)}</div>
+    <p class="muted">총 ${r.ok}/${r.n}${r.sec ? ` · ${Math.floor(r.sec / 60)}분 ${r.sec % 60}초` : ''}<br>${esc(v.tip)}</p></div>`;
+}
+function testView(){
+  const T = S.utest; if (!T) { page = 'home'; return home(); }
+  const u = unitById[T.uid], c = sheetCtx();
+  return `<div class="card"><h2>🏁 단원 마무리 테스트 · ${u.g}-${u.s} ${esc(u.title)}</h2><p class="muted">1~${T.lv.filter(x => x === 1).length}번 기본 · 다음 응용 · 마지막 심화예요. 힌트 없이 내 힘으로! 심화는 어려워도 괜찮아요. 끝까지 생각해 보고 📝 제출해요.</p></div>` + (c.sh.graded ? gradedCard(c) : sheetCard(c));
+}
+function endTest(){ if (S.utest && S.utest.sh && S.utest.sh.graded) award('unit_test'); S.utest = null; save(); location.href = 'start.html'; }
+
 /* ---- 부모님 ---- */
 function parentView(){
   const rows = [...S.wrong].reverse().map(w => { const q = byId[w.qid]; if (!q) return '';
@@ -497,6 +534,7 @@ else { S.settings = Object.assign({openAll:false, opened:{}}, S.settings||{}); S
     else { if (!(S.active && S.active.date === today())) { S.grade = PROGRESS.dailyGrade(S); S.unitId = PROGRESS.dailyUnit(S, D); } startMission(); } }
   else if (h === 'mission' && S.unitId && !doneT) startMission();
   else if (h === 'review' && S.wrong.some(w => w.sat !== 'done')) startReview();
+  else if (h === 'test' && PROGRESS.testDue(S, D)) startTest(PROGRESS.testDue(S, D));
   else if (h === 'parent') go('parent'); else render(); }
 </script>
 </body>

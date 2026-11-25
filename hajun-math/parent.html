@@ -111,6 +111,17 @@ function unitsCard(){
         <span class="mini"><i style="width:${sc}%"></i></span><span class="muted">${n ? `${sc}점 · ${n}문제 · ${esc(st.name)}` : open ? '아직 안 풂' : '잠김'}</span></div>`; }).join('')}</div>`).join('')}</div>`;
 }
 
+/* 🏁 단원 마무리 테스트 기록 (단원이 🌳 능숙이 되면 기본5·응용5·심화5를 힌트 없이) */
+function testsCard(){
+  const rows = Object.entries(S.tests || {}).flatMap(([uid, list]) => list.map(r => ({ uid, ...r }))).sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+  const due = P.testDue(S, D), du = due && unitById[due];
+  const f = x => `${x[0]}/${x[1]}`;
+  return `<div class="card"><h2>🏁 단원 마무리 테스트</h2><p class="muted" style="margin-top:0">단원이 🌳 능숙이 되면 기본 5 · 응용 5 · 심화 5문제를 힌트·해설 없이 풀어요. 매일 공부의 정답률보다 실제 실력에 가까운 점수예요. 판정은 이 문제은행 안에서의 수준이고, 전국 등수는 아니에요.</p>
+    ${du ? `<p>👉 지금 테스트 차례: <b>${du.g}-${du.s} ${esc(du.title)}</b> (오늘의 코스 첫 단계)</p>` : ''}
+    ${rows.length ? `<table><tr><th>날짜</th><th>단원</th><th>기본</th><th>응용</th><th>심화</th><th>판정</th></tr>${rows.map(r => { const v = P.testVerdict(r), u = unitById[r.uid];
+      return `<tr><td>${md(r.date)}</td><td>${u ? esc(u.g + '-' + u.s + ' ' + u.title) : ''}</td><td>${f(r.b)}</td><td>${f(r.a)}</td><td><b>${f(r.v)}</b></td><td>${v.icon} ${esc(v.name)}</td></tr>`; }).join('')}</table>` : '<p class="muted">아직 본 테스트가 없어요.</p>'}</div>`;
+}
+
 /* 날짜별 푼 문제 (최근 14일) */
 function daysCard(){
   const dates = [...Array(14)].map((_, i) => daysAgo(i));
@@ -182,7 +193,7 @@ function arithCard(){
 function render(){
   const c = P.course(S, D);
   const courseHTML = `<div class="card"><h2>🗺️ 오늘의 학습 코스 ${c.done}/${c.total}</h2><p style="margin:0">${c.steps.map(x => `${x.done ? '✅' : '⬜'} ${x.no}. ${x.icon} ${esc(x.name)}`).join(' &nbsp; ')}</p>${P.reportHTML(S, D, '오늘 아이에게 보여 준 피드백') || '<p class="muted">오늘은 아직 공부 기록이 없어요.</p>'}</div>`;
-  document.getElementById('app').innerHTML = courseHTML + summaryCard() + wrongCard() + daysCard() + unitsCard() + arithCard() +
+  document.getElementById('app').innerHTML = courseHTML + summaryCard() + testsCard() + wrongCard() + daysCard() + unitsCard() + arithCard() +
     `<div class="card noprint"><h3>설정</h3><a class="btn" href="daily.html#parent">🏃 매일 학습: 학년·단원·문제 수·주간 보상</a><a class="btn" href="drill.html">⚡ 연산 훈련</a><a class="btn" href="mission.html#parent">📚 미션 단원 열기 · 기록 내보내기/가져오기</a></div>` + notifyCard();
 }
 // 📱 부모님 휴대폰 알림 상태 (notify.js)

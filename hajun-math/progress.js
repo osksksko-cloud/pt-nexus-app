@@ -227,13 +227,39 @@
     const list = drillSkills(grade).filter(k => drillOpen(S, D, grade, k));
     return list.find(k => !drillLevel(S, k.id).done) || list[list.length - 1] || null;
   }
+  /* ---------- 🏁 단원 마무리 테스트 (2026-11-25): 단원이 🌳 능숙이 되면 기본5·응용5·심화5를 힌트 없이 ---------- */
+  const TEST = { per: { 1: 5, 2: 5, 3: 5 }, min: 20 };
+  function unitTests(S, uid) { return ((S.tests || {})[uid]) || []; }
+  function testToday(S) { const t = ymd(); for (const [uid, list] of Object.entries(S.tests || {})) { const r = list.find(x => x.date === t); if (r) return Object.assign({ uid }, r); } return null; }
+  // 테스트 차례인 단원: 지금 학년에서 🌳 이상인데 아직 테스트를 안 본 첫 단원 (하루 1번까지)
+  function testDue(S, D) {
+    if (S.utest && S.utest.date === ymd()) return S.utest.uid;
+    if (testToday(S)) return null;
+    const { order } = index(D);
+    return (order[dailyGrade(S)] || []).find(uid => !unitTests(S, uid).length && unitStage(S, D, uid).stage >= 3) || null;
+  }
+  // 점수 → 수준 (각 5문제 기준). 문제은행 안에서의 상대 위치일 뿐, 전국 백분위가 아님
+  function testVerdict(r) {
+    const b = r.b[0] / (r.b[1] || 1), a = r.a[0] / (r.a[1] || 1), v = r.v[1] ? r.v[0] / r.v[1] : 0;
+    if (b < 0.8) return { icon: '📘', name: '기본 다시 다지기', tip: '기본 개념에서 실수가 있어요. 레이스·미션의 기본 문제를 조금 더 풀고 넘어가요.' };
+    if (a < 0.6) return { icon: '🌿', name: '기본 탄탄 · 응용 연습 더', tip: '기본은 잘 알아요. 문장이 긴 응용 문제를 천천히 읽는 연습이 필요해요.' };
+    if (v < 0.6) return { icon: '🌳', name: '교과서 수준 완성', tip: '기본·응용은 탄탄해요. 심화는 여러 단계를 이어 생각하는 연습을 하면 올라가요.' };
+    if (v < 0.8 || b + a < 1.8) return { icon: '🔥', name: '심화 도전 수준', tip: '심화 문제도 절반 넘게 혼자 풀었어요. 틀린 심화 유형만 다시 보면 돼요.' };
+    return { icon: '🏆', name: '심화까지 탄탄', tip: '심화 문제까지 혼자 풀었어요. 이 단원은 확실히 내 것이에요!' };
+  }
   function course(S, D) {
     const t = ymd(), sat = new Date().getDay() === 6, k = lessonNo(S), n = dose(S);
     const rec = drillRecommend(S, D, dailyGrade(S)), dToday = ((S.drill && S.drill.log) || []).filter(r => r.date === t);
     const rToday = ((S.daily && S.daily.log) || []).filter(r => r.date === t);
     const inLesson = cnt => Math.max(0, Math.min(n, cnt - n * (k - 1)));    // 이번 수업에서 한 판 수
     const dN = inLesson(dToday.length), rN = inLesson(rToday.length), prog = x => n > 1 ? ` · ${x}/${n}판` : '';
-    const steps = [
+    const due = testDue(S, D), tt = testToday(S), U = index(D).unitById;
+    const steps = [];
+    if (due || (tt && (tt.k || 1) === k)) { const u = U[due || tt.uid];   // 테스트는 본 수업의 코스에만 보임
+      steps.push({ key: 'test', icon: '🏁', name: '단원 마무리 테스트', min: TEST.min,
+        desc: `${u ? u.g + '-' + u.s + ' ' + u.title + ' · ' : ''}기본 5 · 응용 5 · 심화 5 · 힌트 없이 내 실력 확인`,
+        href: 'mission.html#test', done: !!tt }); }
+    steps.push(
       { key: 'drill', icon: '⚡', name: `연산 기록 깨기${n > 1 ? ' ' + n + '판' : ''}`, min: 5 * n,
         desc: (rec ? rec.name + ' · 시간 제한 없이 내 기록 깨기' : '') + prog(dN),
         href: 'drill.html' + (rec ? '#' + rec.id : ''), done: dN >= n },
@@ -241,8 +267,7 @@
         href: 'daily.html#start', done: rN >= n },
       { key: 'mission', icon: '📚', name: k > 1 ? `${k}번째 수업 미션` : '오늘의 미션', min: missionCounts(S).min,
         desc: `개념 → 기본 ${missionCounts(S).basic}문제 → 응용 ${missionCounts(S).app}문제 → 오답 확인 → 돌아보기`,
-        href: 'mission.html#course', done: missionsToday(S) >= k },
-    ];
+        href: 'mission.html#course', done: missionsToday(S) >= k });
     const satWait = (S.wrong || []).filter(w => w.sat !== 'done').length;
     if (k === 1 && sat && (satWait || (S.xpAwards || {})[t + '|saturday_review']))
       steps.push({ key: 'review', icon: '🗓️', name: '토요일 복습', min: 10, desc: `처음 틀렸던 문제 ${satWait}개를 해설 없이 다시`,
@@ -385,5 +410,5 @@
   }
 
   window.PROGRESS = { RULES, STAGES, unitStage, unitOpen, recommendedUnit, ladder, wrongBox, index,
-    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, reportHTML, submitFeedback, feedbackHTML };
+    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, TEST, unitTests, testToday, testDue, testVerdict, reportHTML, submitFeedback, feedbackHTML };
 })();
