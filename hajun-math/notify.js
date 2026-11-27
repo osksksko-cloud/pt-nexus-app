@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------
    📱 부모님 휴대폰 알림 (ntfy.sh, 2026-11-24)
-   - 코스 단계(연산·레이스·미션·토요일 복습)를 마칠 때마다 결과 요약을 부모님 휴대폰으로 보낸다.
+   - 코스 단계(연산·복습·미션·토요일 복습)를 마칠 때마다 결과 요약을 부모님 휴대폰으로 보낸다.
    - 알림 채널 이름은 코드에 넣지 않는다. 아이패드에서 한 번 start.html?alert=채널이름 으로 열면
      이 기기에만 저장된다. (채널 이름을 모르는 사람은 알림을 볼 수 없음)
    - 인터넷이 끊겨 못 보낸 알림은 다음에 기록이 저장될 때 다시 보낸다.
@@ -64,7 +64,7 @@
       if (st.key === 'daily') { const L = race.slice(n * (k - 1), n * k);
         const bw = firstWrong('daily'), aw = ((S.daily && S.daily.arithMiss) || []).filter(m => m.date === t && m.at && !sentNow[t + '|wa|' + m.at]);
         const lines = [...aw.map(m => `• ${cut(m.q, 30)} : 내 답 ${m.a} → 정답 ${m.c}`), ...bw.map(a => bankLine(S, a, 'daily')).filter(Boolean)];
-        out.push({ key: pre + 'daily', title: `🏃 레이스 ${L.length}판 완료${tag}`, marks: [...bw.map(wk), ...aw.map(m => t + '|wa|' + m.at)],
+        out.push({ key: pre + 'daily', title: `🔁 복습 ${L.length}판 완료${tag}`, marks: [...bw.map(wk), ...aw.map(m => t + '|wa|' + m.at)],
           msg: L.map(r => `${r.round}판 ${stars(r.stars)} 첫 번에 ${r.firstOk}/${r.n} · 게이지 ${r.startScore}→${r.score}`).join('\n') + (L[0] ? `\n단원: ${unitName(L[0].unit)}` : '') + wrongBlock(lines) }); }
       if (st.key === 'mission') { const d = (S.days || {})[t] || {};
         const res = d.status === 'success' ? '⭐ 성공 (틀린 유형도 새 문제로 혼자 해결)' : '📘 공부 완료 (혼자 풀기 확인은 다음에)';

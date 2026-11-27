@@ -84,6 +84,7 @@ table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px
 <main id="app"><div class="card">불러오는 중…</div></main>
 <script src="mission_data.js"></script>
 <script src="progress.js"></script>
+<script src="reward.js"></script>
 <script src="notify.js"></script>
 <script src="arith_gen.js"></script>
 <script>
@@ -169,6 +170,10 @@ function finish(){
   save();
   R.phase = 'result'; R.rec = rec; R.xp = xp; R.before = before; R.justDone = !before.done && P.drillLevel(S, R.skill).done;
   render(); window.scrollTo(0,0);
+  // 🎉 칭찬과 보상
+  const prevBest = Math.min(...S.drill.log.filter(r => r !== rec && r.skill === rec.skill && r.wrong === 0 && r.sec).map(r => r.sec));
+  const doneToday = S.drill.log.filter(r => r.date === today()).length, need = P.dose(S) * P.lessonNo(S);
+  if (window.RW) RW.celebrate(S, D, 'drill', {wrong, xp, perfect: wrong === 0, record: wrong === 0 && isFinite(prevBest) && sec < prevBest, mastered: R.justDone, left: Math.max(0, need - doneToday)}, save);
 }
 function quit(){ if (R && ['solve','fix'].includes(R.phase) && !confirm('훈련을 그만둘까요? 이번 기록은 저장되지 않아요.')) return; stopTick(); R = null; render(); }
 

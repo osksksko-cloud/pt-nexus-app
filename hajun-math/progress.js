@@ -277,12 +277,51 @@
   // 점수 → 수준 (각 5문제 기준). 문제은행 안에서의 상대 위치일 뿐, 전국 백분위가 아님
   function testVerdict(r) {
     const b = r.b[1] ? r.b[0] / r.b[1] : 1, a = r.a[1] ? r.a[0] / r.a[1] : 1, v = r.v[1] ? r.v[0] / r.v[1] : 0;   // 문제은행에 없는 난이도는 판정에서 빼기 (심화는 없으면 인정 안 함)
-    if (b < 0.8) return { icon: '📘', name: '기본 다시 다지기', tip: '기본 개념에서 실수가 있어요. 레이스·미션의 기본 문제를 조금 더 풀고 넘어가요.' };
+    if (b < 0.8) return { icon: '📘', name: '기본 다시 다지기', tip: '기본 개념에서 실수가 있어요. 복습·미션의 기본 문제를 조금 더 풀고 넘어가요.' };
     if (a < 0.6) return { icon: '🌿', name: '기본 탄탄 · 응용 연습 더', tip: '기본은 잘 알아요. 문장이 긴 응용 문제를 천천히 읽는 연습이 필요해요.' };
     if (v < 0.6) return { icon: '🌳', name: '교과서 수준 완성', tip: '기본·응용은 탄탄해요. 심화는 여러 단계를 이어 생각하는 연습을 하면 올라가요.' };
     if (v < 0.8 || b + a < 1.8) return { icon: '🔥', name: '심화 도전 수준', tip: '심화 문제도 절반 넘게 혼자 풀었어요. 틀린 심화 유형만 다시 보면 돼요.' };
     return { icon: '🏆', name: '심화까지 탄탄', tip: '심화 문제까지 혼자 풀었어요. 이 단원은 확실히 내 것이에요!' };
   }
+  /* ---------- 🔁 간격 반복 (2026-11-27): 유형마다 다음 복습 날짜 ----------
+     기록(attempts)에서 매번 다시 계산하므로 따로 저장하지 않고, 예전 기록에도 그대로 적용된다.
+     그날 그 유형의 '첫 시도'가 혼자 맞힌 것(힌트·아마도 제외)이면 한 칸 올라가고, 틀리면 처음(다음 날)으로.
+     칸별 간격: 1일 → 3일 → 7일 → 14일 → 30일. 복습 날짜 전에 미리 풀어 맞힌 것은 칸을 올리지 않는다. */
+  const SRS_DAYS = [1, 3, 7, 14, 30];
+  function addDays(t, k) { const d = new Date(t + 'T12:00:00'); d.setDate(d.getDate() + k); return ymd(d); }
+  function srsState(S) {
+    const A = S.attempts || [], key = A.length + '|' + (A.length ? A[A.length - 1].at || A[A.length - 1].date : '');
+    if (S._srs && S._srs.key === key) return S._srs.map;
+    const first = {};                                   // f → {date → 첫 시도}
+    A.forEach(a => { if (!a.f || !a.date) return; const m = first[a.f] || (first[a.f] = {}); if (!m[a.date]) m[a.date] = a; });
+    const map = {};
+    Object.entries(first).forEach(([f, days]) => { let box = 0, due = '', last = '';
+      Object.keys(days).sort().forEach(d => { const a = days[d], good = a.ok && !a.hint && a.conf !== 'maybe';
+        if (!good) { box = 0; due = addDays(d, 1); }
+        else if (!due || d >= due) { box = Math.min(box + 1, SRS_DAYS.length); due = addDays(d, SRS_DAYS[box - 1]); }
+        last = d; });
+      map[f] = { box, due, last }; });
+    Object.defineProperty(S, '_srs', { value: { key, map }, writable: true, configurable: true, enumerable: false });   // 저장(JSON)에는 안 들어감
+    return map;
+  }
+  // 복습 후보 유형: 같은 학년에서 지금 단원까지, 어제까지 푼 적 있는 유형. 복습 날짜가 지난 것부터(오래 밀린 것 먼저).
+  function reviewQueue(S, D, uid) {
+    const t = ymd(), src = reviewSource(S, D, uid), m = srsState(S), units = new Set([...src.units, uid]);
+    const fams = [...new Set((S.attempts || []).filter(a => units.has(a.u) && a.date < t && a.mode !== 'test' && a.f).map(a => a.f))].filter(f => m[f]);
+    return fams.map(f => Object.assign({ f, u: f.slice(1, 6) }, m[f])).sort((a, b) => a.due.localeCompare(b.due) || a.box - b.box);
+  }
+  function reviewDue(S, D) { const t = ymd(); return reviewQueue(S, D, dailyUnit(S, D)).filter(x => x.due <= t).length; }
+  // 🔁 복습 재료 (2026-11-27 코스 정리: 연산 → 복습 → 오늘의 미션)
+  //  복습은 '어제까지' 배운 것만: 지난 오답, 지금 단원에서 전날까지 푼 유형, 같은 학년에서 이미 배운 앞 단원.
+  //  오늘 새로 배우는 내용과 오늘 틀린 문제는 미션(개념 → 기본 → 응용 → 오답 확인)에서 다룬다. 하루 동안 결과가 바뀌지 않게 오늘 기록은 보지 않는다.
+  function reviewSource(S, D, uid) {
+    const { byId, unitById } = index(D), t = ymd(), g = uid.split('-')[0], order = index(D).order[unitById[uid].g] || [];
+    const wrongs = (S.wrong || []).filter(w => (w.repair === 'pending' || w.repair === 'todo') && (w.date || '') < t && w.u && w.u.split('-')[0] === g && w.u <= uid);
+    const fams = [...new Set((S.attempts || []).filter(a => a.u === uid && a.date < t && byId[a.qid] && a.mode !== 'test').map(a => a.f))];
+    const units = order.slice(0, Math.max(0, order.indexOf(uid))).filter(x => (S.attempts || []).some(a => a.u === x && a.date < t));
+    return { wrongs, fams, units };
+  }
+  function reviewReady(S, D) { const r = reviewSource(S, D, dailyUnit(S, D)); return !!(r.wrongs.length || r.fams.length || r.units.length); }
   function course(S, D) {
     const t = ymd(), sat = new Date().getDay() === 6, k = lessonNo(S), n = dose(S);
     const rec = drillRecommend(S, D, dailyGrade(S)), dToday = ((S.drill && S.drill.log) || []).filter(r => r.date === t);
@@ -296,13 +335,13 @@
         desc: `${u ? u.g + '-' + u.s + ' ' + u.title + ' · ' : ''}기본 5 · 응용 5 · 심화 5 · 힌트 없이 내 실력 확인`,
         href: 'mission.html#test', done: !!tt }); }
     steps.push(
-      { key: 'drill', icon: '⚡', name: `연산 기록 깨기${n > 1 ? ' ' + n + '판' : ''}`, min: 5 * n,
+      { key: 'drill', icon: '⚡', name: `연산${n > 1 ? ' ' + n + '판' : ''}`, min: 5 * n,
         desc: (rec ? rec.name + ' · 시간 제한 없이 내 기록 깨기' : '') + prog(dN),
         href: 'drill.html' + (rec ? '#' + rec.id : ''), done: dN >= n },
-      { key: 'daily', icon: '🏃', name: `매일 학습 레이스 ${n}판`, min: 7 * n, desc: (fnote || '한 판 6문제 · 끝나면 실력 게이지 확인') + prog(rN),
-        href: 'daily.html#start', done: rN >= n },
+      ...(reviewReady(S, D) || rN ? [{ key: 'daily', icon: '🔁', name: `복습 ${n}판`, min: 7 * n, desc: `복습할 날이 된 유형 ${reviewDue(S, D)}개 · 지난 오답부터 (간격 1→3→7→14→30일, 한 판 6문제)` + prog(rN),
+        href: 'daily.html#start', done: rN >= n }] : []),
       { key: 'mission', icon: '📚', name: k > 1 ? `${k}번째 수업 미션` : '오늘의 미션', min: missionCounts(S).min,
-        desc: `개념 → 기본 ${missionCounts(S).basic}문제 → 응용 ${missionCounts(S).app}문제 → 오답 확인 → 돌아보기`,
+        desc: (fnote ? fnote + ' · ' : '') + `개념 정리 → 기본 ${missionCounts(S).basic}문제로 개념 익히기 → 응용 ${missionCounts(S).app}문제로 사고력 훈련 → 오답 확인 → 돌아보기`,
         href: 'mission.html#course', done: missionsToday(S) >= k });
     const satWait = (S.wrong || []).filter(w => w.sat !== 'done').length;
     if (k === 1 && sat && (satWait || (S.xpAwards || {})[t + '|saturday_review']))
@@ -339,7 +378,7 @@
     // 🏃 매일 학습 · 📚 미션
     if (dlog.length) {
       const top = Math.max(...dlog.map(r => r.stars));
-      if (top === 3) praise.push('🏃 레이스 한 판을 모두 정답으로 완주했어요 ⭐⭐⭐');
+      if (top === 3) praise.push('🔁 복습 한 판을 모두 정답으로 완주했어요 ⭐⭐⭐');
       const g0 = dlog[0].startScore, g1 = dlog[dlog.length - 1].score, u = ix && ix.unitById[dlog[0].unit];
       if (g1 > g0) praise.push(`📈 ${u ? u.title + ' ' : ''}실력 게이지 ${g0} → ${g1} (▲${g1 - g0})`);
       const best = Math.max(...dlog.map(r => r.combo || 0)); if (best >= 4) praise.push(`🔥 ${best}문제 연속 정답`);
@@ -444,10 +483,10 @@
     const u = index(D).unitById[freshUnit(S, D)];
     return `<div style="border:2px dashed #6a3fd1;background:#f5f0ff;border-radius:16px;padding:12px;margin:10px 0">
       <div style="font-weight:900;font-size:17px">⏭️ 시간이 남았나요? 내일 수업을 미리 해요</div>
-      <div style="color:#5a6680;font-size:14px;margin:4px 0 8px">${u ? u.g + '-' + u.s + ' ' + u.title + ' · ' : ''}연산 → 레이스 → 미션을 한 번 더. 힘들면 오늘은 여기까지 해도 충분해요.</div>
+      <div style="color:#5a6680;font-size:14px;margin:4px 0 8px">${u ? u.g + '-' + u.s + ' ' + u.title + ' · ' : ''}연산 → 복습 → 미션을 한 번 더. 힘들면 오늘은 여기까지 해도 충분해요.</div>
       <a href="start.html#next" style="display:inline-block;background:#6a3fd1;color:#fff;text-decoration:none;border-radius:14px;padding:12px 20px;font-weight:900;font-size:18px">⏭️ ${lessonNo(S) + 1}번째 수업 시작 →</a></div>`;
   }
 
   window.PROGRESS = { RULES, STAGES, unitStage, unitOpen, recommendedUnit, ladder, wrongBox, index,
-    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, TEST, unitTests, testToday, testDue, testVerdict, RETEST_DAYS, lastTest, testRank, unitDone, remedialUnit, fastTrack, focus, testNext, reportHTML, submitFeedback, feedbackHTML };
+    DRILL, drillSkills, drillLevel, fluency, unitScore, dailyGrade, dailyUnit, drillLimit, drillOpen, drillRecommend, course, courseBanner, todayReport, dose, missionCounts, lessonNo, missionsToday, xpCap, xpKey, freshUnit, canNextLesson, startNextLesson, nextLessonHTML, MAX_LESSONS, reviewSource, reviewReady, SRS_DAYS, srsState, reviewQueue, reviewDue, addDays, TEST, unitTests, testToday, testDue, testVerdict, RETEST_DAYS, lastTest, testRank, unitDone, remedialUnit, fastTrack, focus, testNext, reportHTML, submitFeedback, feedbackHTML };
 })();

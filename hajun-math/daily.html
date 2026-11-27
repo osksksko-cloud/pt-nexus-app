@@ -103,6 +103,7 @@ h2{font-size:21px;margin:0 0 10px}h3{font-size:18px;margin:0 0 8px}
 <main id="app"><div class="card">불러오는 중…</div></main>
 <script src="mission_data.js"></script>
 <script src="progress.js"></script>
+<script src="reward.js"></script>
 <script src="notify.js"></script>
 <script src="grading.js"></script>
 <script src="arith_gen.js"></script>
@@ -173,22 +174,18 @@ function reviewUnit(uid){
   return list[0] || null;
 }
 function buildRound(){
-  const uid = curUnit(), st = P.unitStage(S, D, uid).stage, n = S.settings.daily.perRound;
-  const pattern = P.focus(S, D, uid).pattern;   // 🎯 단원 진도 + 마무리 테스트 결과에 맞춘 난이도 순서
+  // 🔁 복습 판 (2026-11-27): 어제까지 배운 것만 다시 떠올린다. 연산은 ⚡ 연산 단계, 오늘 새 내용은 📚 미션에서.
+  const uid = curUnit(), n = S.settings.daily.perRound, src = P.reviewSource(S, D, uid);
   const items = [], avoid = [], usedFam = [];
-  const add = (q, role, extra) => { if (!q) return; avoid.push(q.id); usedFam.push(q.f); items.push(Object.assign({kind:'bank', qid:q.id, role}, extra||{})); };
-  // 0) 연산 몸풀기 1문제
-  items.push({kind:'arith', p: AR.makeSet(warmSkill(uid))[0], skill: warmSkill(uid)});
-  // 1) 지난번 못 끝낸 오답 유형 1개 (숫자 바꾼 새 문제)
-  const w = S.wrong.find(x => (x.repair === 'pending' || x.repair === 'todo') && byFam[x.f] && x.u && x.u.split('-')[0] === uid.split('-')[0] && x.u <= uid);   // 같은 학년·지금까지 배운 단원의 오답만
-  if (w) add(pickFromFamily(w.f, [w.qid]), 'repair', {wqid: w.qid});
-  // 2) 지금 단원 + 섞어 풀기 1
-  const nUnit = Math.max(2, n - items.length - 1);
-  for (let k = 0; k < nUnit; k++) add(pickInUnit(uid, pattern[k % pattern.length], avoid, usedFam), 'unit');
-  const ru = reviewUnit(uid);
-  const rq = ru && pickInUnit(ru, rnd(1,2), avoid, []);
-  if (rq) items.splice(Math.max(2, items.length - 1), 0, {kind:'bank', qid:rq.id, role:'review'});
-  else add(pickInUnit(uid, pattern[nUnit % pattern.length], avoid, usedFam), 'unit');   // 복습할 앞 단원이 없으면 지금 단원 1문제 더
+  const add = (q, role, extra) => { if (!q || items.length >= n) return false; avoid.push(q.id); usedFam.push(q.f); items.push(Object.assign({kind:'bank', qid:q.id, role}, extra||{})); return true; };
+  // 1) 지난 오답 유형 (숫자 바꾼 새 문제) 최대 2개
+  src.wrongs.filter((w, i, all) => byFam[w.f] && all.findIndex(x => x.f === w.f) === i).slice(0, 2).forEach(w => add(pickFromFamily(w.f, [w.qid]), 'repair', {wqid: w.qid}));
+  // 2) 간격 반복: 복습 날짜가 된 유형부터 (모자라면 날짜가 가까운 유형으로 채움 · 미리 푼 것은 칸이 오르지 않음)
+  const t = today(), queue = P.reviewQueue(S, D, uid).filter(x => byFam[x.f] && !usedFam.includes(x.f));
+  const gapOf = x => Math.round((new Date(t + 'T12:00:00') - new Date(x.last + 'T12:00:00')) / 864e5);
+  for (let k = 0; items.length < n && queue.length && k < n * 3; k++) { const x = queue[k % queue.length];
+    add(pickFromFamily(x.f, avoid), x.u === uid ? 'unit' : 'review', {gap: gapOf(x), due: x.due <= t}); }
+  if (!items.length) { const f = shuffle([...new Set((byUnit[uid] || []).filter(q => q.d === 1).map(q => q.f))])[0]; add(f && pickFromFamily(f, avoid), 'unit'); }   // 복습할 것이 없는 첫날: 기본 1문제
   items.forEach(it => { it.input = ''; it.conf = null; });
   return {date: today(), phase: 'solve', unit: uid, items, idx: 0, msg: '', combo: 0, maxCombo: 0, firstOk: 0, counted: 0, sureWrong: 0,
           startScore: P.unitScore(S, D, uid, today()), round: todayRounds() + 1, startedAt: Date.now()};
@@ -326,6 +323,9 @@ function finishRound(){
   R.result = {rec, xp, newCombo: R.maxCombo > prevBestCombo && R.maxCombo >= 3, evolved: form(totalStars()).i > form(beforeStars).i};
   S.daily.cur = null; save();
   page = 'result'; render(); window.scrollTo(0,0);
+  // 🎉 칭찬과 보상
+  const okGaps = R.items.filter(it => it.ok && it.gap).map(it => it.gap);
+  if (window.RW) RW.celebrate(S, D, 'daily', {n: rec.n, ok: rec.firstOk, gap: okGaps.length ? Math.max(...okGaps) : 0, fixed, xp, perfect: stars === 3, left: Math.max(0, needRounds() - todayRounds())}, save);
 }
 
 /* ---------- 몸풀기 ---------- */
@@ -351,11 +351,11 @@ function trackHTML(){
   return `<div class="track"><div class="lane">${cells}<button class="flag ${R.phase === 'sheet' ? 'now' : ''}" ${graded ? 'disabled' : 'onclick="toSheet()"'} aria-label="답안 확인">🏁</button></div>
     <div class="tinfo"><span>${R.round}판 · ${graded ? '채점 끝' : `푼 문제 ${done} / ${R.items.length}`}</span><span class="combo">${graded && R.maxCombo >= 2 ? `🔥 최고 ${R.maxCombo}연속!` : ''}</span><span>${graded ? `정답 ${R.firstOk}` : '번호를 누르면 그 문제로'}</span></div></div>`;
 }
-const ROLE = {unit:'', review:'<span class="tag o">🔀 섞어 풀기 · 지난 단원</span>', repair:'<span class="tag o">🔁 지난번 틀린 유형 · 새 숫자</span>', retry:'<span class="tag o">🔁 바로 다시 도전 · 새 숫자</span>'};
+const ROLE = {review:'<span class="tag o">🔀 앞 단원 복습</span>', unit:'<span class="tag o">🧠 지금 단원 복습</span>', repair:'<span class="tag o">🔁 지난번 틀린 유형 · 새 숫자</span>', retry:'<span class="tag o">🔁 바로 다시 도전 · 새 숫자</span>'};
 const PAD = () => `<div class="pad">${['7','8','9','del','4','5','6','/','1','2','3','.','sp','0','clr'].map(k => `<button class="${['del','sp','clr'].includes(k)?'fn':''}" onclick="press('${k}')">${{del:'⌫', sp:'대분수<br>띄움', clr:'지우기'}[k] || k}</button>`).join('')}</div>`;
 function headOf(it){
   if (it.kind === 'arith') return `<span class="tag">⚡ 연산 몸풀기</span>`;
-  const q = qOf(it), u = unitById[q.u]; return `${ROLE[it.role] || ''} <span class="muted">${esc(u.g + '-' + u.s + ' ' + u.title)}</span>`;
+  const q = qOf(it), u = unitById[q.u]; return `${ROLE[it.role] || ''}${it.gap ? ` <span class="tag">📅 ${it.gap}일 만에</span>` : ''} <span class="muted">${esc(u.g + '-' + u.s + ' ' + u.title)}</span>`;
 }
 function stemOf(it){ const q = qOf(it); return it.kind === 'arith' ? `<div class="q arith">${it.p.html} = ?</div>` : `<div class="q">${esc(q.stem)}${q.img ? `<img src="${esc(q.img.src)}" alt="${esc(q.img.alt)}">` : ''}</div>`; }
 function unitOf(it){ return it.kind === 'arith' ? (it.p.unit || '') : (qOf(it).a.unit || ''); }
@@ -434,7 +434,7 @@ function resultView(){
     <div class="card" style="text-align:center">
       ${P.courseBanner(S, D)}
       ${rounds < needRounds() ? `<div class="boom" style="color:var(--blue)">${rounds}판 완료! 오늘은 ${needRounds()}판까지 해요</div><button class="btn big orange" onclick="startMove()">💪 몸풀기 1분 → ${rounds + 1}판 시작</button>`
-        : rounds === needRounds() ? `<div class="boom" style="color:var(--green)">✅ 오늘 레이스 ${rounds}판 완료!</div><button class="btn ghost" onclick="startMove()">💪 몸풀기 1분 → ${rounds + 1}판 더 (선택)</button>`
+        : rounds === needRounds() ? `<div class="boom" style="color:var(--green)">✅ 오늘 복습 ${rounds}판 완료!</div><button class="btn ghost" onclick="startMove()">💪 몸풀기 1분 → ${rounds + 1}판 더 (선택)</button>`
         : `<div class="boom">🏆 오늘 ${rounds}판 완주! 최고예요!</div>`}</div>`;
 }
 function moveView(){
@@ -457,9 +457,9 @@ function homeView(){
       <div style="font-size:22px;font-weight:900">하준 · ${f.name}</div>
       <div class="bar"><i style="width:${prog}%"></i></div>
       <div class="muted">⭐ ${st}개 모음${f.next ? ` · ${nextNeed}개 더 모으면 ${f.next[1]} ${f.next[2]}로 진화!` : ' · 최고 단계!'} · 🔥 최고 ${S.daily.bestCombo}연속</div></div></div></div>
-    <div class="card"><h2>오늘의 레이스</h2>
+    <div class="card"><h2>🔁 오늘의 복습 레이스</h2>
       <div class="dots">${[...Array(maxRounds())].map((_, k) => k + 1).map(i => `<span class="${rounds >= i ? 'on' : ''}">${rounds >= i ? '✓' : i}</span>`).join('')}<span style="background:none;width:auto" class="muted">${rounds >= maxRounds() ? rounds + '판 완주!' : rounds >= needRounds() ? `꼭 할 ${needRounds()}판 완료 · ${maxRounds()}판은 선택` : `${needRounds()}판은 꼭 · ${maxRounds()}판은 선택`}</span></div>
-      <div class="muted">지금 단원: <b>${u.g}-${u.s} ${esc(u.title)}</b> ${stage.stage ? stage.icon : ''} · 한 판 ${S.settings.daily.perRound}문제쯤 (약 7분)</div>
+      <div class="muted">지금 단원: <b>${u.g}-${u.s} ${esc(u.title)}</b> ${stage.stage ? stage.icon : ''} · 한 판 ${S.settings.daily.perRound}문제쯤 (약 7분) · 복습할 날이 된 유형 ${P.reviewDue(S, D)}개 (간격 1→3→7→14→30일)</div>
       ${S.daily.cur && S.daily.cur.date === today() ? `<button class="btn big orange" onclick="resumeRound()">▶ ${S.daily.cur.round}판 이어서 풀기 (${S.daily.cur.phase === 'solve' || S.daily.cur.phase === 'sheet' ? '제출 전' : '고치기 중'})</button>`
         : rounds >= maxRounds() ? '<div class="boom">🏆 오늘은 충분히 달렸어요!</div>' : `<button class="btn big orange" onclick="startRound()">▶ ${rounds + 1}판 시작${rounds >= needRounds() ? ' (선택)' : ''}</button>`}</div>
     <div class="card"><h2>📈 실력 게이지</h2>${gaugeHTML(`${u.g}-${u.s} ${esc(u.title)}`, was, now)}
@@ -477,7 +477,7 @@ function parentView(){
     <div class="muted">학년</div><div class="setrow">${[4,5,6].map(x => `<button class="btn small ${g === x ? '' : 'ghost'}" onclick="S.settings.daily.grade=${x};S.grade=${x};S.daily.unit=null;save();render()">${x}학년${x === 5 ? ' (선행)' : ''}</button>`).join('')}</div>
     <div class="muted">지금 단원 (열린 단원만 고를 수 있어요. 순서대로 열리고, 앞 단원이 🌿가 되면 다음 단원이 열려요)</div>
     <div class="setrow">${D.units.filter(u => u.g === g).map(u => { const open = P.unitOpen(S, D, u.id); return `<button class="btn small ${u.id === uid ? '' : 'ghost'}" ${open ? '' : 'disabled'} onclick="S.daily.unit='${u.id}';if(!(S.active&&S.active.date===today()))S.unitId='${u.id}';save();render()">${u.g}-${u.s} ${esc(u.title)}</button>`; }).join('')}</div>
-    <div class="muted">하루 공부양 (연산·레이스 판 수와 미션 문제 수)</div><div class="setrow">${[[2,'많이 (기본) · 연산·레이스 2판 + 미션 기본 10·응용 5 · 약 1시간'],[1,'적게 · 1판씩 + 미션 기본 2·응용 2 · 약 27분']].map(([x,t]) => `<button class="btn small ${P.dose(S) === x ? '' : 'ghost'}" onclick="S.settings.dose=${x};save();render()">${t}</button>`).join('')}</div>
+    <div class="muted">하루 공부양 (연산·복습 판 수와 미션 문제 수)</div><div class="setrow">${[[2,'많이 (기본) · 연산·복습 2판 + 미션 기본 10·응용 5 · 약 1시간'],[1,'적게 · 1판씩 + 미션 기본 2·응용 2 · 약 27분']].map(([x,t]) => `<button class="btn small ${P.dose(S) === x ? '' : 'ghost'}" onclick="S.settings.dose=${x};save();render()">${t}</button>`).join('')}</div>
     <div class="muted">한 판 문제 수</div><div class="setrow">${[5,6,8].map(x => `<button class="btn small ${ds_.perRound === x ? '' : 'ghost'}" onclick="S.settings.daily.perRound=${x};save();render()">${x}문제${x === 6 ? ' (기본)' : ''}</button>`).join('')}</div>
     <div class="muted">주간 목표 별과 약속 보상 (1판에 별 1~3개, 평일 5일 × 1판 ≈ 별 10~15개)</div>
     <div class="setrow"><input type="number" min="3" max="45" value="${ds_.weekGoal}" style="width:90px" onchange="S.settings.daily.weekGoal=Math.max(1,+this.value||15);save()"> 개 →
